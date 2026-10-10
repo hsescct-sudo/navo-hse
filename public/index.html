@@ -202,12 +202,13 @@ table.mx tr.sec td:first-child{background:var(--surface2)}
 
 <div id="login" hidden><form id="lg-form" class="lg"><div class="logo" style="color:var(--fg)"><b>N</b><div>NAVO<small style="color:var(--muted)">HSE Platform</small></div></div>
 <p style="margin:0;color:var(--muted)">Sign in to report, review and track HSE on your projects.</p>
-<button type="button" class="btn" id="lg-google">Continue with Google</button><div style="text-align:center;color:var(--muted);font-size:12px">or with email</div>
 <div class="fld" id="lg-name-wrap" hidden><label for="lg-name">Full name</label><input id="lg-name" type="text" autocomplete="name"></div>
 <div class="fld"><label for="lg-email">Email</label><input id="lg-email" type="email" autocomplete="email" required></div>
-<div class="fld"><label for="lg-pass">Password</label><input id="lg-pass" type="password" autocomplete="current-password" minlength="6" required></div>
-<button class="btn acc" type="submit">Sign in</button><button type="button" class="btn" id="lg-reset" style="border:0;background:none;color:var(--muted)">Forgot password</button>
-<div id="lg-msg" role="status" style="color:var(--crit);font-size:13px"></div></form></div>
+<div class="fld"><label for="lg-pass">Password</label><input id="lg-pass" type="password" autocomplete="current-password" minlength="8" required></div>
+<button class="btn acc" type="submit" id="lg-submit">Sign in</button>
+<button type="button" class="btn" id="lg-toggle" style="border:0;background:none;color:var(--brand)">New to NAVO? Create an account</button>
+<button type="button" class="btn" id="lg-reset" style="border:0;background:none;color:var(--muted)">Forgot password</button>
+<div id="lg-msg" role="status" style="font-size:13px"></div></form></div>
 <style>#login{position:fixed;inset:0;background:var(--bg);z-index:100;display:grid;place-items:center;padding:16px}#login[hidden]{display:none}.lg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}.lg input{padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:15px}</style>
 <div class="app">
   <aside>
@@ -230,11 +231,9 @@ table.mx tr.sec td:first-child{background:var(--surface2)}
 </div>
 <nav class="tabbar" id="tabbar"></nav>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script src="navo-firebase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="supabase-config.js"></script>
+<script src="navo-supabase.js"></script>
 <script>
 const IC={
 dash:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',
