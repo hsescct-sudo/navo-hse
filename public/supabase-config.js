@@ -1,6 +1,7 @@
-// Paste your Supabase project values here (Supabase dashboard > Project Settings > API).
-// The anon key is meant to be public: access is protected by the Row Level Security rules in supabase/schema.sql.
+// Supabase project values (Supabase dashboard > Project Settings > API Keys).
+// The publishable key is meant to be public: access is protected by the Row Level Security rules in supabase/schema.sql.
+// Never put a secret / service_role key in this file.
 window.NAVO_SUPABASE_CONFIG = {
-  url: "https://PASTE_PROJECT_REF.supabase.co",
-  anonKey: "PASTE_ANON_PUBLIC_KEY"
+  url: "https://gvktcleqiidtmgqxbzsy.supabase.co",
+  anonKey: "sb_publishable_9N-3NV87mniwgZB0dw3IVA_bqK3ppNb"
 };
