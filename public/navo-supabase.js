@@ -7,7 +7,7 @@
   const authed = new Promise(r => (resolveAuthed = r));
 
   // App field names <-> table column names
-  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target" };
+  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target", originalText: "original_text" };
   const TO_FIELD = Object.fromEntries(Object.entries(TO_COL).map(([a, b]) => [b, a]));
   const toRow = o => Object.fromEntries(Object.entries(o).filter(([k]) => k !== "id").map(([k, v]) => [TO_COL[k] || k, v]));
   const fromRow = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [TO_FIELD[k] || k, v]));
@@ -98,7 +98,20 @@
   const db = { doc: docRef, collection: p => collection(p),
     // Bulk helpers used by the admin demo-data tools.
     bulkInsert: async (table, rows) => { for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(toRow))); },
-    removeDemo: async () => run(sb.from("projects").delete().like("id", "demo-%"))
+    removeDemo: async () => run(sb.from("projects").delete().like("id", "demo-%")),
+    ai: async (action, payload) => {
+      const r = await fetch("/api/ai", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ action, ...payload }) });
+      let j = {}; try { j = await r.json(); } catch (e) {}
+      if (!r.ok) throw new Error(j.error || "The AI service is not available right now.");
+      return j;
+    },
+    uploadPhoto: async (project, blob) => {
+      const path = project + "/" + crypto.randomUUID() + ".jpg";
+      const { error } = await sb.storage.from("photos").upload(path, blob, { contentType: "image/jpeg" });
+      if (error) fail(error);
+      return path;
+    },
+    photoUrl: async path => { const { data, error } = await sb.storage.from("photos").createSignedUrl(path, 600); if (error) fail(error); return data.signedUrl; }
   };
 
   const cache = {};
@@ -152,6 +165,7 @@
   }
   sb.auth.getSession().then(({ data }) => start(data.session));
   sb.auth.onAuthStateChange(async (ev, s) => {
+    if (s) session = s;
     if (ev === "PASSWORD_RECOVERY") {
       const pw = window.prompt("Choose a new password (at least 8 characters)");
       if (pw && pw.length >= 8) { const { error } = await sb.auth.updateUser({ password: pw }); window.alert(error ? error.message : "Password updated."); }

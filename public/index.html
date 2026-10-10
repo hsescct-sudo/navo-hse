@@ -1,4 +1,8 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}.ptabs{display:flex;gap:2px;overflow-x:auto;border-bottom:3px solid #0f4c5c;margin:8px 0 12px}.ptabs button{flex:0 0 auto;border:0;background:#e6eef0;color:#0f4c5c;padding:9px 14px;font-weight:600;border-radius:6px 6px 0 0;cursor:pointer}.ptabs button[aria-selected=true]{background:#0f4c5c;color:#fff}
+.pbi-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:6px}.pbi-title{background:#0f4c5c;color:#fff;padding:10px 18px;border-radius:0 0 14px 0;font-weight:700;font-size:1.15rem}.pbi-band{flex:1;min-width:200px;background:linear-gradient(90deg,#0f4c5c22,transparent);padding:8px 12px;border-radius:6px;color:var(--muted)}
+.pbi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.pbi-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pbi-tall{grid-row:span 2}
+@media(max-width:900px){.pbi-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.pbi-grid,.pbi-grid2{grid-template-columns:1fr}.pbi-tall{grid-row:auto}}
+</style></head><body>
 <title>NAVO HSE</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -382,7 +386,7 @@ const MODRAW=MODS.map(([n,r])=>{const raised=ser(1,900,700)[0]+120;return{n,rais
 const SHI_W=[["Reporting culture",20],["Action close-out",25],["Inspection compliance",20],["Leadership engagement",15],["Training currency",10],["Permit discipline",10]];
 const SHI=ALLSITES.map(x=>{const parts=SHI_W.map(([n,w])=>Math.min(w,Math.round(w*(.62+rnd()*.42))));return{...x,parts,score:parts.reduce((a,b)=>a+b,0)}}).sort((a,b)=>b.score-a.score);
 const band=s=>s>=85?["Healthy","p-ok","var(--ok)"]:s>=70?["Watch","p-warn","var(--warn)"]:["Intervene","p-crit","var(--crit)"];
-const PYR=[["Fatality",0],["Lost time injury",2],["Restricted work",3],["Medical treatment",7],["First aid",34],["Property damage",21],["Near miss",186],["Unsafe acts / conditions",3120],["HSE inspections",1640],["Management walkthroughs",412],["Toolbox talks",9850],["Training man-hours",24600]];
+const PYR=window.PYR_DEMO=[["Fatality",0],["Lost time injury",2],["Restricted work",3],["Medical treatment",7],["First aid",34],["Property damage",21],["Near miss",186],["Unsafe acts / conditions",3120],["HSE inspections",1640],["Management walkthroughs",412],["Toolbox talks",9850],["Training man-hours",24600]];
 const BODY=[["Hand / fingers",14],["Eye",6],["Foot",5],["Back",4],["Head",2],["Other",5]];
 const AUD_EL=[["Work at height",[6,4,9]],["Lifting operations",[3,5,7]],["Permit to work",[4,3,6]],["Emergency response",[2,4,5]],["Contractor control",[1,5,8]],["Electrical safety",[2,2,6]],["Waste & environment",[0,3,7]],["Training records",[1,2,5]]];
 const WASTE=[["General",412,"var(--info)"],["Hazardous",38,"var(--crit)"],["Recycled",166,"var(--ok)"],["Scrap metal",94,"var(--warn)"]];
@@ -401,14 +405,14 @@ function line(series,labels,{h=150,target,dec=2}={}){const W=560,all=series.flat
 function donut(parts,center,sub,attr){let a=-Math.PI/2;const tot=parts.reduce((s,p)=>s+p[1],0)||1;const R=54,r=36;
  const arcs=parts.map(([n,v,c])=>{const b=a+v/tot*Math.PI*2;const p=(ang,rr)=>[70+rr*Math.cos(ang),70+rr*Math.sin(ang)];const L=b-a>Math.PI?1:0;const[x1,y1]=p(a,R),[x2,y2]=p(b,R),[x3,y3]=p(b,r),[x4,y4]=p(a,r);const d=`M${x1},${y1}A${R},${R} 0 ${L} 1 ${x2},${y2}L${x3},${y3}A${r},${r} 0 ${L} 0 ${x4},${y4}Z`;a=b;const at=attr?attr(n):"";return v?`<path d="${d}" fill="${c}" ${at} ${at?'class="hot"':""}><title>${n}: ${v} (${Math.round(v/tot*100)}%)</title></path>`:""}).join("");
  return`<div class="dn"><svg viewBox="0 0 140 140" width="140" height="140">${arcs}<text x="70" y="72" text-anchor="middle" font-size="22" font-weight="600" fill="var(--fg)" font-family="Barlow Condensed,sans-serif">${center}</text><text x="70" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">${sub}</text></svg><div class="dl">${parts.map(([n,v,c])=>{const at=attr?attr(n):"";return`<span ${at} ${at?'class="hot"':""}><i style="background:${c}"></i>${n}<b>${v}</b></span>`}).join("")}</div></div>`;}
-function pyramid(){const n=PYR.length,LAG=7,rh=30,gap=4,W=320,cx=W/2+8,lx=W+44,H=n*(rh+gap)-gap,yb=LAG*(rh+gap)-gap/2;
+function pyramid(items,lagN){const PYR=items||window.PYR_DEMO,LAG=lagN||7,n=PYR.length,rh=30,gap=4,W=320,cx=W/2+8,lx=W+44,H=n*(rh+gap)-gap,yb=LAG*(rh+gap)-gap/2;
  const hw=y=>y<=yb?(W/2)*y/yb:(W/2)*(H-y)/(H-yb);
  const rows=PYR.map(([l,v],i)=>{const y0=i*(rh+gap),y1=y0+rh,ym=y0+rh/2,lag=i<LAG;const a=hw(y0),b=hw(y1),wm=hw(ym);
   const shade=lag?.45+.55*(i+1)/LAG:.45+.55*(n-i)/(n-LAG);const fill=lag?"var(--crit)":"var(--ok)";const inside=wm*2>58;
-  return`<polygon points="${cx-a},${y0} ${cx+a},${y0} ${cx+b},${y1} ${cx-b},${y1}" fill="${fill}" fill-opacity="${shade.toFixed(2)}"/>`+
+  const dk=PYR[i][2];return(dk?`<g class="hot" data-drill="${dk}"><title>${l}: ${v} · click for details</title>`:`<g><title>${l}: ${v}</title>`)+`<rect x="0" y="${y0}" width="${lx+190}" height="${rh}" fill="transparent"/><polygon points="${cx-a},${y0} ${cx+a},${y0} ${cx+b},${y1} ${cx-b},${y1}" fill="${fill}" fill-opacity="${shade.toFixed(2)}"/>`+
   `<line x1="${cx+Math.max(a,b)+(inside?6:18+v.toLocaleString().length*8.5)}" y1="${ym}" x2="${lx-8}" y2="${ym}" stroke="var(--line)" stroke-width="1"/>`+
   `<text x="${inside?cx:cx+Math.max(a,b)+10}" y="${ym+4.5}" text-anchor="${inside?"middle":"start"}" font-size="13" font-weight="700" font-family="IBM Plex Mono,monospace" fill="${inside?"#ffffff":"var(--fg)"}">${v.toLocaleString()}</text>`+
-  `<text x="${lx}" y="${ym+4.5}" font-size="13" fill="var(--fg)">${l}</text>`}).join("");
+  `<text x="${lx}" y="${ym+4.5}" font-size="13" fill="var(--fg)">${l}</text></g>`}).join("");
  const div=`<line x1="${cx-W/2-4}" y1="${yb}" x2="${cx+W/2+4}" y2="${yb}" stroke="var(--fg)" stroke-width="1.5" stroke-dasharray="4 4"/>`;
  return`<div class="tbl"><svg viewBox="0 0 ${lx+190} ${H+4}" width="100%" style="min-width:440px" role="img" aria-label="Safety diamond: lagging indicators above, leading indicators below">${rows}${div}
  <text x="4" y="14" font-size="11" font-weight="600" letter-spacing="1" fill="var(--crit)">LAGGING</text><text x="4" y="${H-2}" font-size="11" font-weight="600" letter-spacing="1" fill="var(--ok)">LEADING</text></svg></div>`;}
@@ -594,8 +598,9 @@ function report(){const w=st.w;const bars=`<div class="steps">${[0,1,2,3].map(i=
  let body="";
  if(w.step===0){const opts=w.rt==="Incident"?["Injury","Near Miss","Property Damage","Environmental"]:w.rt==="Good practice"?["Safe behaviour","Good housekeeping","Good planning","Other"]:["Unsafe Act","Unsafe Condition","Equipment defect","Other"];
   body=`<div class="fld"><label>${w.rt} type</label><div class="choice">${opts.map(o=>`<button data-pick="${o}" aria-pressed="${w.kind===o}">${o}</button>`).join("")}</div></div>
+  ${w.kind==="Injury"?`<div class="fld"><label>How serious is the injury?</label><div class="choice">${SEVERITIES.map(o=>`<button data-sev="${o}" aria-pressed="${w.sev===o}">${o}</button>`).join("")}</div></div>`:""}
   ${w.rt!=="Good practice"?`<div class="fld"><label for="cat">High-energy category</label><select id="cat"><option value="">Select if applicable</option>${WHEEL.map(x=>`<option ${w.cat===x?"selected":""}>${x}</option>`).join("")}</select></div>`:""}`;}
- if(w.step===1)body=`<label class="photo" for="ph">${w.img?`<img src="${w.img}" alt="Attached photo">`:svg("cam",34)+"<div>Tap to add a photo</div><small>Optional, but helps the HSE team</small>"}</label><input id="ph" type="file" accept="image/*" hidden>`;
+ if(w.step===1)body=`<label class="photo" for="ph">${w.img?`<img src="${w.img}" alt="Attached photo">`:svg("cam",34)+"<div>Tap to add a photo</div><small>Optional. With a photo, AI can spot hazards and rate the risk.</small>"}</label><input id="ph" type="file" accept="image/*" hidden>`;
  if(w.step===2&&L.ready&&myProjects().length)body=`<div class="fld"><label for="wp">Project</label><select id="wp">${myProjects().map(p=>`<option value="${esc(p.id)}" ${w.p===p.id?"selected":""}>${esc(p.name)} · ${esc(p.country)}</option>`).join("")}</select></div>
   <div class="fld"><label for="wd">Department</label><select id="wd">${DEPTS.map(x=>`<option ${x===(w.dept||"Mechanical")?"selected":""}>${x}</option>`).join("")}</select></div>
   <div class="fld"><label for="wl">Exact location</label><input type="text" id="wl" value="${esc(w.loc||"")}" placeholder="e.g. Pipe rack 4, near Gate B"></div>`;
@@ -603,7 +608,10 @@ function report(){const w=st.w;const bars=`<div class="steps">${[0,1,2,3].map(i=
   <div class="fld"><label for="ws">Site</label><select id="ws">${SITES[w.c||"KSA"].map(x=>`<option>${x}</option>`).join("")}</select></div>
   <div class="fld"><label for="wd">Department</label><select id="wd">${DEPTS.map(x=>`<option ${x==="Mechanical"?"selected":""}>${x}</option>`).join("")}</select></div>
   <div class="fld"><label for="wl">Exact location</label><input type="text" id="wl" placeholder="e.g. Pipe rack 4, near Gate B"></div>`;
- if(w.step===3)body=`<div class="fld"><label for="wt">Describe what you saw</label><textarea id="wt" rows="4" placeholder="Short and simple is fine">${esc(w.desc||"")}</textarea></div>
+ if(w.step===3)body=`<div class="fld"><label for="wlang">Your language</label><select id="wlang">${LANGS.map(([c,n])=>`<option value="${c}" ${(w.lang||"en-US")===c?"selected":""}>${n}</option>`).join("")}</select></div>
+  <div class="fld"><label for="wt">Describe what you saw</label><textarea id="wt" rows="4" placeholder="Type or press Speak. Any language is fine." dir="auto">${esc(w.desc||"")}</textarea>
+  <div class="filters"><button class="btn" id="mic" type="button">${w.listening?"■ Stop":"🎤 Speak"}</button>${L.db&&L.db.ai?`<button class="btn pri" id="ai-run" type="button" ${w.aiBusy?"disabled":""}>${w.aiBusy?"AI is checking…":w.ai?"Check again with AI":"AI check: risk and actions"}</button>`:""}</div></div>
+  ${aiCard(w.ai)}
   <div class="fld"><label for="we">When did it happen?</label><input type="datetime-local" id="we" value="${esc(w.when||new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16))}" style="padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface)"></div>
   <div class="fld"><label>Did you stop the work or make it safe?</label><div class="choice"><button data-safe="Yes" aria-pressed="${w.safe==="Yes"}">Yes</button><button data-safe="No" aria-pressed="${w.safe==="No"}">No</button></div></div>
   <div class="fld"><label>Show my name on this report?</label><div class="choice"><button data-anon="0" aria-pressed="${!w.anon}">Yes</button><button data-anon="1" aria-pressed="${!!w.anon}">No, anonymous</button></div></div>`;
@@ -638,7 +646,11 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,tr");if(!
  if(t.id==="back"){if(st.w.step)st.w.step--;else return go(st.role==="mgr"?"inc":"home");render();return}
  if(t.dataset.anon!==undefined){st.w.anon=t.dataset.anon==="1";st.w.desc=(document.getElementById("wt")||{}).value||st.w.desc;render();return}
  if(t.id==="next"){const g=id=>document.getElementById(id);if(g("cat"))st.w.cat=g("cat").value;if(g("wc"))st.w.c=g("wc").value;if(g("wp"))st.w.p=g("wp").value;if(g("wd"))st.w.dept=g("wd").value;if(g("wl"))st.w.loc=g("wl").value;if(g("wt"))st.w.desc=g("wt").value;if(g("we"))st.w.when=g("we").value;
-  if(st.w.step===3&&L.ready&&st.w.p){const w=st.w;liveSave(()=>L.db.collection("reports").add({rt:w.rt,kind:w.kind||"",cat:w.cat||"",project:w.p,dept:w.dept||"",loc:w.loc||"",desc:(w.desc||"").slice(0,2000),safe:w.safe||"",by:w.anon?null:L.me.id,ts:Date.now(),eventTs:w.when?new Date(w.when).getTime():null,status:"Open"}),"Report sent to the "+projName(w.p)+" HSE team");go("live");return}
+  if(st.w.step===3&&L.ready&&st.w.p){const w=st.w;const btn=t;btn.disabled=true;btn.textContent="Sending…";if(g("wlang"))w.lang=g("wlang").value;
+  liveSave(async()=>{let photo=null;if(w.blob&&L.db.uploadPhoto)photo=await L.db.uploadPhoto(w.p,w.blob);
+   const english=w.ai&&w.ai.english_text&&!(w.lang||"en").startsWith("en")?w.ai.english_text:null;
+   await L.db.collection("reports").add({rt:w.rt,kind:w.kind||"",severity:w.kind==="Injury"?(w.sev||""):"",cat:w.cat||"",project:w.p,dept:w.dept||"",loc:w.loc||"",desc:(english||w.desc||"").slice(0,2000),originalText:english?(w.desc||"").slice(0,2000):null,lang:w.lang||"en-US",ai:w.ai||null,photo,safe:w.safe||"",by:w.anon?null:L.me.id,ts:Date.now(),eventTs:w.when?new Date(w.when).getTime():null,status:"Open"})},
+   "Report sent to the "+projName(w.p)+" HSE team").then(ok=>{if(ok)go("live");else{btn.disabled=false;btn.textContent="Submit report"}});return}
   if(st.w.step===0&&!st.w.kind){toast("Choose a type to continue");return}
   if(st.w.step<3){st.w.step++;render();return}
   toast("Report submitted · Reference "+(st.w.rt==="Incident"?"INC-26-0188":"OBS-5321")+" · HSE team notified");go(st.role==="mgr"?"dash":"home");return}
@@ -647,9 +659,10 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,tr");if(!
 document.addEventListener("change",e=>{if(e.target.id==="country"){st.country=e.target.value;render()}
  if(e.target.id==="hsite"){st.hsite=e.target.value;render()}
  if(e.target.id==="wc"){st.w.c=e.target.value;render()}
- if(e.target.id==="ph"&&e.target.files[0]){const r=new FileReader();r.onload=()=>{st.w.img=r.result;render()};r.readAsDataURL(e.target.files[0])}});
+ if(e.target.id==="ph"&&e.target.files[0]){shrinkPhoto(e.target.files[0]).then(({url,blob})=>{st.w.img=url;st.w.blob=blob;st.w.ai=null;render()}).catch(()=>toast("That photo could not be read. Try another one."))}
+ if(e.target.id==="wlang")st.w.lang=e.target.value;});
 /* ================= LIVE SYSTEM (shared database) ================= */
-const L={db:null,user:null,me:null,owner:false,projects:[],members:{},reports:[],scores:{},ready:false,state:"Connecting…",scProj:null,scMonth:null,structure:null,sdraft:null,np:{plat:"Construction"},actions:[],inspections:[],activities:[],reviews:{},draft:{},af:{},acc:{q:"",hits:[],pick:null}};
+const L={db:null,user:null,me:null,owner:false,projects:[],members:{},reports:[],scores:{},ready:false,state:"Connecting…",scProj:null,scMonth:null,structure:null,sdraft:null,np:{plat:"Construction"},actions:[],inspections:[],activities:[],reviews:{},draft:{},af:{},acc:{q:"",hits:[],pick:null},outlook:{}};
 const ROLES={admin:"HSE Admin",hse:"HSE Engineer",supervisor:"Supervisor",worker:"Site Worker"};
 const thisMonth=()=>{const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")};
 const prevMonth=m=>{let[y,mm]=m.split("-").map(Number);mm--;if(!mm){mm=12;y--}return y+"-"+String(mm).padStart(2,"0")};
@@ -691,13 +704,47 @@ function liveGate(){if(L.state==="offline")return`<div class="panel"><h2>Live da
  return null}
 const liveTag=()=>`<div class="demo"><span style="background:var(--ok-bg);color:var(--ok)">LIVE</span>Signed in as <b class="uname" data-uid="${esc(L.me?.id)}">you</b> · ${ROLES[myRole()]||""} · ${myProjects().length} project${myProjects().length===1?"":"s"}</div>`;
 
+
+/* ---- AI-assisted field reporting ---- */
+const SEVERITIES=["First Aid","Medical Treatment","Restricted Work","Lost Time","Fatality"];
+const LANGS=[["en-US","English"],["ar-SA","العربية Arabic"],["ur-PK","اردو Urdu"],["hi-IN","हिन्दी Hindi"],["bn-BD","বাংলা Bengali"],["ne-NP","नेपाली Nepali"],["ml-IN","മലയാളം Malayalam"],["ta-IN","தமிழ் Tamil"],["fil-PH","Filipino"],["te-IN","తెలుగు Telugu"]];
+const RISKCLS={Low:"p-ok",Medium:"p-info",High:"p-warn",Critical:"p-crit"};
+function shrinkPhoto(file){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const k=Math.min(1,1280/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+ c.getContext("2d").drawImage(img,0,0,c.width,c.height);c.toBlob(b=>b?res({url:c.toDataURL("image/jpeg",.82),blob:b}):rej(),"image/jpeg",.82);URL.revokeObjectURL(img.src)};img.onerror=rej;img.src=URL.createObjectURL(file)})}
+function aiCard(a){if(!a)return"";
+ return`<div class="panel" style="gap:10px;border-color:var(--brand)"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b>AI risk rating</b><span class="pill ${RISKCLS[a.risk_level]||"p-mute"}" style="font-size:13px">${esc(a.risk_level)} · ${a.likelihood} × ${a.severity} = ${a.risk_score}</span></div>
+ ${a.pfpi?`<div class="pill p-crit" style="white-space:normal">PFPI: ${esc(a.pfpi_reason||"potential for fatality or permanent impairment")}</div>`:""}
+ ${a.english_text&&a.language&&!/english/i.test(a.language)?`<div><small style="color:var(--muted)">English (from ${esc(a.language)})</small><div>${esc(a.english_text)}</div></div>`:""}
+ ${a.hazards&&a.hazards.length?`<div><small style="color:var(--muted)">Hazards spotted</small><ul style="margin:4px 0 0;padding-left:18px">${a.hazards.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:""}
+ ${a.category?`<div class="filters" style="align-items:center"><small style="color:var(--muted)">Category: <b style="color:var(--fg)">${esc(a.category)}</b></small>${st.w&&st.w.cat!==a.category?`<button class="btn" id="ai-cat" type="button">Use this category</button>`:""}</div>`:""}
+ ${a.immediate_actions&&a.immediate_actions.length?`<div><small style="color:var(--muted)">Make safe now</small><ul style="margin:4px 0 0;padding-left:18px">${a.immediate_actions.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:""}
+ ${a.corrective_actions&&a.corrective_actions.length?`<div><small style="color:var(--muted)">Suggested corrective actions (HSE confirms)</small><ul style="margin:4px 0 0;padding-left:18px">${a.corrective_actions.map(x=>`<li>${esc(x.title)} <small style="color:var(--muted)">· ${esc(x.owner_role||"")} · ${x.due_days||7} days</small></li>`).join("")}</ul></div>`:""}
+ <small style="color:var(--muted)">AI suggestion (${esc(a.confidence||"medium")} confidence). The HSE team reviews every report.</small></div>`}
+let REC=null;
+function toggleMic(){const w=st.w;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){toast("Voice typing is not available in this browser. Use the microphone on your phone keyboard.");return}
+ if(REC){REC.stop();return}const ta=document.getElementById("wt");w.desc=ta?ta.value:w.desc;const base=w.desc?w.desc+" ":"";
+ REC=new SR();REC.lang=(document.getElementById("wlang")||{}).value||w.lang||"en-US";w.lang=REC.lang;REC.interimResults=true;REC.continuous=true;
+ REC.onresult=ev=>{let t="";for(let i=0;i<ev.results.length;i++)t+=ev.results[i][0].transcript;w.desc=base+t;const el=document.getElementById("wt");if(el)el.value=w.desc};
+ REC.onerror=ev=>{toast(ev.error==="not-allowed"?"Allow the microphone to use voice typing.":"Voice typing stopped. Try again.")};
+ REC.onend=()=>{REC=null;w.listening=false;render()};REC.start();w.listening=true;render()}
+async function runAI(){const w=st.w;const ta=document.getElementById("wt");if(ta)w.desc=ta.value;const ls=document.getElementById("wlang");if(ls)w.lang=ls.value;
+ if(!w.desc&&!w.img){toast("Add a photo or a few words first");return}
+ const p=L.projects.find(x=>x.id===w.p)||{};w.aiBusy=true;render();
+ try{w.ai=await L.db.ai("analyze",{text:w.desc||"",lang:w.lang||"en-US",rtype:`${w.rt}: ${w.kind||""}`,business:[p.platform,p.division,p.cluster].filter(Boolean).join(" / "),country:p.country||"",image:w.img?w.img.split(",")[1]:null,mediaType:"image/jpeg"});
+  if(!w.cat&&w.ai.category)w.cat=w.ai.category}
+ catch(e){toast(e.message)}finally{w.aiBusy=false;render()}}
+async function aiActions(r){const list=(r.ai&&r.ai.corrective_actions)||[];if(!list.length){toast("No AI actions on this report");return}
+ await liveSave(async()=>{for(const a of list)await L.db.collection("actions").add({title:a.title,project:r.project,owner:a.owner_role||"",due:Date.now()+(+a.due_days||7)*864e5,priority:a.priority==="High"?"High":"Normal",report:r.id,ts:Date.now(),by:L.me.id,closedAt:null});
+  await L.db.doc("reports/"+r.id).update({ai:{...r.ai,actionsCreated:true}})},`${list.length} actions created from the AI suggestions`)}
+async function openPhoto(path){try{const u=await L.db.photoUrl(path);window.open(u,"_blank","noopener")}catch(e){toast("The photo could not be opened.")}}
 /* ---- Live reports ---- */
 function live(){const g=liveGate();if(g)return g;const P=myProjects().map(p=>p.id);const R=L.reports.filter(r=>P.includes(r.project)&&(!st.country||L.projects.find(p=>p.id===r.project)?.country===st.country));
  const open=R.filter(r=>r.status!=="Closed").length;
  return liveTag()+`<div class="kpis"><div class="kpi"><span class="l">Reports</span><span class="v">${R.length}</span></div><div class="kpi"><span class="l">Open</span><span class="v">${open}</span></div><div class="kpi"><span class="l">Incidents</span><span class="v">${R.filter(r=>r.rt==="Incident").length}</span></div><div class="kpi"><span class="l">Hazards</span><span class="v">${R.filter(r=>r.rt==="Hazard").length}</span></div><div class="kpi"><span class="l">Good practice</span><span class="v">${R.filter(r=>r.rt==="Good practice").length}</span></div></div>
  <div class="filters"><button class="btn acc" data-go="report" data-rt="Incident">+ Report incident</button><button class="btn" data-go="report" data-rt="Hazard">+ Report hazard</button></div>
  <div class="panel">${R.length?`<div class="tbl"><table><thead><tr><th>When</th><th>Report</th><th>Type</th><th class="hide-m">Project</th><th class="hide-m">By</th><th>Status</th></tr></thead><tbody>
- ${R.map(r=>`<tr><td class="id">${new Date(r.ts).toLocaleDateString("en-GB",{day:"2-digit",month:"short"})}</td><td>${esc(r.desc)||"<i>No description</i>"}<br><small style="color:var(--muted)">${esc(r.dept)}${r.loc?" · "+esc(r.loc):""}${r.cat?" · "+esc(r.cat):""}</small></td><td><span class="pill ${r.rt==="Incident"?"p-crit":r.rt==="Hazard"?"p-warn":"p-ok"}">${esc(r.kind||r.rt)}</span></td><td class="hide-m">${esc(projName(r.project))}</td><td class="hide-m">${r.by?`<span class="uname" data-uid="${esc(r.by)}">…</span>`:"Anonymous"}</td><td>${canScore()?`<button class="pill ${r.status==="Closed"?"p-ok":"p-warn"}" style="border:0" data-close="${esc(r.id)}">${r.status==="Closed"?"Closed":"Open · close"}</button> <button class="pill p-info" style="border:0" data-ract="${esc(r.id)}">+ Action</button>`:`<span class="pill ${r.status==="Closed"?"p-ok":"p-warn"}">${esc(r.status||"Open")}</span>`}</td></tr>`).join("")}</tbody></table></div>`:`<h2>No reports yet</h2><p style="margin:0;color:var(--muted)">Reports submitted from the site appear here for everyone on the same project, as they come in.</p>`}</div>`;}
+ ${R.map(r=>`<tr><td class="id">${new Date(r.ts).toLocaleDateString("en-GB",{day:"2-digit",month:"short"})}</td><td>${esc(r.desc)||"<i>No description</i>"}${r.originalText?`<br><small style="color:var(--muted)" dir="auto">Original: ${esc(r.originalText)}</small>`:""}<br><small style="color:var(--muted)">${esc(r.dept)}${r.loc?" · "+esc(r.loc):""}${r.cat?" · "+esc(r.cat):""}</small><div class="links" style="margin-top:4px">${r.ai?`<span class="pill ${RISKCLS[r.ai.risk_level]||"p-mute"}" title="AI risk rating: likelihood ${r.ai.likelihood} × severity ${r.ai.severity}">AI ${esc(r.ai.risk_level)} ${r.ai.risk_score}</span>`:""}${r.ai&&r.ai.pfpi?`<span class="pill p-crit">PFPI</span>`:""}${r.photo?`<button class="pill p-mute" style="border:0" data-photo="${esc(r.photo)}">Photo</button>`:""}</div></td><td><span class="pill ${r.rt==="Incident"?"p-crit":r.rt==="Hazard"?"p-warn":"p-ok"}">${esc(r.kind||r.rt)}${r.severity?" · "+esc(r.severity):""}</span></td><td class="hide-m">${esc(projName(r.project))}</td><td class="hide-m">${r.by?`<span class="uname" data-uid="${esc(r.by)}">…</span>`:"Anonymous"}</td><td>${canScore()?`<button class="pill ${r.status==="Closed"?"p-ok":"p-warn"}" style="border:0" data-close="${esc(r.id)}">${r.status==="Closed"?"Closed":"Open · close"}</button> <button class="pill p-info" style="border:0" data-ract="${esc(r.id)}">+ Action</button>${r.ai&&r.ai.corrective_actions&&r.ai.corrective_actions.length&&!r.ai.actionsCreated?` <button class="pill p-info" style="border:0" data-aiact="${esc(r.id)}">+ AI actions (${r.ai.corrective_actions.length})</button>`:""}`:`<span class="pill ${r.status==="Closed"?"p-ok":"p-warn"}">${esc(r.status||"Open")}</span>`}</td></tr>`).join("")}</tbody></table></div>`:`<h2>No reports yet</h2><p style="margin:0;color:var(--muted)">Reports submitted from the site appear here for everyone on the same project, as they come in.</p>`}</div>`;}
 
 /* ---- Auto-calculated score card ---- */
 // source of each quantitative indicator: computed from NAVO records, or "admin" when no record type exists yet
@@ -803,6 +850,9 @@ function drillRecords(P,m,d){const ids=new Set(P.map(p=>p.id));const end=monthEn
   openinv:["Incidents open more than 14 days",L.reports.filter(r=>ids.has(r.project)&&r.rt==="Incident"&&r.status!=="Closed"&&end-r.ts>14*864e5)],
   overdue:["Overdue actions",L.actions.filter(a=>ids.has(a.project)&&!a.closedAt&&a.due&&a.due<end)],due:["Actions due this month",L.actions.filter(a=>ids.has(a.project)&&a.due&&inMonth(a.due,m))],
   insp:["Inspections",L.inspections.filter(i=>ids.has(i.project)&&inMonth(i.ts,m))],walks:["Leadership walkthroughs",L.activities.filter(v=>ids.has(v.project)&&inMonth(v.date,m)&&v.type==="Leadership walkthrough")]};
+ if(d.startsWith("sev:")){const s=d.slice(4);return[s+" injuries",R.filter(r=>r.severity===s),"report"]}
+ if(d.startsWith("kind:")){const s=d.slice(5);return[s,R.filter(r=>r.kind===s),"report"]}
+ if(d==="tbt")return["Toolbox talks",L.activities.filter(v=>ids.has(v.project)&&inMonth(v.date,m)&&/toolbox/i.test(v.type||"")),"walk"];
  if(d.startsWith("cat:")){const c=d.slice(4);return[c+" events",R.filter(r=>r.cat===c),"report"]}
  const [t,rows]=map[d]||map.reports;return[t,rows,["overdue","due"].includes(d)?"action":d==="insp"?"insp":d==="walks"?"walk":"report"]}
 function drillPanel(P,m){const d=st.drill;if(!d)return"";const[t,rows,kind]=drillRecords(P,m,d);const fd=x=>x?new Date(x).toLocaleDateString("en-GB",{day:"2-digit",month:"short"}):"—";
@@ -812,7 +862,44 @@ function drillPanel(P,m){const d=st.drill;if(!d)return"";const[t,rows,kind]=dril
   :kind==="insp"?`<td class="id">${fd(x.ts)}</td><td>${esc(x.tpl)}</td><td class="r num ${x.fails?"bad":""}">${x.fails} / ${x.items}</td><td>${esc(projName(x.project))}</td>`
   :`<td class="id">${fd(x.date)}</td><td>${esc(x.type)}</td><td class="r num">${x.count||1}</td><td>${esc(projName(x.project))}</td>`;
  return`<div class="panel" style="border-color:var(--brand)"><h2>${esc(t)} <small>${rows.length} record${rows.length===1?"":"s"}</small><button class="btn" id="drill-close">Close</button></h2>${rows.length?`<div class="tbl" style="max-height:420px;overflow:auto"><table><thead><tr>${head}</tr></thead><tbody>${rows.slice(0,300).map(x=>`<tr>${row(x)}</tr>`).join("")}</tbody></table></div>`:`<p style="margin:0;color:var(--muted)">Nothing to show for this selection.</p>`}</div>`}
+/* ---- Executive dashboards, Global HSSE Dashboard style ---- */
+const ETABS=[["summary","Executive summary"],["closure","Closure rate"],["stats","Safety statistics"],["health","Site health"],["leaders","Leadership"]];
+function combo(cats,raised,closed,{h=170}={}){const n=cats.length;if(!n)return`<p style="margin:0;color:var(--muted)">No data.</p>`;const W=Math.max(360,n*70),mx=Math.max(1,...raised)*1.15,bw=W/n,y=v=>h-v/mx*h+14,ry=p=>14+(1-p/100)*h;
+ const rate=raised.map((r,i)=>r?Math.round(closed[i]/r*100):null);
+ return`<div class="tbl"><svg viewBox="0 0 ${W} ${h+44}" width="100%" style="min-width:${Math.min(W,520)}px" role="img" aria-label="Raised versus closed with closure rate">
+ ${[0,.5,1].map(g=>`<line x1="0" x2="${W}" y1="${14+g*h}" y2="${14+g*h}" stroke="var(--line)"/>`).join("")}
+ ${cats.map((c,i)=>{const x=i*bw;return`<g><title>${c}: ${raised[i]} raised, ${closed[i]} closed${rate[i]!=null?`, ${rate[i]}% closed`:""}</title><rect x="${x+bw*.14}" y="${y(raised[i])}" width="${bw*.34}" height="${h+14-y(raised[i])}" fill="var(--info)" rx="2"/><rect x="${x+bw*.52}" y="${y(closed[i])}" width="${bw*.34}" height="${h+14-y(closed[i])}" fill="var(--ok)" rx="2"/>
+  <text x="${x+bw*.31}" y="${y(raised[i])-3}" text-anchor="middle" font-size="10" fill="var(--fg)">${raised[i]}</text><text x="${x+bw*.69}" y="${y(closed[i])-3}" text-anchor="middle" font-size="10" fill="var(--fg)">${closed[i]}</text>
+  <text x="${x+bw/2}" y="${h+30}" text-anchor="middle" font-size="10" fill="var(--muted)">${c.length>12?c.slice(0,11)+"…":c}</text></g>`}).join("")}
+ <polyline fill="none" stroke="var(--accent)" stroke-width="2" points="${rate.map((r,i)=>r==null?"":`${i*bw+bw/2},${ry(r)}`).filter(Boolean).join(" ")}"/>
+ ${rate.map((r,i)=>r==null?"":`<circle cx="${i*bw+bw/2}" cy="${ry(r)}" r="3.5" fill="var(--accent)"/><text x="${i*bw+bw/2}" y="${ry(r)-7}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--accent)">${r}%</text>`).join("")}
+ </svg></div><div class="legend"><span><i style="background:var(--info)"></i>Raised</span><span><i style="background:var(--ok)"></i>Closed</span><span><i style="background:var(--accent)"></i>Closure rate</span></div>`}
+function liveDiamond(P,m){const ids=new Set(P.map(p=>p.id));const R=L.reports.filter(r=>ids.has(r.project)&&inMonth(r.ts,m));const sev=s=>R.filter(r=>r.severity===s).length;
+ const I=L.inspections.filter(i=>ids.has(i.project)&&inMonth(i.ts,m)).length;const V=L.activities.filter(v=>ids.has(v.project)&&inMonth(v.date,m));
+ const sum=t=>V.filter(v=>v.type===t).reduce((s,v)=>s+(+v.count||1),0);
+ return pyramid([["Fatality",sev("Fatality"),"sev:Fatality"],["Lost time injury",sev("Lost Time"),"sev:Lost Time"],["Restricted work",sev("Restricted Work"),"sev:Restricted Work"],["Medical treatment",sev("Medical Treatment"),"sev:Medical Treatment"],["First aid",sev("First Aid"),"sev:First Aid"],["Property damage",R.filter(r=>r.kind==="Property Damage").length,"kind:Property Damage"],["Near miss",R.filter(r=>r.kind==="Near Miss").length,"nearmiss"],
+  ["Unsafe acts / conditions",R.filter(r=>r.rt==="Hazard").length,"hazards"],["Good practice",R.filter(r=>r.rt==="Good practice").length,"good"],["HSE inspections",I,"insp"],["Leadership walkthroughs",sum("Leadership walkthrough"),"walks"],["Toolbox talks",sum("Toolbox talk"),"tbt"]],7)}
+function countryTable(P,m){const rows=COUNTRIES.map(c=>{const Q=P.filter(p=>p.country===c);const k=levelMetrics(Q,m);return{c,n:Q.length,hc:k.headcount,r:k.reports,i:k.incidents,s:k.score}}).filter(x=>x.n);
+ return`<div class="tbl"><table><thead><tr><th>Country</th><th class="r">Projects</th><th class="r">Workers</th><th class="r">Reports</th><th class="r">Incidents</th><th class="r">Health</th></tr></thead><tbody>${rows.map(x=>`<tr class="click" data-ctry="${esc(x.c)}"><td><b>${esc(x.c)}</b></td><td class="r num">${x.n}</td><td class="r num">${x.hc.toLocaleString()}</td><td class="r num">${x.r}</td><td class="r num">${x.i}</td><td class="r">${x.s==null?"—":`<span class="score-cell" style="background:${hcol(x.s)}">${x.s}</span>`}</td></tr>`).join("")}</tbody></table></div>`}
+function recordables(P,m){const ids=new Set(P.map(p=>p.id));const R=L.reports.filter(r=>ids.has(r.project)&&inMonth(r.ts,m)&&r.severity);
+ const parts=[["Fatality","#7a1f19"],["Lost Time","var(--crit)"],["Restricted Work","var(--warn)"],["Medical Treatment","var(--accent)"],["First Aid","var(--info)"]].map(([s,c])=>[s,R.filter(r=>r.severity===s).length,c]);
+ return donut(parts,String(R.length),"injuries",n=>`data-drill="sev:${n}"`)}
+async function runOutlook(btn){const m=L.scMonth||thisMonth();const P=execScope();const k=levelMetrics(P,m);const ids=new Set(P.map(p=>p.id));const kids=execChildren(P).map(c=>({name:c.name,...(({R,...x})=>x)(levelMetrics(c.P,m))}));
+ const recent=L.reports.filter(r=>ids.has(r.project)&&inMonth(r.ts,m)&&r.rt!=="Good practice").slice(0,60).map(r=>({type:r.kind,cat:r.cat,ai:r.ai?r.ai.risk_level:null,text:(r.desc||"").slice(0,140),project:projName(r.project)}));
+ btn.disabled=true;btn.textContent="AI is analysing…";
+ try{const o=await L.db.ai("outlook",{level:document.getElementById("ex-title").textContent,data:{month:m,kpis:(({R,...x})=>x)(k),trend:lastMonths(m,6).map(mm=>{const x=levelMetrics(P,mm);return{month:mm,reports:x.reports,incidents:x.incidents,nearMiss:x.nearMiss,score:x.score}}),children:kids,recent}});
+  L.outlook[JSON.stringify([st.lvl,st.country,m])]={...o,at:Date.now()};render()}catch(e){toast(e.message);btn.disabled=false;btn.textContent="Generate AI risk outlook"}}
+function outlookPanel(m){if(!(L.db&&L.db.ai))return"";const o=L.outlook[JSON.stringify([st.lvl,st.country,m])];const cls={Low:"p-ok",Moderate:"p-info",High:"p-warn",Critical:"p-crit"};
+ return`<div class="panel"><h2>AI predictive risk outlook <small>next 30 days</small>${o?`<span class="pill ${cls[o.rating]||"p-mute"}" style="font-size:13px">${esc(o.rating)} · ${o.score}/100</span>`:""}</h2>
+ ${o?`<b>${esc(o.headline||"")}</b><div class="grid2" style="gap:12px"><div><small style="color:var(--muted)">What drives it</small><ul style="margin:4px 0 0;padding-left:18px">${(o.drivers||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div><div><small style="color:var(--muted)">Recommended focus</small><ul style="margin:4px 0 0;padding-left:18px">${(o.recommended_focus||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div></div>${(o.watch_projects||[]).length?`<div class="links"><small style="color:var(--muted)">Watch:</small>${o.watch_projects.map(x=>`<span class="pill p-warn">${esc(x)}</span>`).join("")}</div>`:""}<small style="color:var(--muted)">AI estimate from this dashboard's records (${esc(o.confidence||"medium")} confidence). Use with your own judgement.</small>`
+ :`<p style="margin:0;color:var(--muted)">AI reads this level's trends, high-energy events, overdue actions and leadership activity, and estimates where the next serious event is most likely.</p>`}
+ <div class="filters"><button class="btn pri" id="ai-outlook">${o?"Refresh outlook":"Generate AI risk outlook"}</button></div></div>`}
+function healthTable(P,m){const rows=P.map(p=>{const c=monthCard(p.id,m),pv=monthCard(p.id,prevMonth(m));return{p,c,st:statusFor(c.total,pv.total)}}).sort((a,b)=>b.c.total-a.c.total);const cnt=k=>rows.filter(r=>r.st===k).length;
+ return`<div class="kpis">${Object.keys(TRND).map(k=>`<div class="kpi"><span class="l">${k}</span><span class="v"><span class="pill ${TRND[k][0]}" style="font-size:14px;vertical-align:middle">${TRND[k][1]}</span> ${cnt(k)}</span></div>`).join("")}</div>
+ <div class="panel"><h2>Site score card <small>${m} · click a project for its full card</small></h2><div class="tbl"><table><thead><tr><th>Project</th><th>Country</th><th class="r">Quantitative</th><th class="r">Qualitative</th><th class="r">Overall</th><th>System health</th></tr></thead><tbody>
+ ${rows.map(r=>`<tr class="click" data-scd2="${esc(r.p.id)}"><td><b>${esc(r.p.name)}</b><br><small style="color:var(--muted)">${esc([r.p.division,r.p.cluster].filter(Boolean).join(" · "))}</small></td><td>${esc(r.p.country)}</td><td class="r num">${r.c.quant}</td><td class="r num">${r.c.hasQual?r.c.qual:"—"}</td><td class="r"><span class="score-cell" style="background:${hcol(r.c.total)}">${r.c.total}</span></td><td><span class="pill ${TRND[r.st][0]}">${TRND[r.st][1]} ${r.st}</span></td></tr>`).join("")}</tbody></table></div></div>`}
 function exec(){const g=liveGate();if(g)return g;if(myRole()==="worker")return liveTag()+`<div class="panel"><h2>Executive dashboards are for supervisors, HSE and leadership</h2></div>`;
+ st.etab=st.etab||"summary";L.outlook=L.outlook||{};
  const m=L.scMonth||thisMonth();const lv=st.lvl||{};const P=execScope();const k=levelMetrics(P,m),pk=levelMetrics(P,prevMonth(m));
  const has=x=>x!==undefined&&x!==null;
  const levelName=lv.project?projName(lv.project):has(lv.cluster)?lv.cluster:has(lv.division)?lv.division:lv.platform?lv.platform+" platform":corpName();
@@ -823,28 +910,51 @@ function exec(){const g=liveGate();if(g)return g;if(myRole()==="worker")return l
  const st6=s=>s==null?"":TRND[statusFor(s,null)]?`<span class="pill ${TRND[statusFor(s,null)][0]}">${statusFor(s,null)}</span>`:"";
  const cats=WHEEL.map(w=>[w,k.R.filter(r=>r.cat===w).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);
  const tile=(d,l,v,sub,cls="")=>`<div class="kpi hot ${cls}" data-drill="${d}" role="button" tabindex="0" title="Show the records"><span class="l">${l}</span><span class="v">${v}</span><span class="d">${sub||"&nbsp;"}</span></div>`;
- const country=st.country?` · ${esc(st.country)}`:"";
- return liveTag()+`<div class="filters" style="align-items:center"><div class="chips">${crumbs.map(([n,key],i)=>`<button data-lvl='${esc(JSON.stringify(key))}' aria-pressed="${i===crumbs.length-1}">${esc(n)}</button>`).join('<span style="color:var(--muted)">›</span>')}</div><div style="flex:1"></div>
- <div class="chips"><button data-ctry="" aria-pressed="${!st.country}">All countries</button>${COUNTRIES.map(c=>`<button data-ctry="${esc(c)}" aria-pressed="${st.country===c}">${esc(c)}</button>`).join("")}</div><input id="sc-month2" type="month" value="${m}" class="mon" aria-label="Month"></div>
- <div class="panel" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:20px"><div style="flex:1;min-width:240px"><span class="pill p-info">${tier} dashboard</span><h2 style="font-size:30px;margin-top:6px">${esc(levelName)}${country}</h2><small style="color:var(--muted)">${k.projects} project${k.projects===1?"":"s"} · ${k.headcount.toLocaleString()} workers · generated from live records for ${m}</small>
+ const tabs=`<div class="ptabs" role="tablist">${ETABS.map(([key,l])=>`<button role="tab" data-etab="${key}" aria-selected="${st.etab===key}">${l}</button>`).join("")}</div>`;
+ const head=`<div class="pbi-head"><div class="pbi-title"><span>${ETABS.find(t=>t[0]===st.etab)[1]}</span></div>
+ <div class="chips">${crumbs.map(([n,key],i)=>`<button data-lvl='${esc(JSON.stringify(key))}' aria-pressed="${i===crumbs.length-1}">${esc(n)}</button>`).join('<span style="color:var(--muted)">›</span>')}</div><div style="flex:1"></div>
+ <div class="chips"><button data-ctry="" aria-pressed="${!st.country}">All</button>${COUNTRIES.map(c=>`<button data-ctry="${esc(c)}" aria-pressed="${st.country===c}">${esc(c)}</button>`).join("")}</div><input id="sc-month2" type="month" value="${m}" class="mon" aria-label="Month"></div>
+ <div class="panel pbi-band"><div style="flex:1;min-width:240px"><span class="pill p-info">${tier} dashboard</span><h2 id="ex-title" style="font-size:30px;margin-top:6px">${esc(levelName)}${st.country?" · "+esc(st.country):""}</h2><small style="color:var(--muted)">${k.projects} project${k.projects===1?"":"s"} · ${k.headcount.toLocaleString()} workers · live records for ${m}</small>
  <div class="filters" style="margin-top:10px"><span style="font-size:13px;color:var(--muted);align-self:center">Download report:</span><button class="btn" data-export="xlsx">Excel</button><button class="btn" data-export="docx">Word</button><button class="btn" data-export="pptx">PowerPoint</button></div></div>
- <div style="text-align:right"><div class="score" style="color:${k.score==null?"var(--muted)":hcol(k.score)}">${k.score??"—"}</div><small style="color:var(--muted)">Average site health</small><div>${st6(k.score)}</div></div></div>
- <div class="kpis">
- ${tile("reports","Reports",k.reports,delta(k.reports,pk.reports,true))}
- ${tile("nearmiss","Near misses",k.nearMiss,delta(k.nearMiss,pk.nearMiss,true))}
- ${tile("incidents","Incidents",k.incidents,`${k.openInv} open &gt; 14 days`,k.incidents?"alert":"")}
- ${tile("overdue","Action closure on time",k.closure==null?"—":k.closure+"%",`${k.overdue} overdue`)}
- ${tile("insp","Inspections",k.insp,k.atRisk==null?"no items yet":k.atRisk+"% items at risk")}
- ${tile("walks","Leadership walkthroughs",`${k.walks}${k.plan?` / ${k.plan}`:""}`,k.walkPct==null?"no plan set":k.walkPct+"% of plan")}</div>
+ <div style="text-align:right"><div class="score" style="color:${k.score==null?"var(--muted)":hcol(k.score)}">${k.score??"—"}</div><small style="color:var(--muted)">Average site health</small><div>${st6(k.score)}</div></div></div>`;
+ let body="";
+ if(st.etab==="summary")body=`<div class="kpis">
+ ${tile("reports","Reports",k.reports,delta(k.reports,pk.reports,true))}${tile("nearmiss","Near misses",k.nearMiss,delta(k.nearMiss,pk.nearMiss,true))}${tile("incidents","Incidents",k.incidents,`${k.openInv} open &gt; 14 days`,k.incidents?"alert":"")}
+ ${tile("overdue","Action closure on time",k.closure==null?"—":k.closure+"%",`${k.overdue} overdue`)}${tile("insp","Inspections",k.insp,k.atRisk==null?"no items yet":k.atRisk+"% items at risk")}${tile("walks","Leadership walkthroughs",`${k.walks}${k.plan?` / ${k.plan}`:""}`,k.walkPct==null?"no plan set":k.walkPct+"% of plan")}</div>
  ${drillPanel(P,m)}
- ${kids.length?`<div class="grid2"><div class="panel"><h2>${kidLabel(tier,lv)} <small>tap a row to open its dashboard</small></h2><div class="tbl"><table><thead><tr><th>${kidCol(tier,lv)}</th><th class="r">Projects</th><th class="r">Reports</th><th class="r">Incidents</th><th class="r">Closure</th><th class="r">Overdue</th><th class="r">Walks</th><th class="r">Health</th></tr></thead><tbody>
- ${kids.map(c=>`<tr class="click" data-lvl='${esc(JSON.stringify(c.key))}'><td><b>${esc(c.name)}</b></td><td class="r num">${c.k.projects}</td><td class="r num">${c.k.reports}</td><td class="r num">${c.k.incidents}</td><td class="r num">${c.k.closure==null?"—":c.k.closure+"%"}</td><td class="r num ${c.k.overdue?"bad":""}">${c.k.overdue}</td><td class="r num">${c.k.walks}${c.k.plan?" / "+c.k.plan:""}</td><td class="r">${c.k.score==null?"—":`<span class="score-cell" style="background:${hcol(c.k.score)}">${c.k.score}</span>`}</td></tr>`).join("")}</tbody></table></div></div>
- <div class="panel"><h2>Site health by ${kidCol(tier,lv).toLowerCase()} <small>click a bar to open it</small></h2>${vbars(kids.map(c=>c.k.score??0),kids.map(c=>c.name.length>11?c.name.slice(0,10)+"…":c.name),{color:v=>hcol(v),target:80,attr:(v,i)=>`data-lvlj='${esc(JSON.stringify(kids[i].key))}'`})}</div></div>`:`<div class="filters"><button class="btn pri" data-scd2="${esc(lv.project)}">Open full score card</button></div>`}
- <div class="grid2"><div class="panel"><h2>Reports, last 6 months <small>click a month to switch</small></h2>${vbars(months.map(mm=>levelMetrics(P,mm).reports),months.map(mLabel),{color:(v,i)=>months[i]===m?"var(--accent)":"var(--brand)",attr:(v,i)=>`data-setm="${months[i]}"`})}</div>
- <div class="panel"><h2>High-energy categories <small>${m} · click to see events</small></h2>${cats.length?`<div class="bars">${cats.map(([w,n])=>`<div class="bar hot" data-drill="cat:${esc(w)}" role="button" tabindex="0"><span>${w}</span><span class="t"><i style="width:${n/cats[0][1]*100}%;background:var(--crit)"></i></span><span class="n">${n}</span></div>`).join("")}</div>`:`<p style="margin:0;color:var(--muted)">No high-energy events reported this month.</p>`}</div></div>
- <div class="grid2"><div class="panel"><h2>Average site health, last 6 months <small>click a month to switch</small></h2>${vbars(months.map(mm=>{const s=levelMetrics(P,mm).score;return s??0}),months.map(mLabel),{color:v=>hcol(v),target:80,attr:(v,i)=>`data-setm="${months[i]}"`})}</div>
- <div class="panel"><h2>Report mix <small>${m} · click a slice</small></h2>${donut([["Incidents",k.incidents,"var(--crit)"],["Hazards",k.hazards,"var(--warn)"],["Good practice",k.good,"var(--ok)"]],String(k.reports),"reports",n=>`data-drill="${n==="Incidents"?"incidents":n==="Hazards"?"hazards":"good"}"`)}</div></div>`;}
-
+ <div class="pbi-grid"><div class="panel"><h2>Workforce by country <small>click to filter</small></h2>${countryTable(P,m)}</div>
+ <div class="panel"><h2>Recordable injuries <small>${m} · click a slice</small></h2>${recordables(P,m)}</div>
+ <div class="panel pbi-tall"><h2>Lagging &amp; leading indicators <small>click a row</small></h2>${liveDiamond(P,m)}</div>
+ <div class="panel"><h2>Reports, last 6 months <small>click a month</small></h2>${vbars(months.map(mm=>levelMetrics(P,mm).reports),months.map(mLabel),{color:(v,i)=>months[i]===m?"var(--accent)":"var(--brand)",attr:(v,i)=>`data-setm="${months[i]}"`})}</div>
+ <div class="panel"><h2>High-energy categories <small>click to see events</small></h2>${cats.length?`<div class="bars">${cats.map(([w,n])=>`<div class="bar hot" data-drill="cat:${esc(w)}" role="button" tabindex="0"><span>${w}</span><span class="t"><i style="width:${n/cats[0][1]*100}%;background:var(--crit)"></i></span><span class="n">${n}</span></div>`).join("")}</div>`:`<p style="margin:0;color:var(--muted)">No high-energy events this month.</p>`}</div></div>
+ ${kids.length?`<div class="grid2"><div class="panel"><h2>${kidLabel(tier,lv)} <small>tap a row to open its dashboard</small></h2><div class="tbl"><table><thead><tr><th>${kidCol(tier,lv)}</th><th class="r">Projects</th><th class="r">Reports</th><th class="r">Incidents</th><th class="r">Closure</th><th class="r">Overdue</th><th class="r">Health</th></tr></thead><tbody>
+ ${kids.map(c=>`<tr class="click" data-lvl='${esc(JSON.stringify(c.key))}'><td><b>${esc(c.name)}</b></td><td class="r num">${c.k.projects}</td><td class="r num">${c.k.reports}</td><td class="r num">${c.k.incidents}</td><td class="r num">${c.k.closure==null?"—":c.k.closure+"%"}</td><td class="r num ${c.k.overdue?"bad":""}">${c.k.overdue}</td><td class="r">${c.k.score==null?"—":`<span class="score-cell" style="background:${hcol(c.k.score)}">${c.k.score}</span>`}</td></tr>`).join("")}</tbody></table></div></div>
+ <div class="panel"><h2>Site health by ${kidCol(tier,lv).toLowerCase()} <small>click a bar</small></h2>${vbars(kids.map(c=>c.k.score??0),kids.map(c=>c.name.length>11?c.name.slice(0,10)+"…":c.name),{color:v=>hcol(v),target:80,attr:(v,i)=>`data-lvlj='${esc(JSON.stringify(kids[i].key))}'`})}</div></div>`:`<div class="filters"><button class="btn pri" data-scd2="${esc(lv.project)}">Open full score card</button></div>`}
+ ${outlookPanel(m)}`;
+ if(st.etab==="closure"){const groups=kids.length?kids:[{name:levelName,P,k}];const ids=g=>new Set(g.P.map(p=>p.id));const end=monthEnd(m);
+  const rep=groups.map(g=>{const s=ids(g);const R=L.reports.filter(r=>s.has(r.project)&&inMonth(r.ts,m));return[R.length,R.filter(r=>r.status==="Closed").length]});
+  const act=groups.map(g=>{const s=ids(g);const A=L.actions.filter(a=>s.has(a.project)&&a.due&&inMonth(a.due,m));return[A.length,A.filter(a=>a.closedAt).length]});
+  const inc=groups.map(g=>{const s=ids(g);const R=L.reports.filter(r=>s.has(r.project)&&inMonth(r.ts,m)&&r.rt==="Incident");return[R.length,R.filter(r=>r.status==="Closed").length]});
+  const all=[...L.actions.filter(a=>P.some(p=>p.id===a.project))];const ages=[[0,7],[8,14],[15,30],[31,9999]].map(([a,b])=>all.filter(x=>!x.closedAt&&x.due&&x.due<end&&(end-x.due)/864e5>=a&&(end-x.due)/864e5<=b).length);
+  const tot=(arr)=>[arr.reduce((s,x)=>s+x[0],0),arr.reduce((s,x)=>s+x[1],0)];const rate=([r,c])=>r?Math.round(c/r*100)+"%":"—";
+  body=`<div class="kpis"><div class="kpi"><span class="l">Reports closed</span><span class="v">${rate(tot(rep))}</span><span class="d">${tot(rep)[1]} of ${tot(rep)[0]}</span></div><div class="kpi"><span class="l">Actions due, closed</span><span class="v">${rate(tot(act))}</span><span class="d">${tot(act)[1]} of ${tot(act)[0]}</span></div><div class="kpi"><span class="l">Incidents closed</span><span class="v">${rate(tot(inc))}</span><span class="d">${tot(inc)[1]} of ${tot(inc)[0]}</span></div>${tile("overdue","Overdue actions",ages.reduce((a,b)=>a+b,0),"click for the list",ages[3]?"alert":"")}</div>
+  ${drillPanel(P,m)}
+  <div class="pbi-grid2"><div class="panel"><h2>Reports: raised vs closed</h2>${combo(groups.map(g=>g.name),rep.map(x=>x[0]),rep.map(x=>x[1]))}</div>
+  <div class="panel"><h2>Actions due this month: raised vs closed</h2>${combo(groups.map(g=>g.name),act.map(x=>x[0]),act.map(x=>x[1]))}</div>
+  <div class="panel"><h2>Incident investigations: raised vs closed</h2>${combo(groups.map(g=>g.name),inc.map(x=>x[0]),inc.map(x=>x[1]))}</div>
+  <div class="panel"><h2>Overdue action ageing <small>days past due</small></h2>${vbars(ages,["1–7","8–14","15–30","30+"],{color:(v,i)=>i<2?"var(--warn)":"var(--crit)",attr:()=>`data-drill="overdue"`})}</div></div>`}
+ if(st.etab==="stats"){const ids=new Set(P.map(p=>p.id));const V=L.activities.filter(v=>ids.has(v.project)&&inMonth(v.date,m));const sum=t=>V.filter(v=>v.type===t).reduce((s,v)=>s+(+v.count||1),0);
+  const I=L.inspections.filter(i=>ids.has(i.project)&&inMonth(i.ts,m));const tpl=Object.keys(TEMPLATES).map(t=>[t,I.filter(i=>i.tpl===t).length]);
+  const series=lastMonths(m,6).map(mm=>{const x=levelMetrics(P,mm);return[x.reports,x.insp,x.walks]});
+  body=`<div class="kpis">${tile("hazards","Unsafe acts / conditions",k.hazards)}${tile("good","Good practice",k.good)}${tile("insp","Inspections",k.insp)}${tile("walks","Leadership walkthroughs",k.walks)}${tile("tbt","Toolbox talks",sum("Toolbox talk"))}<div class="kpi"><span class="l">Inductions</span><span class="v">${sum("Induction")}</span></div><div class="kpi"><span class="l">Emergency drills</span><span class="v">${sum("Emergency drill")}</span></div></div>
+  ${drillPanel(P,m)}
+  <div class="pbi-grid2"><div class="panel"><h2>Monthly trends</h2>${line([{v:series.map(x=>x[0]),c:"var(--brand)"},{v:series.map(x=>x[1]),c:"var(--info)"},{v:series.map(x=>x[2]),c:"var(--accent)"}],months.map(mLabel),{dec:0})}<div class="legend"><span><i style="background:var(--brand)"></i>Reports</span><span><i style="background:var(--info)"></i>Inspections</span><span><i style="background:var(--accent)"></i>Walkthroughs</span></div></div>
+  <div class="panel"><h2>Inspections by checklist <small>${m}</small></h2><div class="bars">${tpl.map(([t,n])=>`<div class="bar hot" data-drill="insp" role="button" tabindex="0"><span>${t}</span><span class="t"><i style="width:${n/Math.max(1,...tpl.map(x=>x[1]))*100}%;background:var(--info)"></i></span><span class="n">${n}</span></div>`).join("")}</div></div>
+  <div class="panel"><h2>Report mix <small>click a slice</small></h2>${donut([["Incidents",k.incidents,"var(--crit)"],["Hazards",k.hazards,"var(--warn)"],["Good practice",k.good,"var(--ok)"]],String(k.reports),"reports",n=>`data-drill="${n==="Incidents"?"incidents":n==="Hazards"?"hazards":"good"}"`)}</div>
+  <div class="panel"><h2>AI risk ratings on reports <small>${m}</small></h2>${(()=>{const R=k.R.filter(r=>r.ai);const parts=["Critical","High","Medium","Low"].map((l,i)=>[l,R.filter(r=>r.ai.risk_level===l).length,["var(--crit)","var(--warn)","var(--info)","var(--ok)"][i]]);return R.length?donut(parts,String(R.length),"AI-rated"):`<p style="margin:0;color:var(--muted)">No AI-rated reports yet. Reporters can tap “AI check” on the report form.</p>`})()}</div></div>`}
+ if(st.etab==="health")body=healthTable(P,m);
+ if(st.etab==="leaders")body=leaders().replace(liveTag(),"");
+ return liveTag()+head+tabs+body+tabs;}
 /* ---- Report export: the dashboard you are looking at, as Excel / Word / PowerPoint ---- */
 function reportPayload(){const m=L.scMonth||thisMonth();const lv=st.lvl||{};const P=execScope();const k=levelMetrics(P,m),pk=levelMetrics(P,prevMonth(m));
  const has=x=>x!==undefined&&x!==null;const tier=lv.project?"Project":has(lv.cluster)?"Cluster":has(lv.division)?"Business":lv.platform?"Platform":"Corporate executive";
@@ -967,9 +1077,15 @@ async function fillNames(){if(!L.user)return;const els=[...document.querySelecto
  const ps=await L.user.profiles(ids);els.forEach(e=>{const p=ps[e.dataset.uid];e.textContent=p?.isMe?(p.name||"you")+" (you)":(p?.name||"Someone")})}
 async function showHits(q){const box=document.getElementById("acc-hits");if(!box)return;const hits=await L.user.search(q);box.replaceChildren(...hits.slice(0,6).map(h=>{const d=document.createElement("div");const s=document.createElement("span");s.textContent=h.name+(h.isMe?" (you)":"");const b=document.createElement("button");b.className="btn";b.textContent="Select";b.dataset.pick=h.id;d.append(s,b);return d}))}
 async function saveMembers(map){await L.db.doc("admin/members").set({map})}
-async function liveSave(fn,ok){try{await fn();if(ok)toast(ok)}catch(e){toast(e?.code==="invalid_argument"?"You do not have permission to save this. Ask your HSE Admin to add you to this project.":e?.code==="quota_exceeded"?"Storage is full. Remove old records and try again.":"Could not save. Check your connection and try again.")}}
+async function liveSave(fn,ok){try{await fn();if(ok)toast(ok);return true}catch(e){toast(e?.code==="invalid_argument"?"You do not have permission to save this. Ask your HSE Admin to add you to this project.":e?.code==="quota_exceeded"?"Storage is full. Remove old records and try again.":"Could not save. Check your connection and try again.");return false}}
 
 document.addEventListener("click",async e=>{const t=e.target.closest("button,tr");if(!t)return;
+ if(t.id==="mic"){toggleMic();return}
+ if(t.id==="ai-run"){runAI();return}
+ if(t.id==="ai-cat"){st.w.cat=st.w.ai.category;render();return}
+ if(t.dataset.sev){st.w.sev=t.dataset.sev;render();return}
+ if(t.dataset.aiact){if(t.dataset.confirm!=="1"){t.dataset.confirm="1";t.textContent="Confirm: create actions";return}await aiActions(L.reports.find(x=>x.id===t.dataset.aiact));return}
+ if(t.dataset.photo){openPhoto(t.dataset.photo);return}
  if(t.dataset.close){const r=L.reports.find(x=>x.id===t.dataset.close);await liveSave(()=>L.db.doc("reports/"+r.id).update({status:r.status==="Closed"?"Open":"Closed"}));return}
  if(t.dataset.q!==undefined){const k=L.scProj+"_"+L.scMonth;L.draft[k].qual[+t.dataset.q]=+t.dataset.v;render();return}
  if(t.id==="rv-save"){const k=L.scProj+"_"+L.scMonth;const d=L.draft[k];const ov=Object.fromEntries(Object.entries(d.override).filter(([,v])=>v!==""&&v!=null).map(([a,v])=>[a,+v]));
@@ -1002,7 +1118,9 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,tr"
  if(t.dataset.edm){const m=L.members[t.dataset.edm];L.acc={q:"",pick:t.dataset.edm,role:m.role,projects:[...(m.projects||[])],leader:!!m.leader,walkTarget:m.walkTarget??""};render();window.scrollTo(0,0);return}
  if(t.dataset.delm){if(t.dataset.confirm!=="1"){t.dataset.confirm="1";t.textContent="Confirm";return}const m={...L.members};delete m[t.dataset.delm];await liveSave(()=>saveMembers(m),"Access removed");return}
 });
-document.addEventListener("click",e=>{const t=e.target.closest("[data-drill],[data-setm],[data-lvlj],[data-ctry],#drill-close,[data-export]");if(!t)return;
+document.addEventListener("click",e=>{const t=e.target.closest("[data-drill],[data-setm],[data-lvlj],[data-ctry],#drill-close,[data-export],[data-etab],#ai-outlook");if(!t)return;
+ if(t.dataset.etab){st.etab=t.dataset.etab;st.drill=null;render();return}
+ if(t.id==="ai-outlook"){runOutlook(t);return}
  if(t.id==="drill-close"){st.drill=null;render();return}
  if(t.dataset.drill){st.drill=st.drill===t.dataset.drill?null:t.dataset.drill;render();return}
  if(t.dataset.setm){L.scMonth=t.dataset.setm;render();return}
