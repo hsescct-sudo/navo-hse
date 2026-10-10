@@ -38,7 +38,7 @@
     return () => { alive = false; sb.removeChannel(ch); };
   }
 
-  function projectsFromRows(rows) { return { list: rows.map(r => ({ id: r.id, name: r.name, country: r.country, headcount: r.headcount, planInsp: r.plan_insp, planWalk: r.plan_walk, platform: r.platform || "Construction", division: r.division || "" })) }; }
+  function projectsFromRows(rows) { return { list: rows.map(r => ({ id: r.id, name: r.name, country: r.country, headcount: r.headcount, planInsp: r.plan_insp, planWalk: r.plan_walk, platform: r.platform || "Construction", division: r.division || "", cluster: r.cluster || "" })) }; }
   function membersFromRows(rows) { return { map: Object.fromEntries(rows.map(r => [r.user_id, { role: r.role, projects: r.projects || [], leader: !!r.leader, walkTarget: r.walk_target }])) }; }
 
   async function syncList(table, key, rows) {
@@ -55,7 +55,7 @@
       id, path,
       onSnapshot: (n, e) => watch("projects", null, rows => n(snapDoc(id, projectsFromRows(rows))), e),
       get: async () => snapDoc(id, projectsFromRows(await run(sb.from("projects").select("*")))),
-      set: async d => syncList("projects", "id", (d.list || []).map(p => ({ id: p.id, name: p.name, country: p.country, headcount: p.headcount ?? null, plan_insp: p.planInsp ?? null, plan_walk: p.planWalk ?? null, platform: p.platform || "Construction", division: p.division || null })))
+      set: async d => syncList("projects", "id", (d.list || []).map(p => ({ id: p.id, name: p.name, country: p.country, headcount: p.headcount ?? null, plan_insp: p.planInsp ?? null, plan_walk: p.planWalk ?? null, platform: p.platform || "Construction", division: p.division || null, cluster: p.cluster || null })))
     };
     if (path === "admin/members") return {
       id, path,
