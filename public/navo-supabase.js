@@ -7,7 +7,7 @@
   const authed = new Promise(r => (resolveAuthed = r));
 
   // App field names <-> table column names
-  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk" };
+  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target" };
   const TO_FIELD = Object.fromEntries(Object.entries(TO_COL).map(([a, b]) => [b, a]));
   const toRow = o => Object.fromEntries(Object.entries(o).filter(([k]) => k !== "id").map(([k, v]) => [TO_COL[k] || k, v]));
   const fromRow = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [TO_FIELD[k] || k, v]));
@@ -38,8 +38,8 @@
     return () => { alive = false; sb.removeChannel(ch); };
   }
 
-  function projectsFromRows(rows) { return { list: rows.map(r => ({ id: r.id, name: r.name, country: r.country, headcount: r.headcount, planInsp: r.plan_insp, planWalk: r.plan_walk })) }; }
-  function membersFromRows(rows) { return { map: Object.fromEntries(rows.map(r => [r.user_id, { role: r.role, projects: r.projects || [] }])) }; }
+  function projectsFromRows(rows) { return { list: rows.map(r => ({ id: r.id, name: r.name, country: r.country, headcount: r.headcount, planInsp: r.plan_insp, planWalk: r.plan_walk, platform: r.platform || "Construction", division: r.division || "" })) }; }
+  function membersFromRows(rows) { return { map: Object.fromEntries(rows.map(r => [r.user_id, { role: r.role, projects: r.projects || [], leader: !!r.leader, walkTarget: r.walk_target }])) }; }
 
   async function syncList(table, key, rows) {
     if (rows.length) await run(sb.from(table).upsert(rows, { onConflict: key }));
@@ -55,13 +55,13 @@
       id, path,
       onSnapshot: (n, e) => watch("projects", null, rows => n(snapDoc(id, projectsFromRows(rows))), e),
       get: async () => snapDoc(id, projectsFromRows(await run(sb.from("projects").select("*")))),
-      set: async d => syncList("projects", "id", (d.list || []).map(p => ({ id: p.id, name: p.name, country: p.country, headcount: p.headcount ?? null, plan_insp: p.planInsp ?? null, plan_walk: p.planWalk ?? null })))
+      set: async d => syncList("projects", "id", (d.list || []).map(p => ({ id: p.id, name: p.name, country: p.country, headcount: p.headcount ?? null, plan_insp: p.planInsp ?? null, plan_walk: p.planWalk ?? null, platform: p.platform || "Construction", division: p.division || null })))
     };
     if (path === "admin/members") return {
       id, path,
       onSnapshot: (n, e) => watch("members", null, rows => n(snapDoc(id, membersFromRows(rows))), e),
       get: async () => snapDoc(id, membersFromRows(await run(sb.from("members").select("*")))),
-      set: async d => syncList("members", "user_id", Object.entries(d.map || {}).map(([uid, m]) => ({ user_id: uid, role: m.role, projects: m.projects || [] })))
+      set: async d => syncList("members", "user_id", Object.entries(d.map || {}).map(([uid, m]) => ({ user_id: uid, role: m.role, projects: m.projects || [], leader: !!m.leader, walk_target: m.walkTarget ?? null })))
     };
     const table = TABLE[coll];
     if (!table) throw new TypeError("Unknown path " + path);
