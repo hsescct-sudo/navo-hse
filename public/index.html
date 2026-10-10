@@ -146,6 +146,7 @@ aside{overflow-y:auto}
 .score{font:600 40px/1 var(--f-display);font-variant-numeric:tabular-nums}
 .plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
 .plan div{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.hot{cursor:pointer}.hot:hover{opacity:.8}.kpi.hot:hover{border-color:var(--brand)}g.hot:hover rect:last-child{filter:brightness(1.15)}
 .mon{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
 .ov-in{width:90px;padding:6px 8px;border-radius:6px;border:1px solid var(--line);background:var(--surface);text-align:right}
 .links{display:flex;flex-wrap:wrap;gap:6px}
@@ -275,7 +276,7 @@ const IC_CAPA=IC.capa;Object.assign(IC,{
 ncr:'<circle cx="12" cy="12" r="10"/><path d="M4.9 4.9l14.2 14.2"/>',
 insp:'<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/>',
 moc:'<path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
-live:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',sc:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',entry:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',lactions:IC_CAPA,exec:IC.dash,leaders:'<path d="M12 15l-3.5 2 1-4-3-2.7 4-.3L12 6l1.5 4 4 .3-3 2.7 1 4z"/>',activity:'<path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/>',access:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',soon:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'});
+live:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',sc:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',entry:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',lactions:IC_CAPA,settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',exec:IC.dash,leaders:'<path d="M12 15l-3.5 2 1-4-3-2.7 4-.3L12 6l1.5 4 4 .3-3 2.7 1 4z"/>',activity:'<path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/>',access:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',soon:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'});
 const SOON={
 audit:["Audits & Assessments","Plan internal, client and ISO 45001 / 14001 audits, record findings by clause, and turn each finding into a tracked action.",["Annual audit programme per country","Clause-based protocols (ISO 45001, 14001, client specs)","Findings graded Major / Minor / OFI","Auto-link findings to CAPA","Auditor competency register"]],
 risk:["Risk Register & Bowtie","Hold every site's hazards in one register, score them on a 5×5 matrix, and draw threats, barriers and consequences as a bowtie.",["5×5 matrix with residual risk","Bowtie: threats, barriers, consequences","Barrier health from inspection results","JSA / task risk assessment library","Review reminders on changed conditions"]],
@@ -285,9 +286,9 @@ comp:["Compliance Register","List the legal and client requirements that apply i
 train:["Training & Competency","Record inductions, courses and certificates for 2,000 employees and warn before anything expires.",["Training matrix by role and department","Certificate expiry alerts","Induction and toolbox talk attendance","Competency sign-off for critical roles","Training hours KPI"]],
 sugg:["Improvement Suggestions","Let anyone submit an idea, route it to the right department, and show what was done with it.",["Submit from phone with photo","Department review and decision","Recognition and points","Link to MOC when a change is approved"]],
 emer:["Emergency Preparedness","Keep emergency plans, contacts and drill records per site, and measure drill performance.",["Emergency response plan per site","Drill schedule and evaluation","Muster time tracking","Emergency equipment inspections","Contact lists by site"]]};
-const NAV_M=[["#Live system"],["exec","Executive dashboards"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Live actions"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["#Overview"],["dash","Dashboard"],["#Report & investigate"],["inc","Incidents"],["obs","Observations"],["ncr","Non-Conformance"],["capa","Actions (CAPA)"],["#Assure"],["insp","Inspections"],["audit","Audits",1],["comp","Compliance",1],["#Control risk"],["risk","Risk & Bowtie",1],["moc","Management of Change"],["ptw","Permit to Work",1],["#People & environment"],["train","Training",1],["env","Environment & ESG",1],["emer","Emergency",1],["sugg","Suggestions",1],["#Platform"],["mod","All Modules"]];
+const NAV_M=[["#Live system"],["exec","Executive dashboards"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Live actions"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["settings","Structure & settings"],["#Overview"],["dash","Dashboard"],["#Report & investigate"],["inc","Incidents"],["obs","Observations"],["ncr","Non-Conformance"],["capa","Actions (CAPA)"],["#Assure"],["insp","Inspections"],["audit","Audits",1],["comp","Compliance",1],["#Control risk"],["risk","Risk & Bowtie",1],["moc","Management of Change"],["ptw","Permit to Work",1],["#People & environment"],["train","Training",1],["env","Environment & ESG",1],["emer","Emergency",1],["sugg","Suggestions",1],["#Platform"],["mod","All Modules"]];
 const NAV_W=[["home","Home"],["live","Reports"],["lactions","Actions"]];
-const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Live Actions",exec:"Executive Dashboards",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
+const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Live Actions",exec:"Executive Dashboards",settings:"Structure & Settings",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
 const PARENT={incd:"inc",report:"home",ncrd:"ncr",inspd:"insp",mocd:"moc"};
 
 function nav(){const L=st.role==="mgr"?NAV_M:NAV_W;const cur=PARENT[st.view]||st.view;
@@ -364,7 +365,7 @@ function soon(){const [t,desc,feats]=SOON[st.view];
 function render(){nav();const v=document.getElementById("view");
  document.getElementById("title").textContent=TITLES[st.view]||SOON[st.view][0];
  document.getElementById("crumb").textContent="NAVO · "+(st.country||"All countries")+(st.role==="wrk"?" · Site Worker":" · HSE Manager");
- v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec,leaders})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
+ v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec,leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
 
 const demoTag=`<div class="demo"><span>DEMO</span>Sample data for illustration. Your live records replace it after setup.</div>`;
 
@@ -386,20 +387,20 @@ const BODY=[["Hand / fingers",14],["Eye",6],["Foot",5],["Back",4],["Head",2],["O
 const AUD_EL=[["Work at height",[6,4,9]],["Lifting operations",[3,5,7]],["Permit to work",[4,3,6]],["Emergency response",[2,4,5]],["Contractor control",[1,5,8]],["Electrical safety",[2,2,6]],["Waste & environment",[0,3,7]],["Training records",[1,2,5]]];
 const WASTE=[["General",412,"var(--info)"],["Hazardous",38,"var(--crit)"],["Recycled",166,"var(--ok)"],["Scrap metal",94,"var(--warn)"]];
 
-function vbars(vals,labels,{h=150,color="var(--brand)",fmt=v=>v,target}={}){const W=Math.max(320,labels.length*44),mx=Math.max(...vals,target||0)*1.15||1,bw=W/vals.length;
+function vbars(vals,labels,{h=150,color="var(--brand)",fmt=v=>v,target,attr}={}){const W=Math.max(320,labels.length*44),mx=Math.max(...vals,target||0)*1.15||1,bw=W/vals.length;
  return`<div class="tbl"><svg viewBox="0 0 ${W} ${h+34}" width="100%" style="min-width:${Math.min(W,560)}px" role="img">
  ${[0,.5,1].map(g=>`<line x1="0" x2="${W}" y1="${h-g*h/1.15+10}" y2="${h-g*h/1.15+10}" stroke="var(--line)"/>`).join("")}
- ${vals.map((v,i)=>{const bh=v/mx*h;return`<rect x="${i*bw+bw*.2}" y="${h-bh+10}" width="${bw*.6}" height="${bh}" rx="2" fill="${typeof color==="function"?color(v,i):color}"/><text x="${i*bw+bw/2}" y="${h-bh+4}" text-anchor="middle" font-size="10" fill="var(--fg)" font-family="IBM Plex Mono,monospace">${fmt(v)}</text><text x="${i*bw+bw/2}" y="${h+26}" text-anchor="middle" font-size="10" fill="var(--muted)">${labels[i]}</text>`}).join("")}
+ ${vals.map((v,i)=>{const bh=v/mx*h;const at=attr?attr(v,i):"";return`<g ${at} ${at?'class="hot"':""}><title>${labels[i]}: ${fmt(v)}${at?" · click for details":""}</title><rect x="${i*bw}" y="10" width="${bw}" height="${h}" fill="transparent"/><rect x="${i*bw+bw*.2}" y="${h-bh+10}" width="${bw*.6}" height="${bh}" rx="2" fill="${typeof color==="function"?color(v,i):color}"/></g><text x="${i*bw+bw/2}" y="${h-bh+4}" text-anchor="middle" font-size="10" fill="var(--fg)" font-family="IBM Plex Mono,monospace">${fmt(v)}</text><text x="${i*bw+bw/2}" y="${h+26}" text-anchor="middle" font-size="10" fill="var(--muted)">${labels[i]}</text>`}).join("")}
  ${target?`<line x1="0" x2="${W}" y1="${h-target/mx*h+10}" y2="${h-target/mx*h+10}" stroke="var(--crit)" stroke-dasharray="4 4"/><text x="${W-4}" y="${h-target/mx*h+6}" text-anchor="end" font-size="10" fill="var(--crit)">Target ${target}</text>`:""}</svg></div>`;}
 function line(series,labels,{h=150,target,dec=2}={}){const W=560,all=series.flatMap(s=>s.v).concat(target||0),mx=Math.max(...all)*1.2||1,x=i=>20+i*(W-40)/(labels.length-1),y=v=>h-v/mx*(h-14)+4;
  return`<div class="tbl"><svg viewBox="0 0 ${W} ${h+28}" width="100%" style="min-width:420px" role="img">
  ${[0,.5,1].map(g=>`<line x1="20" x2="${W-20}" y1="${y(g*mx/1.2)}" y2="${y(g*mx/1.2)}" stroke="var(--line)"/><text x="16" y="${y(g*mx/1.2)+3}" text-anchor="end" font-size="9" fill="var(--muted)">${(g*mx/1.2).toFixed(dec)}</text>`).join("")}
  ${target!==undefined?`<rect x="20" y="${y(target)}" width="${W-40}" height="${h+4-y(target)}" fill="var(--ok)" opacity=".12"/><line x1="20" x2="${W-20}" y1="${y(target)}" y2="${y(target)}" stroke="var(--ok)" stroke-dasharray="4 4"/>`:""}
- ${series.map(s=>`<polyline fill="none" stroke="${s.c}" stroke-width="2.2" points="${s.v.map((v,i)=>x(i)+","+y(v)).join(" ")}"/>${s.v.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===s.v.length-1?4:2.5}" fill="${s.c}"/>`).join("")}<text x="${x(s.v.length-1)}" y="${y(s.v[s.v.length-1])-8}" text-anchor="middle" font-size="10" font-weight="600" fill="${s.c}">${s.v[s.v.length-1].toFixed?s.v[s.v.length-1].toFixed(dec):s.v[s.v.length-1]}</text>`).join("")}
+ ${series.map(s=>`<polyline fill="none" stroke="${s.c}" stroke-width="2.2" points="${s.v.map((v,i)=>x(i)+","+y(v)).join(" ")}"/>${s.v.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===s.v.length-1?4:2.5}" fill="${s.c}"><title>${labels[i]}: ${v}</title></circle>`).join("")}<text x="${x(s.v.length-1)}" y="${y(s.v[s.v.length-1])-8}" text-anchor="middle" font-size="10" font-weight="600" fill="${s.c}">${s.v[s.v.length-1].toFixed?s.v[s.v.length-1].toFixed(dec):s.v[s.v.length-1]}</text>`).join("")}
  ${labels.map((l,i)=>`<text x="${x(i)}" y="${h+22}" text-anchor="middle" font-size="10" fill="var(--muted)">${l}</text>`).join("")}</svg></div>`;}
-function donut(parts,center,sub){let a=-Math.PI/2;const tot=parts.reduce((s,p)=>s+p[1],0)||1;const R=54,r=36;
- const arcs=parts.map(([n,v,c])=>{const b=a+v/tot*Math.PI*2;const p=(ang,rr)=>[70+rr*Math.cos(ang),70+rr*Math.sin(ang)];const L=b-a>Math.PI?1:0;const[x1,y1]=p(a,R),[x2,y2]=p(b,R),[x3,y3]=p(b,r),[x4,y4]=p(a,r);const d=`M${x1},${y1}A${R},${R} 0 ${L} 1 ${x2},${y2}L${x3},${y3}A${r},${r} 0 ${L} 0 ${x4},${y4}Z`;a=b;return v?`<path d="${d}" fill="${c}"/>`:""}).join("");
- return`<div class="dn"><svg viewBox="0 0 140 140" width="140" height="140">${arcs}<text x="70" y="72" text-anchor="middle" font-size="22" font-weight="600" fill="var(--fg)" font-family="Barlow Condensed,sans-serif">${center}</text><text x="70" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">${sub}</text></svg><div class="dl">${parts.map(([n,v,c])=>`<span><i style="background:${c}"></i>${n}<b>${v}</b></span>`).join("")}</div></div>`;}
+function donut(parts,center,sub,attr){let a=-Math.PI/2;const tot=parts.reduce((s,p)=>s+p[1],0)||1;const R=54,r=36;
+ const arcs=parts.map(([n,v,c])=>{const b=a+v/tot*Math.PI*2;const p=(ang,rr)=>[70+rr*Math.cos(ang),70+rr*Math.sin(ang)];const L=b-a>Math.PI?1:0;const[x1,y1]=p(a,R),[x2,y2]=p(b,R),[x3,y3]=p(b,r),[x4,y4]=p(a,r);const d=`M${x1},${y1}A${R},${R} 0 ${L} 1 ${x2},${y2}L${x3},${y3}A${r},${r} 0 ${L} 0 ${x4},${y4}Z`;a=b;const at=attr?attr(n):"";return v?`<path d="${d}" fill="${c}" ${at} ${at?'class="hot"':""}><title>${n}: ${v} (${Math.round(v/tot*100)}%)</title></path>`:""}).join("");
+ return`<div class="dn"><svg viewBox="0 0 140 140" width="140" height="140">${arcs}<text x="70" y="72" text-anchor="middle" font-size="22" font-weight="600" fill="var(--fg)" font-family="Barlow Condensed,sans-serif">${center}</text><text x="70" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">${sub}</text></svg><div class="dl">${parts.map(([n,v,c])=>{const at=attr?attr(n):"";return`<span ${at} ${at?'class="hot"':""}><i style="background:${c}"></i>${n}<b>${v}</b></span>`}).join("")}</div></div>`;}
 function pyramid(){const n=PYR.length,LAG=7,rh=30,gap=4,W=320,cx=W/2+8,lx=W+44,H=n*(rh+gap)-gap,yb=LAG*(rh+gap)-gap/2;
  const hw=y=>y<=yb?(W/2)*y/yb:(W/2)*(H-y)/(H-yb);
  const rows=PYR.map(([l,v],i)=>{const y0=i*(rh+gap),y1=y0+rh,ym=y0+rh/2,lag=i<LAG;const a=hw(y0),b=hw(y1),wm=hw(ym);
@@ -648,7 +649,7 @@ document.addEventListener("change",e=>{if(e.target.id==="country"){st.country=e.
  if(e.target.id==="wc"){st.w.c=e.target.value;render()}
  if(e.target.id==="ph"&&e.target.files[0]){const r=new FileReader();r.onload=()=>{st.w.img=r.result;render()};r.readAsDataURL(e.target.files[0])}});
 /* ================= LIVE SYSTEM (shared database) ================= */
-const L={db:null,user:null,me:null,owner:false,projects:[],members:{},reports:[],scores:{},ready:false,state:"Connecting…",scProj:null,scMonth:null,np:{plat:"Construction"},actions:[],inspections:[],activities:[],reviews:{},draft:{},af:{},acc:{q:"",hits:[],pick:null}};
+const L={db:null,user:null,me:null,owner:false,projects:[],members:{},reports:[],scores:{},ready:false,state:"Connecting…",scProj:null,scMonth:null,structure:null,sdraft:null,np:{plat:"Construction"},actions:[],inspections:[],activities:[],reviews:{},draft:{},af:{},acc:{q:"",hits:[],pick:null}};
 const ROLES={admin:"HSE Admin",hse:"HSE Engineer",supervisor:"Supervisor",worker:"Site Worker"};
 const thisMonth=()=>{const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")};
 const prevMonth=m=>{let[y,mm]=m.split("-").map(Number);mm--;if(!mm){mm=12;y--}return y+"-"+String(mm).padStart(2,"0")};
@@ -661,7 +662,7 @@ const projName=id=>L.projects.find(p=>p.id===id)?.name||"Unknown project";
 function scoreEntry(e){if(!e)return null;let qs=0;const rows=SHQ.map(([sec,inds],si)=>{let st=0;const ir=inds.map(([n,u,t,mx,hi],ii)=>{const raw=e.actual?.[si+"_"+ii];if(raw===undefined||raw==="")return{n,u,t,mx,a:null,sc:0,ok:false,missing:true};const a=+raw;
   const ok=hi?a>=t:a<=t;const sc=ok?mx:+(mx*(hi?Math.max(0,Math.min(1,t?a/t:0)):Math.max(0,1-(a-t)/(t+4)))).toFixed(1);st+=sc;return{n,u,t,mx,a,sc,ok}});qs+=st;return{sec,st:+st.toFixed(1),max:inds.reduce((s,i)=>s+i[3],0),ir}});
  const ql=SHL.map(([n,mx],i)=>{const r=+(e.qual?.[i]||0);return{n,mx,r,sc:+(mx*r/5).toFixed(1)}});
- const quant=+(qs/96*100).toFixed(1),qual=+(ql.reduce((s,q)=>s+q.sc,0)/40*100).toFixed(1);return{rows,ql,quant,qual,total:+(quant*.6+qual*.4).toFixed(1)}}
+ const avail=rows.reduce((s,r)=>s+r.ir.filter(i=>!i.missing).reduce((t,i)=>t+i.mx,0),0);const quant=avail?+(qs/avail*100).toFixed(1):0,qual=+(ql.reduce((s,q)=>s+q.sc,0)/40*100).toFixed(1);return{rows,ql,quant,qual,total:+(quant*.6+qual*.4).toFixed(1)}}
 function statusFor(cur,prev){if(cur==null)return null;if(cur<70)return"Intervention";if(cur<80)return"Review";if(prev!=null&&cur-prev>=2)return"Improving";return"Monitor"}
 
 async function liveInit(){try{
@@ -669,6 +670,7 @@ async function liveInit(){try{
  if(!L.db||!L.user){L.state="offline";render();return}
  L.me=await L.user.me();L.owner=await L.user.isOwner();
  if(!L.me.id){L.state="signedout";render();return}
+ L.db.doc("admin/structure").onSnapshot(s=>{if(s.exists){applyStructure(s.data());render()}},err);
  L.db.doc("admin/projects").onSnapshot(s=>{L.projects=(s.data()?.list)||[];L.ready=true;L.state="ok";resub();render()},err);
  L.db.doc("admin/members").onSnapshot(s=>{L.members=(s.data()?.map)||{};resub();render()},err);
  L.db.collection("admin/rv/months").onSnapshot(s=>{L.reviews={};s.docs.forEach(d=>L.reviews[d.id]=d.data());if(["sc","entry"].includes(st.view))render()},err);
@@ -715,7 +717,7 @@ function autoValues(pid,m){const p=L.projects.find(x=>x.id===pid)||{};const end=
  return{"0_0":p.headcount?+(nm/p.headcount*100).toFixed(1):null,"0_1":pct(timely,R.length),"0_2":openInc,"1_0":pct(onTime,dueM.length),"1_1":overdue.length,"1_2":hiOver,"1_3":noDue,"2_0":p.planInsp?Math.min(100,pct(I.length,p.planInsp)):null,"2_1":items?+(fails/items*100).toFixed(1):null,"2_3":ccItems?pct(ccItems-ccFails,ccItems):null,"3_0":p.planWalk?Math.min(100,pct(walks,p.planWalk)):null,"3_2":+(tbt/crews/4.3).toFixed(1)}}
 function monthCard(pid,m,useDraft){const auto=autoValues(pid,m);const rv=(useDraft&&L.draft[pid+"_"+m])||L.reviews[pid+"_"+m]||{};const actual={},src={};
  Object.keys(SRC).forEach(k=>{if(rv.override&&rv.override[k]!==undefined&&rv.override[k]!==""){actual[k]=rv.override[k];src[k]="override"}else if(SRC[k]==="admin"){if(rv.admin&&rv.admin[k]!==undefined&&rv.admin[k]!==""){actual[k]=rv.admin[k];src[k]="admin"}else src[k]="missing"}else if(auto[k]!==null&&auto[k]!==undefined){actual[k]=auto[k];src[k]="auto"}else src[k]="nodata"});
- const s=scoreEntry({actual,qual:rv.qual||[]});return{...s,auto,src,rv,hasQual:(rv.qual||[]).filter(Boolean).length===5}}
+ const s=scoreEntry({actual,qual:rv.qual||[]});const hasQual=(rv.qual||[]).filter(Boolean).length===5;if(!hasQual)s.total=s.quant;return{...s,auto,src,rv,hasQual}}
 const SRCTAG={auto:["p-ok","Auto"],override:["p-warn","Override"],admin:["p-info","Admin"],missing:["p-crit","Needs admin"],nodata:["p-mute","No data yet"]};
 
 function entry(){const g=liveGate();if(g)return g;if(myRole()!=="admin")return liveTag()+`<div class="panel"><h2>Only the HSE Admin reviews score cards</h2><p style="margin:0;color:var(--muted)">Scores are calculated automatically from what everyone enters. See them on Project score card.</p></div>`;
@@ -782,7 +784,7 @@ function levelMetrics(P,m){const ids=new Set(P.map(p=>p.id));const end=monthEnd(
   openInv:L.reports.filter(r=>ids.has(r.project)&&r.rt==="Incident"&&r.status!=="Closed"&&end-r.ts>14*864e5).length,
   closure:due.length?Math.round(onTime/due.length*100):null,overdue:A.filter(a=>!a.closedAt&&a.due&&a.due<end).length,
   insp:I.length,atRisk:items?+(fails/items*100).toFixed(1):null,walks,plan,walkPct:plan?Math.round(walks/plan*100):null,
-  score:scores.length?+(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):null,R}}
+  score:scores.length&&(R.length+I.length+V.length)?+(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):null,R}}
 function execScope(){const lv=st.lvl||{};let P=myProjects().filter(p=>!st.country||p.country===st.country);
  if(lv.platform)P=P.filter(p=>(p.platform||"Construction")===lv.platform);
  if(lv.division!==undefined&&lv.division!==null)P=P.filter(p=>(p.division||"Unassigned")===lv.division);
@@ -796,33 +798,71 @@ function execChildren(P){const lv=st.lvl||{};
  if(!lv.project)return P.map(p=>({key:{...lv,project:p.id},name:p.name,P:[p]}));return[]}
 function kidCol(tier,lv){const hasCl=((HIER[lv.platform]||{})[lv.division]||[]).length>0;return tier==="Corporate executive"?"Platform":tier==="Platform"?"Business":tier==="Business"&&hasCl?"Cluster":"Project"}
 function kidLabel(tier,lv){return"By "+kidCol(tier,lv).toLowerCase()}
+function drillRecords(P,m,d){const ids=new Set(P.map(p=>p.id));const end=monthEnd(m);const R=L.reports.filter(r=>ids.has(r.project)&&inMonth(r.ts,m));
+ const map={reports:["Reports",R],incidents:["Incidents",R.filter(r=>r.rt==="Incident")],nearmiss:["Near misses",R.filter(r=>r.kind==="Near Miss")],hazards:["Hazards",R.filter(r=>r.rt==="Hazard")],good:["Good practice",R.filter(r=>r.rt==="Good practice")],
+  openinv:["Incidents open more than 14 days",L.reports.filter(r=>ids.has(r.project)&&r.rt==="Incident"&&r.status!=="Closed"&&end-r.ts>14*864e5)],
+  overdue:["Overdue actions",L.actions.filter(a=>ids.has(a.project)&&!a.closedAt&&a.due&&a.due<end)],due:["Actions due this month",L.actions.filter(a=>ids.has(a.project)&&a.due&&inMonth(a.due,m))],
+  insp:["Inspections",L.inspections.filter(i=>ids.has(i.project)&&inMonth(i.ts,m))],walks:["Leadership walkthroughs",L.activities.filter(v=>ids.has(v.project)&&inMonth(v.date,m)&&v.type==="Leadership walkthrough")]};
+ if(d.startsWith("cat:")){const c=d.slice(4);return[c+" events",R.filter(r=>r.cat===c),"report"]}
+ const [t,rows]=map[d]||map.reports;return[t,rows,["overdue","due"].includes(d)?"action":d==="insp"?"insp":d==="walks"?"walk":"report"]}
+function drillPanel(P,m){const d=st.drill;if(!d)return"";const[t,rows,kind]=drillRecords(P,m,d);const fd=x=>x?new Date(x).toLocaleDateString("en-GB",{day:"2-digit",month:"short"}):"—";
+ const head={report:"<th>Date</th><th>Report</th><th>Type</th><th>Project</th><th>Status</th>",action:"<th>Due</th><th>Action</th><th>Owner</th><th>Project</th><th>Status</th>",insp:"<th>Date</th><th>Checklist</th><th class='r'>Failed items</th><th>Project</th>",walk:"<th>Date</th><th>Activity</th><th class='r'>Count</th><th>Project</th>"}[kind];
+ const row=x=>kind==="report"?`<td class="id">${fd(x.ts)}</td><td>${esc(x.desc)||"—"}${x.cat?`<br><small style="color:var(--muted)">${esc(x.cat)}</small>`:""}</td><td><span class="pill ${x.rt==="Incident"?"p-crit":x.rt==="Hazard"?"p-warn":"p-ok"}">${esc(x.kind||x.rt)}</span></td><td>${esc(projName(x.project))}</td><td><span class="pill ${x.status==="Closed"?"p-ok":"p-warn"}">${esc(x.status)}</span></td>`
+  :kind==="action"?`<td class="id">${fd(x.due)}</td><td>${esc(x.title)}</td><td>${esc(x.owner)||"—"}</td><td>${esc(projName(x.project))}</td><td><span class="pill ${x.closedAt?"p-ok":x.due<Date.now()?"p-crit":"p-warn"}">${x.closedAt?"Closed":x.due<Date.now()?"Overdue":"Open"}</span></td>`
+  :kind==="insp"?`<td class="id">${fd(x.ts)}</td><td>${esc(x.tpl)}</td><td class="r num ${x.fails?"bad":""}">${x.fails} / ${x.items}</td><td>${esc(projName(x.project))}</td>`
+  :`<td class="id">${fd(x.date)}</td><td>${esc(x.type)}</td><td class="r num">${x.count||1}</td><td>${esc(projName(x.project))}</td>`;
+ return`<div class="panel" style="border-color:var(--brand)"><h2>${esc(t)} <small>${rows.length} record${rows.length===1?"":"s"}</small><button class="btn" id="drill-close">Close</button></h2>${rows.length?`<div class="tbl" style="max-height:420px;overflow:auto"><table><thead><tr>${head}</tr></thead><tbody>${rows.slice(0,300).map(x=>`<tr>${row(x)}</tr>`).join("")}</tbody></table></div>`:`<p style="margin:0;color:var(--muted)">Nothing to show for this selection.</p>`}</div>`}
 function exec(){const g=liveGate();if(g)return g;if(myRole()==="worker")return liveTag()+`<div class="panel"><h2>Executive dashboards are for supervisors, HSE and leadership</h2></div>`;
  const m=L.scMonth||thisMonth();const lv=st.lvl||{};const P=execScope();const k=levelMetrics(P,m),pk=levelMetrics(P,prevMonth(m));
  const has=x=>x!==undefined&&x!==null;
- const levelName=lv.project?projName(lv.project):has(lv.cluster)?lv.cluster:has(lv.division)?lv.division:lv.platform?lv.platform+" platform":"Corporation";
+ const levelName=lv.project?projName(lv.project):has(lv.cluster)?lv.cluster:has(lv.division)?lv.division:lv.platform?lv.platform+" platform":corpName();
  const tier=lv.project?"Project":has(lv.cluster)?"Cluster":has(lv.division)?"Business":lv.platform?"Platform":"Corporate executive";
- const crumbs=[["Corporation",{}]];if(lv.platform)crumbs.push([lv.platform,{platform:lv.platform}]);if(has(lv.division))crumbs.push([lv.division,{platform:lv.platform,division:lv.division}]);if(has(lv.cluster))crumbs.push([lv.cluster,{platform:lv.platform,division:lv.division,cluster:lv.cluster}]);if(lv.project)crumbs.push([projName(lv.project),lv]);
+ const crumbs=[[corpName(),{}]];if(lv.platform)crumbs.push([lv.platform,{platform:lv.platform}]);if(has(lv.division))crumbs.push([lv.division,{platform:lv.platform,division:lv.division}]);if(has(lv.cluster))crumbs.push([lv.cluster,{platform:lv.platform,division:lv.division,cluster:lv.cluster}]);if(lv.project)crumbs.push([projName(lv.project),lv]);
  const delta=(a,b,good)=>a==null||b==null||a===b?"":`<span style="color:${(a>b)===good?"var(--ok)":"var(--crit)"}">${a>b?"▲":"▼"} ${Math.abs(+(a-b).toFixed(1))}</span> vs last month`;
  const kids=execChildren(P).map(c=>({...c,k:levelMetrics(c.P,m)}));const months=lastMonths(m,6);
  const st6=s=>s==null?"":TRND[statusFor(s,null)]?`<span class="pill ${TRND[statusFor(s,null)][0]}">${statusFor(s,null)}</span>`:"";
  const cats=WHEEL.map(w=>[w,k.R.filter(r=>r.cat===w).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);
- return liveTag()+`<div class="filters" style="align-items:center"><div class="chips">${crumbs.map(([n,key],i)=>`<button data-lvl='${esc(JSON.stringify(key))}' aria-pressed="${i===crumbs.length-1}">${esc(n)}</button>`).join('<span style="color:var(--muted)">›</span>')}</div><div style="flex:1"></div><input id="sc-month2" type="month" value="${m}" class="mon" aria-label="Month"></div>
- <div class="panel" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:20px"><div style="flex:1;min-width:240px"><span class="pill p-info">${tier} dashboard</span><h2 style="font-size:30px;margin-top:6px">${esc(levelName)}</h2><small style="color:var(--muted)">${k.projects} project${k.projects===1?"":"s"} · ${k.headcount.toLocaleString()} workers · generated from live records for ${m}</small></div>
+ const tile=(d,l,v,sub,cls="")=>`<div class="kpi hot ${cls}" data-drill="${d}" role="button" tabindex="0" title="Show the records"><span class="l">${l}</span><span class="v">${v}</span><span class="d">${sub||"&nbsp;"}</span></div>`;
+ const country=st.country?` · ${esc(st.country)}`:"";
+ return liveTag()+`<div class="filters" style="align-items:center"><div class="chips">${crumbs.map(([n,key],i)=>`<button data-lvl='${esc(JSON.stringify(key))}' aria-pressed="${i===crumbs.length-1}">${esc(n)}</button>`).join('<span style="color:var(--muted)">›</span>')}</div><div style="flex:1"></div>
+ <div class="chips"><button data-ctry="" aria-pressed="${!st.country}">All countries</button>${COUNTRIES.map(c=>`<button data-ctry="${esc(c)}" aria-pressed="${st.country===c}">${esc(c)}</button>`).join("")}</div><input id="sc-month2" type="month" value="${m}" class="mon" aria-label="Month"></div>
+ <div class="panel" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:20px"><div style="flex:1;min-width:240px"><span class="pill p-info">${tier} dashboard</span><h2 style="font-size:30px;margin-top:6px">${esc(levelName)}${country}</h2><small style="color:var(--muted)">${k.projects} project${k.projects===1?"":"s"} · ${k.headcount.toLocaleString()} workers · generated from live records for ${m}</small>
+ <div class="filters" style="margin-top:10px"><span style="font-size:13px;color:var(--muted);align-self:center">Download report:</span><button class="btn" data-export="xlsx">Excel</button><button class="btn" data-export="docx">Word</button><button class="btn" data-export="pptx">PowerPoint</button></div></div>
  <div style="text-align:right"><div class="score" style="color:${k.score==null?"var(--muted)":hcol(k.score)}">${k.score??"—"}</div><small style="color:var(--muted)">Average site health</small><div>${st6(k.score)}</div></div></div>
  <div class="kpis">
- <div class="kpi"><span class="l">Reports</span><span class="v">${k.reports}</span><span class="d">${delta(k.reports,pk.reports,true)||"&nbsp;"}</span></div>
- <div class="kpi"><span class="l">Near misses</span><span class="v">${k.nearMiss}</span><span class="d">${delta(k.nearMiss,pk.nearMiss,true)||"&nbsp;"}</span></div>
- <div class="kpi ${k.incidents?"alert":""}"><span class="l">Incidents</span><span class="v">${k.incidents}</span><span class="d">${k.openInv} open &gt; 14 days</span></div>
- <div class="kpi"><span class="l">Action closure on time</span><span class="v">${k.closure==null?"—":k.closure+"%"}</span><span class="d">${k.overdue} overdue</span></div>
- <div class="kpi"><span class="l">Inspections</span><span class="v">${k.insp}</span><span class="d">${k.atRisk==null?"no items yet":k.atRisk+"% items at risk"}</span></div>
- <div class="kpi"><span class="l">Leadership walkthroughs</span><span class="v">${k.walks}${k.plan?` / ${k.plan}`:""}</span><span class="d">${k.walkPct==null?"no plan set":k.walkPct+"% of plan"}</span></div></div>
- ${kids.length?`<div class="panel"><h2>${kidLabel(tier,lv)} <small>tap a row to open its dashboard</small></h2><div class="tbl"><table><thead><tr><th>${kidCol(tier,lv)}</th><th class="r">Projects</th><th class="r">Reports</th><th class="r">Incidents</th><th class="r">Closure</th><th class="r">Overdue</th><th class="r">Walkthroughs</th><th class="r">Health</th></tr></thead><tbody>
- ${kids.map(c=>`<tr class="click" data-lvl='${esc(JSON.stringify(c.key))}'><td><b>${esc(c.name)}</b></td><td class="r num">${c.k.projects}</td><td class="r num">${c.k.reports}</td><td class="r num">${c.k.incidents}</td><td class="r num">${c.k.closure==null?"—":c.k.closure+"%"}</td><td class="r num ${c.k.overdue?"bad":""}">${c.k.overdue}</td><td class="r num">${c.k.walks}${c.k.plan?" / "+c.k.plan:""}</td><td class="r">${c.k.score==null?"—":`<span class="score-cell" style="background:${hcol(c.k.score)}">${c.k.score}</span>`}</td></tr>`).join("")}</tbody></table></div></div>`:`<div class="filters"><button class="btn pri" data-scd2="${esc(lv.project)}">Open full score card</button></div>`}
- <div class="grid2"><div class="panel"><h2>Reports, last 6 months</h2>${vbars(months.map(mm=>levelMetrics(P,mm).reports),months.map(mLabel),{color:"var(--brand)"})}</div>
- <div class="panel"><h2>High-energy categories <small>${m}</small></h2>${cats.length?`<div class="bars">${cats.map(([w,n])=>`<div class="bar"><span>${w}</span><span class="t"><i style="width:${n/cats[0][1]*100}%;background:var(--crit)"></i></span><span class="n">${n}</span></div>`).join("")}</div>`:`<p style="margin:0;color:var(--muted)">No high-energy events reported this month.</p>`}</div></div>
- <div class="grid2"><div class="panel"><h2>Average site health, last 6 months</h2>${vbars(months.map(mm=>{const s=levelMetrics(P,mm).score;return s??0}),months.map(mLabel),{color:v=>hcol(v),target:80})}</div>
- <div class="panel"><h2>Report mix <small>${m}</small></h2>${donut([["Incidents",k.incidents,"var(--crit)"],["Hazards",k.hazards,"var(--warn)"],["Good practice",k.good,"var(--ok)"]],String(k.reports),"reports")}</div></div>`;}
+ ${tile("reports","Reports",k.reports,delta(k.reports,pk.reports,true))}
+ ${tile("nearmiss","Near misses",k.nearMiss,delta(k.nearMiss,pk.nearMiss,true))}
+ ${tile("incidents","Incidents",k.incidents,`${k.openInv} open &gt; 14 days`,k.incidents?"alert":"")}
+ ${tile("overdue","Action closure on time",k.closure==null?"—":k.closure+"%",`${k.overdue} overdue`)}
+ ${tile("insp","Inspections",k.insp,k.atRisk==null?"no items yet":k.atRisk+"% items at risk")}
+ ${tile("walks","Leadership walkthroughs",`${k.walks}${k.plan?` / ${k.plan}`:""}`,k.walkPct==null?"no plan set":k.walkPct+"% of plan")}</div>
+ ${drillPanel(P,m)}
+ ${kids.length?`<div class="grid2"><div class="panel"><h2>${kidLabel(tier,lv)} <small>tap a row to open its dashboard</small></h2><div class="tbl"><table><thead><tr><th>${kidCol(tier,lv)}</th><th class="r">Projects</th><th class="r">Reports</th><th class="r">Incidents</th><th class="r">Closure</th><th class="r">Overdue</th><th class="r">Walks</th><th class="r">Health</th></tr></thead><tbody>
+ ${kids.map(c=>`<tr class="click" data-lvl='${esc(JSON.stringify(c.key))}'><td><b>${esc(c.name)}</b></td><td class="r num">${c.k.projects}</td><td class="r num">${c.k.reports}</td><td class="r num">${c.k.incidents}</td><td class="r num">${c.k.closure==null?"—":c.k.closure+"%"}</td><td class="r num ${c.k.overdue?"bad":""}">${c.k.overdue}</td><td class="r num">${c.k.walks}${c.k.plan?" / "+c.k.plan:""}</td><td class="r">${c.k.score==null?"—":`<span class="score-cell" style="background:${hcol(c.k.score)}">${c.k.score}</span>`}</td></tr>`).join("")}</tbody></table></div></div>
+ <div class="panel"><h2>Site health by ${kidCol(tier,lv).toLowerCase()} <small>click a bar to open it</small></h2>${vbars(kids.map(c=>c.k.score??0),kids.map(c=>c.name.length>11?c.name.slice(0,10)+"…":c.name),{color:v=>hcol(v),target:80,attr:(v,i)=>`data-lvlj='${esc(JSON.stringify(kids[i].key))}'`})}</div></div>`:`<div class="filters"><button class="btn pri" data-scd2="${esc(lv.project)}">Open full score card</button></div>`}
+ <div class="grid2"><div class="panel"><h2>Reports, last 6 months <small>click a month to switch</small></h2>${vbars(months.map(mm=>levelMetrics(P,mm).reports),months.map(mLabel),{color:(v,i)=>months[i]===m?"var(--accent)":"var(--brand)",attr:(v,i)=>`data-setm="${months[i]}"`})}</div>
+ <div class="panel"><h2>High-energy categories <small>${m} · click to see events</small></h2>${cats.length?`<div class="bars">${cats.map(([w,n])=>`<div class="bar hot" data-drill="cat:${esc(w)}" role="button" tabindex="0"><span>${w}</span><span class="t"><i style="width:${n/cats[0][1]*100}%;background:var(--crit)"></i></span><span class="n">${n}</span></div>`).join("")}</div>`:`<p style="margin:0;color:var(--muted)">No high-energy events reported this month.</p>`}</div></div>
+ <div class="grid2"><div class="panel"><h2>Average site health, last 6 months <small>click a month to switch</small></h2>${vbars(months.map(mm=>{const s=levelMetrics(P,mm).score;return s??0}),months.map(mLabel),{color:v=>hcol(v),target:80,attr:(v,i)=>`data-setm="${months[i]}"`})}</div>
+ <div class="panel"><h2>Report mix <small>${m} · click a slice</small></h2>${donut([["Incidents",k.incidents,"var(--crit)"],["Hazards",k.hazards,"var(--warn)"],["Good practice",k.good,"var(--ok)"]],String(k.reports),"reports",n=>`data-drill="${n==="Incidents"?"incidents":n==="Hazards"?"hazards":"good"}"`)}</div></div>`;}
 
+/* ---- Report export: the dashboard you are looking at, as Excel / Word / PowerPoint ---- */
+function reportPayload(){const m=L.scMonth||thisMonth();const lv=st.lvl||{};const P=execScope();const k=levelMetrics(P,m),pk=levelMetrics(P,prevMonth(m));
+ const has=x=>x!==undefined&&x!==null;const tier=lv.project?"Project":has(lv.cluster)?"Cluster":has(lv.division)?"Business":lv.platform?"Platform":"Corporate executive";
+ const title=lv.project?projName(lv.project):has(lv.cluster)?`${lv.division} · ${lv.cluster}`:has(lv.division)?lv.division:lv.platform?lv.platform+" platform":corpName();
+ const strip=x=>{const{R,...r}=x;return r};const kids=execChildren(P).map(c=>({name:c.name,...strip(levelMetrics(c.P,m))}));
+ const ids=new Set(P.map(p=>p.id));const end=monthEnd(m);
+ const overdue=L.actions.filter(a=>ids.has(a.project)&&!a.closedAt&&a.due&&a.due<end).sort((a,b)=>a.due-b.due).slice(0,40).map(a=>({title:a.title,project:projName(a.project),owner:a.owner||"",due:new Date(a.due).toLocaleDateString("en-GB",{day:"2-digit",month:"short"}),daysOver:Math.floor((end-a.due)/864e5),priority:a.priority||"Normal"}));
+ return{title,tier,month:m,monthLabel:new Date(m+"-01T00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"}),country:st.country||"",corporation:corpName(),
+  projects:k.projects,headcount:k.headcount,generated:new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}),
+  kpis:strip(k),prev:strip(pk),childLabel:kids.length?kidCol(tier,lv):"Project",children:kids,
+  trend:lastMonths(m,6).map(mm=>{const x=levelMetrics(P,mm);return{month:mm,label:mLabel(mm),reports:x.reports,nearMiss:x.nearMiss,incidents:x.incidents,score:x.score}}),
+  categories:WHEEL.map(w=>[w,k.R.filter(r=>r.cat===w).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]),mix:{incidents:k.incidents,hazards:k.hazards,good:k.good},overdue}}
+async function exportReport(fmt,btn){const old=btn.textContent;btn.disabled=true;btn.textContent="Preparing…";
+ try{const data=reportPayload();const r=await fetch("/api/report?fmt="+fmt,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+  if(!r.ok){let m="The report could not be created.";try{m=(await r.json()).error||m}catch(e){}throw new Error(m)}
+  const blob=await r.blob();const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`NAVO ${data.title} ${data.month}.${fmt}`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
+  toast(({xlsx:"Excel",docx:"Word",pptx:"PowerPoint"})[fmt]+" report downloaded")}
+ catch(e){toast(e.message==="Failed to fetch"?"Check your connection and try again.":e.message)}finally{btn.disabled=false;btn.textContent=old}}
 /* ---- Leadership proactive engagement ---- */
 function leaders(){const g=liveGate();if(g)return g;const m=L.scMonth||thisMonth();
  const ids=new Set(myProjects().map(p=>p.id));const people=Object.entries(L.members).filter(([,x])=>x.leader);
@@ -838,11 +878,80 @@ function leaders(){const g=liveGate();if(g)return g;const m=L.scMonth||thisMonth
  <div class="panel">${rows.length?`<h2>Leadership engagement <small>visible activity in your projects · ${m}</small></h2><div class="tbl"><table><thead><tr><th>Leader</th><th>Role</th><th class="r">Walkthroughs</th><th class="r">Inspections</th><th class="r">Actions raised</th><th class="r">Reports</th><th class="r">Toolbox talks</th><th>Status</th></tr></thead><tbody>
  ${rows.map(r=>`<tr><td class="uname" data-uid="${esc(r.uid)}">…</td><td>${ROLES[r.x.role]||""}</td><td class="r num">${r.walks}${r.t?" / "+r.t:""}</td><td class="r num">${r.ins}</td><td class="r num">${r.act}</td><td class="r num">${r.rep}</td><td class="r num">${r.tbt}</td><td><span class="pill ${r.status[1]}">${r.status[0]}</span></td></tr>`).join("")}</tbody></table></div>`:`<h2>No leaders tracked yet</h2><p style="margin:0;color:var(--muted)">On Projects &amp; access, mark people as leaders and set their monthly walkthrough target. Their walkthroughs, inspections and actions then appear here automatically.</p>`}</div>`;}
 
+/* ---- Editable organisation structure (admin) ---- */
+const DEFAULT_STRUCT={corporation:"Corporation",countries:COUNTRIES.slice(),platforms:Object.entries(HIER).map(([name,b])=>({name,businesses:Object.entries(b).map(([n,c])=>({name:n,clusters:c.slice()}))}))};
+function applyStructure(s){if(!s||!Array.isArray(s.platforms))return;L.structure=s;
+ PLATFORMS.length=0;s.platforms.forEach(p=>PLATFORMS.push(p.name));
+ Object.keys(HIER).forEach(k=>delete HIER[k]);s.platforms.forEach(p=>{HIER[p.name]={};(p.businesses||[]).forEach(b=>HIER[p.name][b.name]=(b.clusters||[]).slice())});
+ if(Array.isArray(s.countries)&&s.countries.length){COUNTRIES.length=0;s.countries.forEach(c=>COUNTRIES.push(c))}
+ const sel=document.getElementById("country");if(sel){const cur=sel.value;sel.innerHTML=`<option value="">All countries</option>`+COUNTRIES.map(c=>`<option ${c===cur?"selected":""}>${esc(c)}</option>`).join("")}}
+const corpName=()=>(L.structure&&L.structure.corporation)||"Corporation";
+const usage=(f,v,extra)=>L.projects.filter(p=>(f==="country"?p.country:f==="platform"?(p.platform||"Construction"):f==="division"?p.division:p.cluster)===v&&(!extra||extra(p))).length;
+
+function settings(){const g=liveGate();if(g)return g;if(myRole()!=="admin")return liveTag()+`<div class="panel"><h2>Only the HSE Admin edits the structure</h2></div>`;
+ const d=L.sdraft||(L.sdraft=JSON.parse(JSON.stringify(L.structure||DEFAULT_STRUCT)));
+ d.platforms.forEach(p=>{p._o=p._o??p.name;p.businesses.forEach(b=>{b._o=b._o??b.name;b.clusters=b.clusters.map(c=>typeof c==="string"?{name:c,_o:c}:c)})});
+ const inp=(path,val,label,w=220)=>`<input class="st-in" data-path="${path}" type="text" value="${esc(val)}" aria-label="${esc(label)}" style="width:${w}px;max-width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600">`;
+ const del=(path,label)=>`<button class="btn" data-sdel="${path}" aria-label="Remove ${esc(label)}" title="Remove ${esc(label)}">✕</button>`;
+ const demo=!!L.db.bulkInsert;const demoCount=L.projects.filter(p=>String(p.id).startsWith("demo-")).length;
+ return liveTag()+`<div class="panel"><h2>Organisation structure <small>changes apply everywhere after you save</small></h2>
+ <div class="filters" style="align-items:center"><label for="st-corp" style="font-weight:600">Top level name</label>${inp("corporation",d.corporation,"Top level name",260).replace('class="st-in"','id="st-corp" class="st-in"')}</div>
+ <h2 style="margin-top:8px">Countries</h2><div class="chips">${d.countries.map((c,i)=>`<span class="pill p-mute" style="font-size:13px;display:inline-flex;gap:6px;align-items:center">${esc(c)} <button class="btn" style="padding:0 6px" data-sdel="countries.${i}" aria-label="Remove ${esc(c)}">✕</button></span>`).join("")}</div>
+ <div class="filters"><input id="st-newc" type="text" placeholder="Add a country" style="padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface)"><button class="btn" data-sadd="countries">Add country</button></div></div>
+ ${d.platforms.map((p,pi)=>`<div class="panel"><div class="filters" style="align-items:center"><span class="pill p-info">Platform</span>${inp(`platforms.${pi}.name`,p.name,"Platform name",280)}<div style="flex:1"></div>${del(`platforms.${pi}`,p.name)}</div>
+ <div class="tbl"><table><thead><tr><th>Business</th><th>Clusters</th><th class="r">Projects</th><th></th></tr></thead><tbody>
+ ${p.businesses.map((b,bi)=>`<tr><td>${inp(`platforms.${pi}.businesses.${bi}.name`,b.name,"Business name")}</td><td><div class="chips" style="align-items:center">${b.clusters.map((c,ci)=>`<span style="display:inline-flex;gap:4px;align-items:center">${inp(`platforms.${pi}.businesses.${bi}.clusters.${ci}.name`,c.name,"Cluster name",150)}${del(`platforms.${pi}.businesses.${bi}.clusters.${ci}`,c.name)}</span>`).join("")}<button class="btn" data-sadd="platforms.${pi}.businesses.${bi}.clusters">+ Cluster</button></div></td><td class="r num">${usage("division",b._o,x=>(x.platform||"Construction")===p._o)}</td><td class="r">${del(`platforms.${pi}.businesses.${bi}`,b.name)}</td></tr>`).join("")}
+ </tbody></table></div><div class="filters"><button class="btn" data-sadd="platforms.${pi}.businesses">+ Add business</button></div></div>`).join("")}
+ <div class="filters"><button class="btn" data-sadd="platforms">+ Add platform</button><div style="flex:1"></div><button class="btn" id="st-reset">Discard changes</button><button class="btn acc" id="st-save">Save structure</button></div>
+ ${demo?`<div class="panel"><h2>Demo data <small>for presentations</small></h2><p style="margin:0;color:var(--muted);max-width:75ch">Adds one sample project for every business and cluster across your countries, with three months of reports, actions, inspections and leadership walkthroughs, so every dashboard has something to show. Demo projects start with "demo-" and can be removed in one step.</p>
+ <div class="filters"><button class="btn pri" id="demo-load" ${demoCount?"disabled":""}>${demoCount?`${demoCount} demo projects loaded`:"Load demo data"}</button><button class="btn" id="demo-remove" ${demoCount?"":"disabled"}>Remove demo data</button></div></div>`:""}`;}
+
+const getP=(o,path)=>path.split(".").reduce((a,k)=>a[k],o);
+function setP(o,path,v){const ks=path.split(".");const last=ks.pop();ks.reduce((a,k)=>a[k],o)[last]=v}
+function delP(o,path){const ks=path.split(".");const i=+ks.pop();ks.reduce((a,k)=>a[k],o).splice(i,1)}
+
+async function saveStructure(){const d=L.sdraft;const errs=[];
+ // removing something still used by projects is blocked
+ const kept=new Set(d.platforms.map(p=>p._o));(L.structure||DEFAULT_STRUCT).platforms.forEach(p=>{if(!kept.has(p.name)&&usage("platform",p.name))errs.push(`Platform "${p.name}" still has projects`)});
+ d.platforms.forEach(p=>{const kb=new Set(p.businesses.map(b=>b._o));const old=((L.structure||DEFAULT_STRUCT).platforms.find(x=>x.name===p._o)||{businesses:[]}).businesses;
+  old.forEach(b=>{if(!kb.has(b.name)&&usage("division",b.name,x=>(x.platform||"Construction")===p._o))errs.push(`Business "${b.name}" still has projects`)})});
+ const oldC=(L.structure||DEFAULT_STRUCT).countries;oldC.forEach(c=>{if(!d.countries.includes(c)&&usage("country",c))errs.push(`Country "${c}" still has projects`)});
+ const names=d.platforms.map(p=>p.name.trim());if(names.some(n=>!n))errs.push("Every platform needs a name");if(new Set(names).size!==names.length)errs.push("Two platforms have the same name");
+ d.platforms.forEach(p=>{const bn=p.businesses.map(b=>b.name.trim());if(bn.some(n=>!n))errs.push(`A business in ${p.name} has no name`);if(new Set(bn).size!==bn.length)errs.push(`Two businesses in ${p.name} have the same name`)});
+ if(errs.length){toast(errs[0]+". Move or remove those projects first.");return}
+ const clean={corporation:(d.corporation||"Corporation").trim(),countries:d.countries,platforms:d.platforms.map(p=>({name:p.name.trim(),businesses:p.businesses.map(b=>({name:b.name.trim(),clusters:b.clusters.map(c=>c.name.trim()).filter(Boolean)}))}))};
+ // carry renames through to projects
+ const list=L.projects.map(pr=>{const pl=d.platforms.find(p=>p._o===(pr.platform||"Construction"));if(!pl)return pr;const n={...pr,platform:pl.name.trim()};
+  const b=pl.businesses.find(x=>x._o===pr.division);if(b){n.division=b.name.trim();const c=b.clusters.find(x=>x._o===pr.cluster);if(c)n.cluster=c.name.trim()}return n});
+ const changed=list.some((p,i)=>JSON.stringify(p)!==JSON.stringify(L.projects[i]));
+ await liveSave(async()=>{await L.db.doc("admin/structure").set(clean);if(changed)await L.db.doc("admin/projects").set({list})},"Structure saved");L.sdraft=null;}
+
+/* ---- Demo data generator (same structure as the client's organisation) ---- */
+async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646};const pick=a=>a[Math.floor(R()*a.length)];
+ const slots=[];PLATFORMS.forEach(pl=>Object.entries(HIER[pl]||{}).forEach(([b,cl])=>(cl.length?cl:[null]).forEach(c=>slots.push([pl,b,c]))));
+ const NAMES=["Ring Road","Tower","Hospital Package","Plant","Yard","Hub","Factory","Depot","Complex","Upgrade","Jetty","Showroom"];
+ const now=Date.now(),day=864e5;const projects=[],reports=[],actions=[],insp=[],acts=[];
+ slots.forEach(([pl,b,c],i)=>{const id="demo-p"+String(i+1).padStart(2,"0");const country=COUNTRIES[i%COUNTRIES.length];const hc=pick([90,140,220,310,460,650]);const pi=pick([4,6,8,10]);const pw=pick([2,3,4,6]);
+  projects.push({id,name:`${country} ${c||b} ${pick(NAMES)}`,country,platform:pl,division:b,cluster:c||"",headcount:hc,planInsp:pi,planWalk:pw});
+  const q=.45+R()*.55;
+  for(let d=88;d>=0;d--){const t=now-d*day-Math.floor(R()*8)*3600e3;
+   if(R()<Math.min(.95,hc/380*(.6+q*.6))){const r=R();const rt=r<.12?"Incident":r<.82?"Hazard":"Good practice";const kind=rt==="Incident"?pick(["Near Miss","Near Miss","First Aid","Property Damage"]):rt==="Hazard"?(R()<.25?"Near Miss":pick(["Unsafe Condition","Unsafe Act","Equipment defect"])):"Safe behaviour";
+    const late=R()>q*.95;const cat=rt!=="Good practice"&&R()<.55?pick(WHEEL):"";const old=d>14;const status=(old&&R()<q+.15)||(!old&&R()<q*.6)?"Closed":"Open";
+    reports.push({rt:kind==="Near Miss"&&rt==="Hazard"?"Incident":rt,kind,cat,project:id,dept:pick(DEPTS),loc:"",desc:pick(rt==="Good practice"?["Good housekeeping in laydown area","Spotter used for reversing","Correct LOTO applied"]:["Unsecured materials at height","Missing barricade at open edge","Damaged sling in use","Blocked fire exit","Dropped object near walkway","Forklift reversing without spotter"]),safe:"Yes",by:null,ts:t,eventTs:t-(late?(30+R()*40):(1+R()*9))*3600e3,status});
+    if(rt!=="Good practice"&&R()<.45){const due=t+pick([3,7,14])*day;let closedAt=null;if(due<now&&R()<q+.1)closedAt=R()<q?due-Math.floor(R()*2)*day:due+(2+Math.floor(R()*7))*day;else if(due>=now&&R()<.3)closedAt=now-5*3600e3;
+     actions.push({title:"Follow up: "+reports[reports.length-1].desc.toLowerCase(),project:id,owner:pick(["Site Supervisor","HSE Engineer","Area Engineer","Foreman"]),due,priority:cat&&R()<.4?"High":"Normal",report:null,ts:t,by:null,closedAt})}}
+   if(R()<pi/30*(.5+q*.6))insp.push({project:id,tpl:pick(Object.keys(TEMPLATES)),items:6,fails:R()<q?0:Math.ceil(R()*3),ts:t,by:null});
+   if(R()<pw/30*(.4+q*.7))acts.push({type:"Leadership walkthrough",project:id,date:t,count:1,by:null,ts:now});
+   if(d%7===0)acts.push({type:"Toolbox talk",project:id,date:t,count:Math.max(1,Math.round(hc/12)),by:null,ts:now})}});
+ await liveSave(async()=>{await L.db.doc("admin/projects").set({list:[...L.projects.filter(p=>!String(p.id).startsWith("demo-")),...projects]});
+  await L.db.bulkInsert("reports",reports);await L.db.bulkInsert("actions",actions);await L.db.bulkInsert("inspections",insp);await L.db.bulkInsert("activities",acts)},
+  `Demo data loaded: ${projects.length} projects, ${reports.length} reports`);L.subKey=null;resub()}
+
 /* ---- Projects & access ---- */
 function access(){const g=liveGate();if(g)return g;if(myRole()!=="admin")return liveTag()+`<div class="panel"><h2>Only HSE Admins manage projects and access</h2><p style="margin:0;color:var(--muted)">Your projects: ${myProjects().map(p=>esc(p.name)).join(", ")||"none"}.</p></div>`;
  const M=Object.entries(L.members);const a=L.acc;
  return liveTag()+`<div class="grid2"><div class="panel"><h2>Projects <small>${L.projects.length}</small></h2>
- <div class="filters"><input id="np-name" type="text" placeholder="Project name, e.g. Jubail Tank Farm" style="flex:1;min-width:180px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface)"><select id="np-cty"><option>Bahrain</option><option>KSA</option><option>Oman</option><option>Qatar</option><option>UAE</option></select><select id="np-plat">${PLATFORMS.map(x=>`<option ${L.np.plat===x?"selected":""}>${x}</option>`).join("")}</select><select id="np-div">${divOpts(L.np.plat,L.np.div)}</select>${cluOpts(L.np.plat,L.np.div,"")?`<select id="np-clu">${cluOpts(L.np.plat,L.np.div,"")}</select>`:""}<button class="btn pri" id="np-add">Add project</button></div><p style="margin:0;font-size:12px;color:var(--muted)">Headcount and monthly plans drive the automatic score. Edit them in the table any time.</p>
+ <div class="filters"><input id="np-name" type="text" placeholder="Project name, e.g. Jubail Tank Farm" style="flex:1;min-width:180px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface)"><select id="np-cty">${COUNTRIES.map(c=>`<option>${esc(c)}</option>`).join("")}</select><select id="np-plat">${PLATFORMS.map(x=>`<option ${L.np.plat===x?"selected":""}>${x}</option>`).join("")}</select><select id="np-div">${divOpts(L.np.plat,L.np.div)}</select>${cluOpts(L.np.plat,L.np.div,"")?`<select id="np-clu">${cluOpts(L.np.plat,L.np.div,"")}</select>`:""}<button class="btn pri" id="np-add">Add project</button></div><p style="margin:0;font-size:12px;color:var(--muted)">Headcount and monthly plans drive the automatic score. Edit them in the table any time.</p>
  ${L.projects.length?`<div class="tbl"><table><thead><tr><th>Project</th><th>Country</th><th>Platform</th><th>Business</th><th>Cluster</th><th class="r">Headcount</th><th class="r">Inspections / month</th><th class="r">Walkthroughs / month</th><th class="r">People</th><th></th></tr></thead><tbody>${L.projects.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.country)}</td><td><select class="pe-in" data-t="text" data-pid="${esc(p.id)}" data-f="platform" aria-label="Platform">${PLATFORMS.map(x=>`<option ${(p.platform||"Construction")===x?"selected":""}>${x}</option>`).join("")}</select></td><td><select class="pe-in" data-t="text" data-pid="${esc(p.id)}" data-f="division" aria-label="Business">${divOpts(p.platform,p.division)}</select></td><td>${cluOpts(p.platform,p.division,p.cluster)?`<select class="pe-in" data-t="text" data-pid="${esc(p.id)}" data-f="cluster" aria-label="Cluster">${cluOpts(p.platform,p.division,p.cluster)}</select>`:`<span style="color:var(--muted)">—</span>`}</td>${["headcount","planInsp","planWalk"].map(f=>`<td class="r"><input class="pe-in ov-in" data-pid="${esc(p.id)}" data-f="${f}" type="number" min="0" value="${esc(p[f]??"")}" aria-label="${f}"></td>`).join("")}<td class="r num">${M.filter(([,m])=>m.role==="admin"||m.projects?.includes(p.id)).length}</td><td class="r"><button class="btn" data-delp="${esc(p.id)}">Remove</button></td></tr>`).join("")}</tbody></table></div>`:`<p style="margin:0;color:var(--muted)">No projects yet. Add your first one above.</p>`}</div>
  <div class="panel"><h2>Add a person</h2>
  <div class="fld"><label for="acc-q">Search by name</label><input id="acc-q" type="text" autocomplete="off" placeholder="Start typing a name" value="${esc(a.q)}" style="padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--surface)"></div>
@@ -871,7 +980,14 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,tr"
   await liveSave(()=>L.db.collection("actions").add({title,project:g("af-proj"),owner:g("af-owner").trim(),due:due?new Date(due+"T23:59").getTime():null,priority:g("af-pri"),report:L.af.report||null,ts:Date.now(),by:L.me.id,closedAt:null}),"Action added");L.af={};return}
  if(t.dataset.aclose){const a=L.actions.find(x=>x.id===t.dataset.aclose);await liveSave(()=>L.db.doc("actions/"+a.id).update({closedAt:a.closedAt?null:Date.now()}));return}
  if(t.id==="lv-add"){const g=id=>document.getElementById(id).value;await liveSave(()=>L.db.collection("activities").add({type:g("lv-type"),project:g("lv-proj"),date:new Date(g("lv-date")+"T12:00").getTime(),count:Math.max(1,+g("lv-count")||1),by:L.me.id,ts:Date.now()}),"Logged");return}
- if(t.dataset.lvl){st.lvl=JSON.parse(t.dataset.lvl);render();window.scrollTo(0,0);return}
+ if(t.dataset.sdel){delP(L.sdraft,t.dataset.sdel);render();return}
+ if(t.dataset.sadd){const k=t.dataset.sadd;if(k==="countries"){const v=(document.getElementById("st-newc").value||"").trim();if(!v){toast("Type a country name first");return}if(!L.sdraft.countries.includes(v))L.sdraft.countries.push(v)}
+  else if(k==="platforms")L.sdraft.platforms.push({name:"New platform",businesses:[],_o:null});else if(k.endsWith(".businesses"))getP(L.sdraft,k).push({name:"New business",clusters:[],_o:null});else getP(L.sdraft,k).push({name:"New cluster",_o:null});render();return}
+ if(t.id==="st-save"){await saveStructure();return}
+ if(t.id==="st-reset"){L.sdraft=null;render();return}
+ if(t.id==="demo-load"){t.disabled=true;t.textContent="Loading…";await loadDemo();return}
+ if(t.id==="demo-remove"){if(t.dataset.confirm!=="1"){t.dataset.confirm="1";t.textContent="Confirm: remove all demo projects and their records";return}await liveSave(()=>L.db.removeDemo(),"Demo data removed");return}
+ if(t.dataset.lvl){st.lvl=JSON.parse(t.dataset.lvl);st.drill=null;render();window.scrollTo(0,0);return}
  if(t.dataset.scd2){go("sc");st.scd=t.dataset.scd2;render();return}
  if(t.dataset.scd){st.scd=t.dataset.scd;render();return}
  if(t.id==="scd-back"){st.scd=null;render();return}
@@ -886,7 +1002,15 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,tr"
  if(t.dataset.edm){const m=L.members[t.dataset.edm];L.acc={q:"",pick:t.dataset.edm,role:m.role,projects:[...(m.projects||[])],leader:!!m.leader,walkTarget:m.walkTarget??""};render();window.scrollTo(0,0);return}
  if(t.dataset.delm){if(t.dataset.confirm!=="1"){t.dataset.confirm="1";t.textContent="Confirm";return}const m={...L.members};delete m[t.dataset.delm];await liveSave(()=>saveMembers(m),"Access removed");return}
 });
-document.addEventListener("input",e=>{if(e.target.id==="ov-note"){L.draft[L.scProj+"_"+L.scMonth].note=e.target.value}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-drill],[data-setm],[data-lvlj],[data-ctry],#drill-close,[data-export]");if(!t)return;
+ if(t.id==="drill-close"){st.drill=null;render();return}
+ if(t.dataset.drill){st.drill=st.drill===t.dataset.drill?null:t.dataset.drill;render();return}
+ if(t.dataset.setm){L.scMonth=t.dataset.setm;render();return}
+ if(t.dataset.lvlj){st.lvl=JSON.parse(t.dataset.lvlj);st.drill=null;render();window.scrollTo(0,0);return}
+ if(t.dataset.ctry!==undefined){st.country=t.dataset.ctry;const s=document.getElementById("country");if(s)s.value=st.country;render();return}
+ if(t.dataset.export){exportReport(t.dataset.export,t);return}});
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches("[data-drill][role=button]")){e.preventDefault();e.target.click()}});
+document.addEventListener("input",e=>{if(e.target.classList.contains("st-in")){setP(L.sdraft,e.target.dataset.path,e.target.value);return}if(e.target.id==="ov-note"){L.draft[L.scProj+"_"+L.scMonth].note=e.target.value}
  if(e.target.classList.contains("ov-in")&&!e.target.classList.contains("pe-in")){const k=L.scProj+"_"+L.scMonth;L.draft[k][e.target.dataset.f][e.target.dataset.k]=e.target.value;clearTimeout(L.t);L.t=setTimeout(()=>{const pos=e.target.dataset.k;render();const el=document.querySelector(`.ov-in[data-k="${pos}"]`);if(el){el.focus();const v=el.value;el.value="";el.value=v}},600)}
  if(e.target.id==="acc-q"){L.acc.q=e.target.value;showHits(e.target.value)}});
 document.addEventListener("focusin",e=>{if(e.target.id==="acc-q"&&!e.target.value)showHits("")});

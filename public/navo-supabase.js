@@ -63,6 +63,12 @@
       get: async () => snapDoc(id, membersFromRows(await run(sb.from("members").select("*")))),
       set: async d => syncList("members", "user_id", Object.entries(d.map || {}).map(([uid, m]) => ({ user_id: uid, role: m.role, projects: m.projects || [], leader: !!m.leader, walk_target: m.walkTarget ?? null })))
     };
+    if (path === "admin/structure") return {
+      id, path,
+      onSnapshot: (n, e) => watch("settings", ["id", "structure"], rows => n(snapDoc(id, rows[0] ? rows[0].data : undefined)), e),
+      get: async () => { const r = await run(sb.from("settings").select("*").eq("id", "structure").maybeSingle()); return snapDoc(id, r ? r.data : undefined); },
+      set: async d => run(sb.from("settings").upsert({ id: "structure", data: d }))
+    };
     const table = TABLE[coll];
     if (!table) throw new TypeError("Unknown path " + path);
     return {
@@ -89,7 +95,11 @@
     };
     return q;
   }
-  const db = { doc: docRef, collection: p => collection(p) };
+  const db = { doc: docRef, collection: p => collection(p),
+    // Bulk helpers used by the admin demo-data tools.
+    bulkInsert: async (table, rows) => { for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(toRow))); },
+    removeDemo: async () => run(sb.from("projects").delete().like("id", "demo-%"))
+  };
 
   const cache = {};
   const me = () => session && session.user;
