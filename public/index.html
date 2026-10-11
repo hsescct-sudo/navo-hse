@@ -80,16 +80,69 @@
 @media(max-width:600px){.hs-frame{grid-template-columns:1fr}.hs-strip{flex-direction:row;padding:4px 8px}.hs-strip span{display:none}.hs-2,.hs-inj,.hs-kpi,.hs-inj>.hs-2{grid-template-columns:1fr}.hs-acc{grid-template-columns:1fr}.hs-body{padding:8px}}
 body.hs-full .app{grid-template-columns:1fr}body.hs-full .app>aside,body.hs-full .top{display:none}body.hs-full .view{max-width:none!important;padding:8px!important;margin:0!important}body.hs-full .hs{min-height:calc(100vh - 54px)}
 .hs-tbl th{text-transform:none!important;letter-spacing:0!important;font-size:12px!important;color:#252423!important;font-weight:700!important;white-space:normal!important;padding:6px 8px!important}.hs-tbl td{padding:6px 8px!important}
-.hs-nav .hs-back{font-weight:500;font-size:12.5px;opacity:.9;border:1px solid #ffffff55;text-align:center;margin-bottom:6px}
+.hs-nav a.hs-back{color:#fff;text-decoration:none;padding:10px 12px;border-radius:6px;display:block}.hs-nav .hs-back{font-weight:500;font-size:12.5px;opacity:.9;border:1px solid #ffffff55;text-align:center;margin-bottom:6px}
 .brand-ed{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.brand-prev{width:84px;height:84px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;padding:8px}.brand-prev svg,.brand-prev img{width:64px;height:64px;object-fit:contain}.brand-none{font-size:12px;color:var(--muted)}
-</style></head><body>
+</style><style id="theme3d">
+/* ---- 3D navy theme: no side menu, home of tiles, depth everywhere ---- */
+body{background:radial-gradient(1200px 600px at 10% -10%,#dbe6ff 0,transparent 60%),radial-gradient(900px 500px at 110% 0,#e3ecff 0,transparent 55%),var(--bg);background-attachment:fixed}
+.app{grid-template-columns:1fr!important}.app>aside{display:none!important}
+.app .top{background:linear-gradient(180deg,#0f2d63,#0b2350)!important;color:#fff!important;border-bottom:0!important;box-shadow:0 10px 30px -18px rgba(5,20,60,.8);padding:10px 22px!important}
+.app .top .crumb{color:#a9bde6!important}.app .top h1{color:#fff!important;font-size:22px;margin:0}
+.top-l{display:flex;align-items:center;gap:14px;min-width:0}
+.top-brand{display:flex;align-items:center;gap:8px;background:none;border:0;color:#fff;font:700 24px/1 var(--f-display);letter-spacing:.06em;padding:0}
+.top-brand .logo-mark,.top-brand .logo-mark svg,.top-brand .logo-mark img{width:38px;height:38px}
+.top-home{border:1px solid #ffffff40;background:linear-gradient(180deg,#2a5fd0,#1d47a8);color:#fff;border-radius:10px;padding:7px 14px;font-weight:600;box-shadow:0 4px 0 #0d2a6b,0 8px 16px -8px rgba(0,0,0,.5);transition:transform .1s,box-shadow .1s}
+.top-home:active{transform:translateY(3px);box-shadow:0 1px 0 #0d2a6b}
+.top .seg{background:#ffffff1a;border-color:#ffffff30}.top .seg button{color:#cfe0ff}.top .seg button[aria-pressed=true]{background:#fff;color:#0b2350}
+.app .top select,.app .top .btn{background:#ffffff14!important;color:#fff!important;border-color:#ffffff40!important;box-shadow:none}.top select option{color:#0e1a33}
+.wrap{max-width:1320px;margin:0 auto}
+.panel,.card,.kpi{border:1px solid #dfe6f3;border-radius:16px;box-shadow:0 1px 0 #fff inset,0 2px 4px rgba(11,42,91,.04),0 14px 30px -16px rgba(11,42,91,.28);background:linear-gradient(180deg,#fff,#fbfcff)}
+.btn{border-radius:10px;box-shadow:0 3px 0 #d3dbea,0 6px 12px -8px rgba(11,42,91,.35);transition:transform .1s,box-shadow .1s;border-color:#d3dbea}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #d3dbea}
+.btn.pri{background:linear-gradient(180deg,#2f6fe0,#1d4fb8);border-color:#1d4fb8;box-shadow:0 3px 0 #0f2f78,0 8px 16px -8px rgba(15,47,120,.7)}
+.tabbar{background:linear-gradient(180deg,#0f2d63,#0b2350)}.tabbar button{color:#c4d4f5}.tabbar button[aria-current=true]{color:#fff}
+.hero3d{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;padding:22px 24px;border-radius:22px;color:#fff;background:linear-gradient(135deg,#0b2a5b 0,#1d4fb8 60%,#2f7bff 100%);box-shadow:0 22px 40px -22px rgba(11,42,91,.9),inset 0 1px 0 #ffffff30;position:relative;overflow:hidden}
+.hero3d:after{content:"";position:absolute;right:-60px;top:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,#ffffff2a,transparent 65%)}
+.hero3d h2{margin:0;font:700 30px/1.1 var(--f-display);letter-spacing:.02em}.hero3d p{margin:4px 0 0;color:#cfe0ff}
+.hero-k{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;position:relative;z-index:1}
+.k3d{background:linear-gradient(180deg,#fff,#eef4ff);color:var(--fg);border-radius:14px;padding:10px 14px;box-shadow:0 6px 0 #9db6e8,0 16px 24px -14px rgba(0,0,0,.6);transition:transform .15s}
+.k3d small{display:block;font-size:12px;color:var(--muted);font-weight:600}.k3d b{display:block;font:700 30px/1.1 var(--f-display)}.k3d em{font-style:normal;font-size:12px;color:var(--muted)}
+.grp3d h3{margin:6px 2px 10px;font:700 15px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:#3d4f78}
+.tiles3d{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.tile3d{position:relative;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:6px;font:inherit;padding:18px;border-radius:20px;border:1px solid #dfe6f3;background:linear-gradient(160deg,#fff 0,#f4f7ff 100%);color:var(--fg);text-decoration:none;cursor:pointer;
+ box-shadow:0 1px 0 #fff inset,0 7px 0 #d6def0,0 22px 34px -20px rgba(11,42,91,.55);transition:transform .18s ease,box-shadow .18s;transform-style:preserve-3d;will-change:transform}
+.tile3d:hover{box-shadow:0 1px 0 #fff inset,0 9px 0 #cbd6ef,0 30px 40px -20px rgba(11,42,91,.6)}
+.tile3d:active{transform:translateY(5px)!important;box-shadow:0 2px 0 #d6def0,0 10px 20px -14px rgba(11,42,91,.5)}
+.tile3d.wide{grid-column:span 2}.tile3d.wide .i3d{width:76px;height:76px}
+.i3d{width:62px;height:62px;filter:drop-shadow(0 8px 10px rgba(11,42,91,.28));transform:translateZ(30px)}
+.t-t{font:700 19px/1.2 var(--f-display);letter-spacing:.02em;margin-top:6px}.t-d{font-size:13px;color:var(--muted)}
+.t-b{position:absolute;top:16px;right:16px;background:#e6efff;color:#1d4fb8;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;box-shadow:0 2px 0 #c7d8ff}.t-b.warn{background:#ffe3ea;color:#c21d4b;box-shadow:0 2px 0 #ffc2d0}
+.t-ext{font-size:12px;color:#1d4fb8;font-weight:600}
+@media(max-width:700px){.hero-k{grid-template-columns:1fr 1fr;width:100%}.tile3d.wide{grid-column:auto}.top-home{display:none}.top h1{font-size:18px}}
+/* dashboard page: its own app, navy */
+body.dash-mode .top,body.dash-mode .tabbar{display:none!important}
+.hs{background:#eef2f9;border:0;border-radius:18px;box-shadow:0 30px 60px -30px rgba(11,42,91,.55)}
+.hs-nav{background:linear-gradient(180deg,#0f2d63,#081a3d)}.hs-nav button[aria-current=true]{background:linear-gradient(180deg,#2f6fe0,#1d4fb8);box-shadow:0 3px 0 #0c2a6e}
+.hs-band{border-bottom:3px solid #2f7bff}.hs-sectitle{background:linear-gradient(180deg,#1d4fb8,#0b2a5b);border:0;border-radius:10px;box-shadow:0 4px 0 #071d45}
+.hs-strip{background:linear-gradient(180deg,#3d6fe6,#1d4fb8)}
+.hs-tabs{background:#e3e9f5}.hs-tabs button[aria-selected=true]{border-bottom-color:#2f7bff;color:#0b2a5b}
+.hc{border:1px solid #dbe3f1;border-radius:14px;box-shadow:0 1px 0 #fff inset,0 5px 0 #dbe3f1,0 18px 26px -18px rgba(11,42,91,.45);transition:transform .18s}
+.hc.b-red,.hc.b-blue,.hc.b-gold{border-width:1px;border-top:5px solid}
+.hk,.hs-tile{border-radius:14px;box-shadow:0 5px 0 #dbe3f1,0 16px 24px -18px rgba(11,42,91,.5)}
+.hsvg svg,.hg,.hbody{filter:drop-shadow(0 6px 5px rgba(11,42,91,.18))}
+.hs-chips button,.hseg button{border-radius:8px;margin:2px;box-shadow:0 3px 0 #d3dbea}.hs-chips button[aria-pressed=true],.hseg button[aria-pressed=true]{background:#1d4fb8;border-color:#1d4fb8;box-shadow:0 3px 0 #0c2a6e}
+.hs-letters i:nth-child(1){background:#2f7bff!important}.hs-letters i{box-shadow:0 3px 0 rgba(0,0,0,.3);border-radius:6px}
+.ptabs{border-bottom-color:#0b2a5b}.ptabs button{background:#e6ecf7;color:#0b2a5b}.ptabs button[aria-selected=true]{background:#0b2a5b;color:#fff}
+.pbi-title{background:#0b2a5b}
+</style>
+</head><body>
 <title>NAVO HSE</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* Layout: app shell — sidebar on desktop, bottom tab bar on phone; worker view is a single-column big-button flow */
 :root{
-  --bg:#f3f5f4; --surface:#ffffff; --surface2:#e9eeec; --fg:#14201d; --muted:#5d6b67; --line:#d5ddda;
-  --brand:#0f4c45; --brand-fg:#ffffff; --accent:#e8a317;
+  --bg:#eef2f9; --surface:#ffffff; --surface2:#e6ecf7; --fg:#0e1a33; --muted:#5a6785; --line:#d8e0ee;
+  --brand:#0b2a5b; --brand-fg:#ffffff; --accent:#2f7bff;
   --ok:#2f8a57; --warn:#c77a0a; --crit:#c2392f; --info:#2d6aa6;
   --ok-bg:#e3f2e9; --warn-bg:#fbefd9; --crit-bg:#f8e2df; --info-bg:#e1ecf7;
   --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
@@ -97,13 +150,13 @@ body.hs-full .app{grid-template-columns:1fr}body.hs-full .app>aside,body.hs-full
   --f-mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0e1514; --surface:#16201e; --surface2:#1e2a28; --fg:#e6eeec; --muted:#93a39f; --line:#2a3836;
-  --brand:#2f9c8c; --brand-fg:#06110f; --accent:#f0b437;
+  --bg:#0a1226; --surface:#111c36; --surface2:#18264a; --fg:#e8eefc; --muted:#94a3c4; --line:#253556;
+  --brand:#4d8dff; --brand-fg:#06112a; --accent:#5fa0ff;
   --ok:#5cc286; --warn:#e7a23b; --crit:#ef6b5f; --info:#6aa6e0;
   --ok-bg:#163223; --warn-bg:#3a2a0f; --crit-bg:#3d1a17; --info-bg:#162a3d; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0e1514; --surface:#16201e; --surface2:#1e2a28; --fg:#e6eeec; --muted:#93a39f; --line:#2a3836;
-  --brand:#2f9c8c; --brand-fg:#06110f; --accent:#f0b437;
+  --bg:#0a1226; --surface:#111c36; --surface2:#18264a; --fg:#e8eefc; --muted:#94a3c4; --line:#253556;
+  --brand:#4d8dff; --brand-fg:#06112a; --accent:#5fa0ff;
   --ok:#5cc286; --warn:#e7a23b; --crit:#ef6b5f; --info:#6aa6e0;
   --ok-bg:#163223; --warn-bg:#3a2a0f; --crit-bg:#3d1a17; --info-bg:#162a3d; color-scheme:dark}
 *{box-sizing:border-box}
@@ -303,7 +356,7 @@ table.mx tr.sec td:first-child{background:var(--surface2)}
   </aside>
   <main>
     <div class="top">
-      <div><div class="crumb" id="crumb"></div><h1 id="title"></h1></div>
+      <div class="top-l"><button class="top-brand" data-go="hub" title="Home"><span class="logo-mark"></span><span class="brand-name">NAVO</span></button><button class="top-home" data-go="hub" aria-label="Home">⌂ Home</button><div><div class="crumb" id="crumb"></div><h1 id="title"></h1></div></div>
       <div class="ctrls">
         <div class="seg" role="group" aria-label="Role">
           <button id="r-mgr" aria-pressed="true">HSE Manager</button>
@@ -352,7 +405,7 @@ const OBS=[];for(let i=0;i<46;i++){const c=pick(ctys);const t=OBS_T[i%OBS_T.leng
 const CA_T=["Re-brief scaffold team on board securing","Install edge protection on level 3","Replace damaged slings and inspect rigging store","Update excavation permit with GPR scan","Provide face shields at grinding stations","Add spotter for forklift reversing","Heat stress plan: water and shade every 200 m","Calibrate gas detectors","Review LOTO procedure with mechanical crew","Anti-slip coating on jetty deck"];
 const CAPA=CA_T.map((t,i)=>{const due=d(18-i*4);const st=i%4===0?"Closed":due<TODAY?"Overdue":"Open";return{id:"CA-"+(910+i),title:t,src:INCS[i%INCS.length].id,owner:pick(PEOPLE),dept:pick(DEPTS),country:INCS[i%INCS.length].country,due,status:st,kind:i%3===0?"Preventive":"Corrective"}});
 
-const st={role:"mgr",view:"exec",country:"",sel:null,w:{step:0}};
+const st={role:"mgr",view:(location.pathname.startsWith("/dashboard")||/[?&]dashboard/.test(location.search)?"exec":"hub"),country:"",sel:null,w:{step:0}};
 const f=a=>a.filter(x=>!st.country||x.country===st.country);
 const pillFor=s=>({"Closed":"p-ok","Open":"p-warn","Overdue":"p-crit","Under Investigation":"p-info","Actions Open":"p-warn"}[s]||"p-mute");
 const typeColor=t=>({"Lost Time":"var(--crit)","Medical Treatment":"var(--crit)","First Aid":"var(--warn)","Near Miss":"var(--info)","Property Damage":"var(--warn)","Environmental":"var(--ok)"}[t]);
@@ -373,13 +426,13 @@ sugg:["Improvement Suggestions","Let anyone submit an idea, route it to the righ
 emer:["Emergency Preparedness","Keep emergency plans, contacts and drill records per site, and measure drill performance.",["Emergency response plan per site","Drill schedule and evaluation","Muster time tracking","Emergency equipment inspections","Contact lists by site"]]};
 const NAV_M=[["#Live system"],["exec","Global HSSE dashboard"],["hdata","Enter HSSE data"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Live actions"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["settings","Structure & settings"],["#Report & investigate"],["inc","Incidents"],["obs","Observations"],["ncr","Non-Conformance"],["capa","Actions (CAPA)"],["#Assure"],["insp","Inspections"],["audit","Audits",1],["comp","Compliance",1],["#Control risk"],["risk","Risk & Bowtie",1],["moc","Management of Change"],["ptw","Permit to Work",1],["#People & environment"],["train","Training",1],["env","Environment & ESG",1],["emer","Emergency",1],["sugg","Suggestions",1],["#Platform"],["mod","All Modules"]];
 const NAV_W=[["home","Home"],["live","Reports"],["lactions","Actions"]];
-const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Live Actions",exec:"Global HSSE Dashboard",hdata:"Enter HSSE Data",settings:"Structure & Settings",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
+const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Live Actions",exec:"Global HSSE Dashboard",hub:"Home",hdata:"Enter HSSE Data",settings:"Structure & Settings",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
 const PARENT={incd:"inc",report:"home",ncrd:"ncr",inspd:"insp",mocd:"moc"};
 
 function nav(){const L=st.role==="mgr"?NAV_M:NAV_W;const cur=PARENT[st.view]||st.view;
  const b=([k,l,soon])=>k[0]==="#"?`<div class="sec">${k.slice(1)}</div>`:`<button data-go="${k}" aria-current="${cur===k}">${svg(IC[k]?k:"soon")}<span>${l}</span>${soon?'<span class="soon">PH2</span>':""}</button>`;
  document.getElementById("sidenav").innerHTML=(st.role==="mgr"?"":`<div class="sec">Site</div>`)+L.map(b).join("");
- const T=st.role==="mgr"?[["exec","Home"],["live","Reports"],["sc","Score card"],["access","Access"],["mod","More"]]:NAV_W;
+ const T=st.role==="mgr"?[["hub","Home"],["live","Reports"],["lactions","Actions"],["sc","Score card"],["hdata","Data"]]:NAV_W;
  document.getElementById("tabbar").innerHTML=T.map(b).join("");}
 
 /* ---------- NCR ---------- */
@@ -447,10 +500,10 @@ function soon(){const [t,desc,feats]=SOON[st.view];
  <div class="panel"><h2>What it will include</h2><div class="plan">${feats.map(x=>`<div>${x}</div>`).join("")}</div></div>
  <div class="panel"><h2>Connected to</h2><div class="links"><span class="pill p-info">Actions (CAPA)</span><span class="pill p-info">Dashboard KPIs</span><span class="pill p-info">Notifications</span><span class="pill p-info">Audit trail</span></div></div>`;}
 
-function render(){nav();const v=document.getElementById("view");document.body.classList.toggle("hs-full",st.view==="exec"&&L.ready);
+function render(){nav();const v=document.getElementById("view");if(NAVO_DASH&&st.view!=="exec")st.view="exec";document.body.classList.toggle("hs-full",st.view==="exec"&&L.ready);document.body.classList.toggle("dash-mode",NAVO_DASH);
  document.getElementById("title").textContent=TITLES[st.view]||SOON[st.view][0];
  document.getElementById("crumb").textContent="NAVO · "+(st.country||"All countries")+(st.role==="wrk"?" · Site Worker":" · HSE Manager");
- v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec:()=>typeof hsse==="function"?hsse():"",hdata:()=>typeof hdata==="function"?hdata():"",leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
+ v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec:()=>typeof hsse==="function"?hsse():"",hub:()=>typeof hub==="function"?hub():"",hdata:()=>typeof hdata==="function"?hdata():"",leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
 
 const demoTag=`<div class="demo"><span>DEMO</span>Sample data for illustration. Your live records replace it after setup.</div>`;
 
@@ -485,7 +538,8 @@ function line(series,labels,{h=150,target,dec=2}={}){const W=560,all=series.flat
  ${labels.map((l,i)=>`<text x="${x(i)}" y="${h+22}" text-anchor="middle" font-size="10" fill="var(--muted)">${l}</text>`).join("")}</svg></div>`;}
 function donut(parts,center,sub,attr){let a=-Math.PI/2;const tot=parts.reduce((s,p)=>s+p[1],0)||1;const R=54,r=36;
  const arcs=parts.map(([n,v,c])=>{const b=a+v/tot*Math.PI*2;const p=(ang,rr)=>[70+rr*Math.cos(ang),70+rr*Math.sin(ang)];const L=b-a>Math.PI?1:0;const[x1,y1]=p(a,R),[x2,y2]=p(b,R),[x3,y3]=p(b,r),[x4,y4]=p(a,r);const d=`M${x1},${y1}A${R},${R} 0 ${L} 1 ${x2},${y2}L${x3},${y3}A${r},${r} 0 ${L} 0 ${x4},${y4}Z`;a=b;const at=attr?attr(n):"";return v?`<path d="${d}" fill="${c}" ${at} ${at?'class="hot"':""}><title>${n}: ${v} (${Math.round(v/tot*100)}%)</title></path>`:""}).join("");
- return`<div class="dn"><svg viewBox="0 0 140 140" width="140" height="140">${arcs}<text x="70" y="72" text-anchor="middle" font-size="${String(center).length>5?17:22}" font-weight="600" fill="var(--fg)" font-family="Barlow Condensed,sans-serif">${center}</text><text x="70" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">${sub}</text></svg><div class="dl">${parts.map(([n,v,c])=>{const at=attr?attr(n):"";return`<span ${at} ${at?'class="hot"':""}><i style="background:${c}"></i>${n}<b>${v}</b></span>`}).join("")}</div></div>`;}
+ const depth=arcs.replace(/ data-[a-z]+="[^"]*"/g,"").replace(/class="hot"/g,"").replace(/<title>.*?<\/title>/g,"");
+ return`<div class="dn"><svg viewBox="0 0 140 140" width="140" height="140"><g transform="translate(0,15) scale(1,.76)"><g transform="translate(0,11)" style="filter:brightness(.6)">${depth}</g>${arcs}</g><text x="70" y="72" text-anchor="middle" font-size="${String(center).length>5?17:22}" font-weight="600" fill="var(--fg)" font-family="Barlow Condensed,sans-serif">${center}</text><text x="70" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">${sub}</text></svg><div class="dl">${parts.map(([n,v,c])=>{const at=attr?attr(n):"";return`<span ${at} ${at?'class="hot"':""}><i style="background:${c}"></i>${n}<b>${v}</b></span>`}).join("")}</div></div>`;}
 function pyramid(items,lagN){const PYR=items||window.PYR_DEMO,LAG=lagN||7,n=PYR.length,rh=30,gap=4,W=320,cx=W/2+8,lx=W+44,H=n*(rh+gap)-gap,yb=LAG*(rh+gap)-gap/2;
  const hw=y=>y<=yb?(W/2)*y/yb:(W/2)*(H-y)/(H-yb);
  const rows=PYR.map(([l,v],i)=>{const y0=i*(rh+gap),y1=y0+rh,ym=y0+rh/2,lag=i<LAG;const a=hw(y0),b=hw(y1),wm=hw(ym);
@@ -745,6 +799,7 @@ document.addEventListener("change",e=>{if(e.target.id==="country"){st.country=e.
  if(e.target.id==="ph"&&e.target.files[0]){shrinkPhoto(e.target.files[0]).then(({url,blob})=>{st.w.img=url;st.w.blob=blob;st.w.ai=null;render()}).catch(()=>toast("That photo could not be read. Try another one."))}
  if(e.target.id==="wlang")st.w.lang=e.target.value;});
 /* ================= LIVE SYSTEM (shared database) ================= */
+const NAVO_DASH=location.pathname.startsWith("/dashboard")||/[?&]dashboard/.test(location.search);
 const L={db:null,user:null,me:null,owner:false,projects:[],members:{},reports:[],scores:{},ready:false,state:"Connecting…",scProj:null,scMonth:null,structure:null,sdraft:null,np:{plat:"Construction"},actions:[],inspections:[],activities:[],reviews:{},draft:{},af:{},acc:{q:"",hits:[],pick:null},outlook:{}};
 const ROLES={admin:"HSE Admin",hse:"HSE Engineer",supervisor:"Supervisor",worker:"Site Worker"};
 const thisMonth=()=>{const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")};
@@ -1242,5 +1297,6 @@ document.addEventListener("click",async e=>{const t=e.target.closest("#br-defaul
 applyBrand();
 </script>
 <script src="hsse.js"></script>
+<script src="ui3d.js"></script>
 
 </body></html>

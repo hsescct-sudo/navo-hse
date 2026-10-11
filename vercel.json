@@ -1,4 +1,1 @@
-{
-  "outputDirectory": "public",
-  "cleanUrls": true
-}
+{"outputDirectory":"public","cleanUrls":true,"rewrites":[{"source":"/dashboard","destination":"/index.html"}]}
