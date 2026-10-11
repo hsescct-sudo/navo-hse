@@ -7,7 +7,7 @@
 .hs{display:grid;grid-template-columns:210px minmax(0,1fr);gap:0;background:#f3f2f1;border:1px solid var(--line);border-radius:10px;overflow:hidden;color:#252423}
 .hs-nav{background:#0b4f3c;color:#fff;padding:14px 10px;display:flex;flex-direction:column;gap:4px}
 .hs-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0 14px;border-bottom:1px solid #ffffff33;margin-bottom:8px}
-.hs-logo{font-weight:800;letter-spacing:.12em;font-size:18px}.hs-letters{display:flex;gap:3px}.hs-letters i{font-style:normal;font-weight:800;width:30px;height:32px;display:grid;place-items:center;color:#fff;border-radius:2px}
+.hs-mark svg,.hs-mark img{width:46px;height:46px;object-fit:contain;display:block}.hs-logo{font-weight:800;letter-spacing:.12em;font-size:18px}.hs-letters{display:flex;gap:3px}.hs-letters i{font-style:normal;font-weight:800;width:30px;height:32px;display:grid;place-items:center;color:#fff;border-radius:2px}
 .hs-brand b{font-size:13px;font-weight:600}
 .hs-nav button{background:none;border:0;color:#fff;text-align:left;padding:10px 12px;border-radius:6px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
 .hs-nav button:hover{background:#ffffff1a}.hs-nav button[aria-current=true]{background:#2E8B57}
@@ -81,6 +81,7 @@
 body.hs-full .app{grid-template-columns:1fr}body.hs-full .app>aside,body.hs-full .top{display:none}body.hs-full .view{max-width:none!important;padding:8px!important;margin:0!important}body.hs-full .hs{min-height:calc(100vh - 54px)}
 .hs-tbl th{text-transform:none!important;letter-spacing:0!important;font-size:12px!important;color:#252423!important;font-weight:700!important;white-space:normal!important;padding:6px 8px!important}.hs-tbl td{padding:6px 8px!important}
 .hs-nav .hs-back{font-weight:500;font-size:12.5px;opacity:.9;border:1px solid #ffffff55;text-align:center;margin-bottom:6px}
+.brand-ed{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.brand-prev{width:84px;height:84px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;padding:8px}.brand-prev svg,.brand-prev img{width:64px;height:64px;object-fit:contain}.brand-none{font-size:12px;color:var(--muted)}
 </style></head><body>
 <title>NAVO HSE</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -115,6 +116,7 @@ button{cursor:pointer}
 aside{background:var(--brand);color:var(--brand-fg);padding:20px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
 .logo{font:700 30px/1 var(--f-display);letter-spacing:.06em;display:flex;align-items:center;gap:10px;padding:4px 8px 18px}
 .logo b{display:inline-grid;place-items:center;width:34px;height:34px;background:var(--accent);color:#14201d;border-radius:8px;font-size:22px}
+.logo-mark{display:inline-grid;place-items:center;width:40px;height:40px;flex:0 0 auto}.logo-mark svg,.logo-mark img{width:40px;height:40px;object-fit:contain;display:block}.logo-mark:empty{display:none}
 .logo small{display:block;font:500 11px var(--f-body);letter-spacing:.12em;opacity:.75;text-transform:uppercase}
 .nav button{all:unset;display:flex;gap:10px;align-items:center;width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:500;opacity:.82}
 .nav button:hover{background:rgba(255,255,255,.08);opacity:1}
@@ -284,7 +286,7 @@ table.mx tr.sec td:first-child{background:var(--surface2)}
 @media (prefers-reduced-motion:no-preference){.view{animation:fade .2s ease}@keyframes fade{from{opacity:.4;transform:translateY(4px)}}}
 </style>
 
-<div id="login" hidden><form id="lg-form" class="lg"><div class="logo" style="color:var(--fg)"><b>N</b><div>NAVO<small style="color:var(--muted)">HSE Platform</small></div></div>
+<div id="login" hidden><form id="lg-form" class="lg"><div class="logo" style="color:var(--fg)"><span class="logo-mark"></span><div><span class="brand-name">NAVO</span><small class="brand-tag" style="color:var(--muted)">HSE Platform</small></div></div>
 <p style="margin:0;color:var(--muted)">Sign in to report, review and track HSE on your projects.</p>
 <div class="fld" id="lg-name-wrap" hidden><label for="lg-name">Full name</label><input id="lg-name" type="text" autocomplete="name"></div>
 <div class="fld"><label for="lg-email">Email</label><input id="lg-email" type="email" autocomplete="email" required></div>
@@ -296,7 +298,7 @@ table.mx tr.sec td:first-child{background:var(--surface2)}
 <style>#login{position:fixed;inset:0;background:var(--bg);z-index:100;display:grid;place-items:center;padding:16px}#login[hidden]{display:none}.lg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}.lg input{padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:15px}</style>
 <div class="app">
   <aside>
-    <div class="logo"><b>N</b><div>NAVO<small>HSE Platform</small></div></div>
+    <div class="logo"><span class="logo-mark"></span><div><span class="brand-name">NAVO</span><small class="brand-tag">HSE Platform</small></div></div>
     <nav class="nav" id="sidenav"></nav>
   </aside>
   <main>
@@ -350,7 +352,7 @@ const OBS=[];for(let i=0;i<46;i++){const c=pick(ctys);const t=OBS_T[i%OBS_T.leng
 const CA_T=["Re-brief scaffold team on board securing","Install edge protection on level 3","Replace damaged slings and inspect rigging store","Update excavation permit with GPR scan","Provide face shields at grinding stations","Add spotter for forklift reversing","Heat stress plan: water and shade every 200 m","Calibrate gas detectors","Review LOTO procedure with mechanical crew","Anti-slip coating on jetty deck"];
 const CAPA=CA_T.map((t,i)=>{const due=d(18-i*4);const st=i%4===0?"Closed":due<TODAY?"Overdue":"Open";return{id:"CA-"+(910+i),title:t,src:INCS[i%INCS.length].id,owner:pick(PEOPLE),dept:pick(DEPTS),country:INCS[i%INCS.length].country,due,status:st,kind:i%3===0?"Preventive":"Corrective"}});
 
-const st={role:"mgr",view:"dash",country:"",sel:null,w:{step:0}};
+const st={role:"mgr",view:"exec",country:"",sel:null,w:{step:0}};
 const f=a=>a.filter(x=>!st.country||x.country===st.country);
 const pillFor=s=>({"Closed":"p-ok","Open":"p-warn","Overdue":"p-crit","Under Investigation":"p-info","Actions Open":"p-warn"}[s]||"p-mute");
 const typeColor=t=>({"Lost Time":"var(--crit)","Medical Treatment":"var(--crit)","First Aid":"var(--warn)","Near Miss":"var(--info)","Property Damage":"var(--warn)","Environmental":"var(--ok)"}[t]);
@@ -369,7 +371,7 @@ comp:["Compliance Register","List the legal and client requirements that apply i
 train:["Training & Competency","Record inductions, courses and certificates for 2,000 employees and warn before anything expires.",["Training matrix by role and department","Certificate expiry alerts","Induction and toolbox talk attendance","Competency sign-off for critical roles","Training hours KPI"]],
 sugg:["Improvement Suggestions","Let anyone submit an idea, route it to the right department, and show what was done with it.",["Submit from phone with photo","Department review and decision","Recognition and points","Link to MOC when a change is approved"]],
 emer:["Emergency Preparedness","Keep emergency plans, contacts and drill records per site, and measure drill performance.",["Emergency response plan per site","Drill schedule and evaluation","Muster time tracking","Emergency equipment inspections","Contact lists by site"]]};
-const NAV_M=[["#Live system"],["exec","Global HSSE dashboard"],["hdata","Enter HSSE data"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Live actions"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["settings","Structure & settings"],["#Overview"],["dash","Dashboard"],["#Report & investigate"],["inc","Incidents"],["obs","Observations"],["ncr","Non-Conformance"],["capa","Actions (CAPA)"],["#Assure"],["insp","Inspections"],["audit","Audits",1],["comp","Compliance",1],["#Control risk"],["risk","Risk & Bowtie",1],["moc","Management of Change"],["ptw","Permit to Work",1],["#People & environment"],["train","Training",1],["env","Environment & ESG",1],["emer","Emergency",1],["sugg","Suggestions",1],["#Platform"],["mod","All Modules"]];
+const NAV_M=[["#Live system"],["exec","Global HSSE dashboard"],["hdata","Enter HSSE data"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Live actions"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["settings","Structure & settings"],["#Report & investigate"],["inc","Incidents"],["obs","Observations"],["ncr","Non-Conformance"],["capa","Actions (CAPA)"],["#Assure"],["insp","Inspections"],["audit","Audits",1],["comp","Compliance",1],["#Control risk"],["risk","Risk & Bowtie",1],["moc","Management of Change"],["ptw","Permit to Work",1],["#People & environment"],["train","Training",1],["env","Environment & ESG",1],["emer","Emergency",1],["sugg","Suggestions",1],["#Platform"],["mod","All Modules"]];
 const NAV_W=[["home","Home"],["live","Reports"],["lactions","Actions"]];
 const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Live Actions",exec:"Global HSSE Dashboard",hdata:"Enter HSSE Data",settings:"Structure & Settings",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
 const PARENT={incd:"inc",report:"home",ncrd:"ncr",inspd:"insp",mocd:"moc"};
@@ -448,7 +450,7 @@ function soon(){const [t,desc,feats]=SOON[st.view];
 function render(){nav();const v=document.getElementById("view");document.body.classList.toggle("hs-full",st.view==="exec"&&L.ready);
  document.getElementById("title").textContent=TITLES[st.view]||SOON[st.view][0];
  document.getElementById("crumb").textContent="NAVO · "+(st.country||"All countries")+(st.role==="wrk"?" · Site Worker":" · HSE Manager");
- v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec:()=>hsse(),hdata:()=>hdata(),leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
+ v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec:()=>typeof hsse==="function"?hsse():"",hdata:()=>typeof hdata==="function"?hdata():"",leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
 
 const demoTag=`<div class="demo"><span>DEMO</span>Sample data for illustration. Your live records replace it after setup.</div>`;
 
@@ -1071,7 +1073,7 @@ function leaders(){const g=liveGate();if(g)return g;const m=L.scMonth||thisMonth
 
 /* ---- Editable organisation structure (admin) ---- */
 const DEFAULT_STRUCT={corporation:"Corporation",countries:COUNTRIES.slice(),platforms:Object.entries(HIER).map(([name,b])=>({name,businesses:Object.entries(b).map(([n,c])=>({name:n,clusters:c.slice()}))}))};
-function applyStructure(s){if(!s||!Array.isArray(s.platforms))return;L.structure=s;
+function applyStructure(s){if(!s||!Array.isArray(s.platforms))return;L.structure=s;setTimeout(applyBrand);
  PLATFORMS.length=0;s.platforms.forEach(p=>PLATFORMS.push(p.name));
  Object.keys(HIER).forEach(k=>delete HIER[k]);s.platforms.forEach(p=>{HIER[p.name]={};(p.businesses||[]).forEach(b=>HIER[p.name][b.name]=(b.clusters||[]).slice())});
  if(Array.isArray(s.countries)&&s.countries.length){COUNTRIES.length=0;s.countries.forEach(c=>COUNTRIES.push(c))}
@@ -1085,7 +1087,7 @@ function settings(){const g=liveGate();if(g)return g;if(myRole()!=="admin")retur
  const inp=(path,val,label,w=220)=>`<input class="st-in" data-path="${path}" type="text" value="${esc(val)}" aria-label="${esc(label)}" style="width:${w}px;max-width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600">`;
  const del=(path,label)=>`<button class="btn" data-sdel="${path}" aria-label="Remove ${esc(label)}" title="Remove ${esc(label)}">✕</button>`;
  const demo=!!L.db.bulkInsert;const demoCount=L.projects.filter(p=>String(p.id).startsWith("demo-")).length;
- return liveTag()+`<div class="panel"><h2>Organisation structure <small>changes apply everywhere after you save</small></h2>
+ return liveTag()+brandPanel()+`<div class="panel"><h2>Organisation structure <small>changes apply everywhere after you save</small></h2>
  <div class="filters" style="align-items:center"><label for="st-corp" style="font-weight:600">Top level name</label>${inp("corporation",d.corporation,"Top level name",260).replace('class="st-in"','id="st-corp" class="st-in"')}</div>
  <h2 style="margin-top:8px">Countries</h2><div class="chips">${d.countries.map((c,i)=>`<span class="pill p-mute" style="font-size:13px;display:inline-flex;gap:6px;align-items:center">${esc(c)} <button class="btn" style="padding:0 6px" data-sdel="countries.${i}" aria-label="Remove ${esc(c)}">✕</button></span>`).join("")}</div>
  <div class="filters"><input id="st-newc" type="text" placeholder="Add a country" style="padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface)"><button class="btn" data-sadd="countries">Add country</button></div></div>
@@ -1218,6 +1220,26 @@ document.addEventListener("focusin",e=>{if(e.target.id==="acc-q"&&!e.target.valu
 document.addEventListener("change",e=>{if(e.target.id==="np-plat"){L.np={plat:e.target.value};render()}if(e.target.id==="np-div"){L.np.div=e.target.value;render()}if(e.target.id==="ip")st.ip=e.target.value;if(e.target.classList.contains("pe-in")){const v=e.target.dataset.t==="text"?e.target.value.trim():e.target.value===""?null:+e.target.value;liveSave(()=>L.db.doc("admin/projects").set({list:L.projects.map(p=>{if(p.id!==e.target.dataset.pid)return p;const f=e.target.dataset.f;const n={...p,[f]:v};if(f==="platform"){n.division="";n.cluster=""}if(f==="division")n.cluster="";return n})}),"Project updated")}if(e.target.id==="sc-proj"){L.scProj=e.target.value;render()}if(e.target.id==="sc-month"||e.target.id==="sc-month2"){if(e.target.value){L.scMonth=e.target.value;render()}}});
 
 render();liveInit();
+
+/* ---- Branding: name, tagline and logo, editable by the HSE Admin ---- */
+const NAVO_MARK=`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 3 L56 12 V30 C56 45 46 56 32 61 C18 56 8 45 8 30 V12 Z" fill="#1FA37A" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/><path d="M32 4.5 L55 13 V30 C55 44 45.5 54.5 32 59.5 Z" fill="#0B4F3C" opacity=".35"/><circle cx="32" cy="32" r="14.5" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M32 16 L38.5 33 L32 29.5 L25.5 33 Z" fill="#F5B82E"/><path d="M32 48 L25.5 31 L32 34.5 L38.5 31 Z" fill="#fff"/><circle cx="32" cy="32" r="2.6" fill="#0B4F3C"/></svg>`;
+function brand(){const b=(L.structure&&L.structure.brand)||{};return{name:b.name||"NAVO",tag:b.tag??"HSE Platform",logo:b.logo||"",hide:!!b.hide}}
+function applyBrand(){const b=brand();document.querySelectorAll(".brand-name").forEach(e=>e.textContent=b.name);document.querySelectorAll(".brand-tag").forEach(e=>e.textContent=b.tag);
+ document.querySelectorAll(".logo-mark").forEach(e=>e.innerHTML=b.hide?"":b.logo?`<img src="${b.logo}" alt="">`:NAVO_MARK);document.title=b.name+" HSE";}
+function brandPanel(){const b=L.bdraft||(L.bdraft={...brand()});
+ return`<div class="panel"><h2>Name & logo <small>shown on every page, the login screen and the dashboard</small></h2>
+ <div class="brand-ed"><div class="brand-prev">${b.hide?`<span class="brand-none">No logo</span>`:b.logo?`<img src="${b.logo}" alt="Logo">`:NAVO_MARK}</div>
+ <div class="hd-grid" style="flex:1"><div class="fld"><label for="br-name">System name</label><input id="br-name" class="br-in" data-k="name" type="text" maxlength="30" value="${esc(b.name)}"></div><div class="fld"><label for="br-tag">Tagline</label><input id="br-tag" class="br-in" data-k="tag" type="text" maxlength="40" value="${esc(b.tag)}"></div></div></div>
+ <div class="filters" style="margin-top:10px"><label class="btn" for="br-file">Upload a logo</label><input id="br-file" type="file" accept="image/*" hidden><button class="btn" id="br-default">Use the NAVO logo</button><button class="btn" id="br-hide">Remove logo</button><button class="btn pri" id="br-save">Save name & logo</button></div>
+ <p style="margin:6px 0 0;font-size:12px;color:var(--muted)">PNG or SVG with a transparent background looks best. It is resized to 256 px.</p></div>`}
+document.addEventListener("input",e=>{const t=e.target;if(t.classList&&t.classList.contains("br-in")){(L.bdraft||(L.bdraft={...brand()}))[t.dataset.k]=t.value}});
+document.addEventListener("change",e=>{const t=e.target;if(t.id!=="br-file"||!t.files[0])return;const f=t.files[0];const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const s=256,c=document.createElement("canvas"),k=Math.min(s/img.width,s/img.height,1);c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+ L.bdraft={...(L.bdraft||brand()),logo:c.toDataURL("image/png"),hide:false};render()};img.src=rd.result};rd.readAsDataURL(f)});
+document.addEventListener("click",async e=>{const t=e.target.closest("#br-default,#br-hide,#br-save");if(!t)return;const b=L.bdraft||(L.bdraft={...brand()});
+ if(t.id==="br-default"){b.logo="";b.hide=false;render();return}if(t.id==="br-hide"){b.hide=true;b.logo="";render();return}
+ const s={...(L.structure||DEFAULT_STRUCT),brand:{name:(b.name||"NAVO").trim(),tag:(b.tag||"").trim(),logo:b.logo||"",hide:!!b.hide}};
+ const ok=await liveSave(()=>L.db.doc("admin/structure").set(s),"Name & logo saved");if(ok!==false){L.structure=s;L.bdraft=null;applyBrand();render()}});
+applyBrand();
 </script>
 <script src="hsse.js"></script>
 
