@@ -7,11 +7,11 @@
   const authed = new Promise(r => (resolveAuthed = r));
 
   // App field names <-> table column names
-  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target", originalText: "original_text" };
+  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target", originalText: "original_text", personType: "person_type", injuryType: "injury_type", bodyPart: "body_part", incClass: "inc_class" };
   const TO_FIELD = Object.fromEntries(Object.entries(TO_COL).map(([a, b]) => [b, a]));
   const toRow = o => Object.fromEntries(Object.entries(o).filter(([k]) => k !== "id").map(([k, v]) => [TO_COL[k] || k, typeof v === "number" && Math.abs(v) > 1e11 ? Math.round(v) : v]));
   const fromRow = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [TO_FIELD[k] || k, v]));
-  const TABLE = { reports: "reports", actions: "actions", inspections: "inspections", activities: "activities", "admin/rv/months": "reviews" };
+  const TABLE = { reports: "reports", actions: "actions", inspections: "inspections", activities: "activities", records: "hsse_records", "admin/rv/months": "reviews" };
 
   const fail = error => { throw { code: error.code === "42501" || /row-level security|permission/i.test(error.message || "") ? "invalid_argument" : error.code === "53100" ? "quota_exceeded" : "unavailable", message: error.message || "" }; };
   const run = async q => { const { data, error } = await q; if (error) fail(error); return data; };
@@ -23,12 +23,18 @@
   function watch(table, filter, onRows, onErr) {
     let alive = true, t;
     const fetch = async () => {
-      let q = sb.from(table).select("*");
-      if (filter) q = q.eq(filter[0], filter[1]);
-      const { data, error } = await q;
-      if (!alive) return;
-      if (error) { onErr && onErr({ code: "unavailable", message: error.message }); return; }
-      onRows(data);
+      // Page through results: the API returns at most 1,000 rows per request.
+      const all = [];
+      for (let from = 0; ; from += 1000) {
+        let q = sb.from(table).select("*").order(table === "members" ? "user_id" : "id").range(from, from + 999);
+        if (filter) q = q.eq(filter[0], filter[1]);
+        const { data, error } = await q;
+        if (!alive) return;
+        if (error) { onErr && onErr({ code: "unavailable", message: error.message }); return; }
+        all.push(...data);
+        if (data.length < 1000) break;
+      }
+      onRows(all);
     };
     fetch();
     const ch = sb.channel("navo-" + table + "-" + (++chan))

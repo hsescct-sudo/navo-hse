@@ -2,6 +2,85 @@
 .pbi-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:6px}.pbi-title{background:#0f4c5c;color:#fff;padding:10px 18px;border-radius:0 0 14px 0;font-weight:700;font-size:1.15rem}.pbi-band{flex:1;min-width:200px;background:linear-gradient(90deg,#0f4c5c22,transparent);padding:8px 12px;border-radius:6px;color:var(--muted)}
 .pbi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.pbi-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pbi-tall{grid-row:span 2}
 @media(max-width:900px){.pbi-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.pbi-grid,.pbi-grid2{grid-template-columns:1fr}.pbi-tall{grid-row:auto}}
+
+/* ---- Global HSSE dashboard ---- */
+.hs{display:grid;grid-template-columns:210px minmax(0,1fr);gap:0;background:#f3f2f1;border:1px solid var(--line);border-radius:10px;overflow:hidden;color:#252423}
+.hs-nav{background:#0b4f3c;color:#fff;padding:14px 10px;display:flex;flex-direction:column;gap:4px}
+.hs-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0 14px;border-bottom:1px solid #ffffff33;margin-bottom:8px}
+.hs-logo{font-weight:800;letter-spacing:.12em;font-size:18px}.hs-letters{display:flex;gap:3px}.hs-letters i{font-style:normal;font-weight:800;width:30px;height:32px;display:grid;place-items:center;color:#fff;border-radius:2px}
+.hs-brand b{font-size:13px;font-weight:600}
+.hs-nav button{background:none;border:0;color:#fff;text-align:left;padding:10px 12px;border-radius:6px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.hs-nav button:hover{background:#ffffff1a}.hs-nav button[aria-current=true]{background:#2E8B57}
+.hs-nav .hs-entry{margin-top:auto;border:1px dashed #ffffff88;text-align:center;font-weight:500}
+.hs-main-wrap{display:flex;flex-direction:column;min-width:0}
+.hs-band{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;background:#fff;border-bottom:2px solid #9370DB}
+.hs-sectitle{background:#155e75;color:#fff;padding:7px 18px;font-size:18px;border:1px solid #0b3b4a}
+.hs-crumb{color:#605e5c;font-size:13px;flex:1;min-width:160px}.hs-dl{display:flex;gap:6px}
+.hs-frame{display:grid;grid-template-columns:34px minmax(0,1fr);flex:1}
+.hs-strip{background:#9370DB;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0;color:#fff}
+.hs-strip button{background:none;border:0;color:#fff;font-size:18px;cursor:pointer;padding:4px;border-radius:4px}.hs-strip button[aria-pressed=true]{background:#ffffff33}
+.hs-strip span{writing-mode:vertical-rl;transform:rotate(180deg);margin-top:auto;font-weight:700;font-size:15px;opacity:.95;white-space:nowrap}
+.hs-body{padding:10px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.hs-tabs{display:flex;gap:0;background:#e9e8e6;border-top:1px solid #d6d4d2;overflow-x:auto}
+.hs-tabs button{border:0;background:none;padding:11px 18px;font:inherit;font-size:13.5px;color:#252423;cursor:pointer;border-right:1px solid #d6d4d2;white-space:nowrap;border-bottom:3px solid transparent}
+.hs-tabs button[aria-selected=true]{font-weight:700;border-bottom-color:#117865;background:#fff}
+.hc{background:#fff;border:1px solid #c8c6c4;border-radius:3px;padding:8px 10px;min-width:0;display:flex;flex-direction:column}
+.hc-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px}.hc-h b{font-size:15px;font-weight:600;color:#252423}.hc-h span{font-size:12px;color:#605e5c}.hc-h span b{font-size:12px;color:#12239E}
+.hc.b-red{border:2px solid #A4262C}.hc.b-red .hc-h>b{color:#A4262C}.hc.b-blue{border:2px solid #12239E}.hc.b-blue .hc-h>b{color:#12239E}.hc.b-gold{border:2px solid #C9A227}.hc.b-gold .hc-h>b{color:#9B7A00}
+.hc.dark{background:#2e1a5c;color:#fff;border-color:#2e1a5c}.hc.dark .hc-h b{color:#fff}.hc.dark .hx,.hc.dark .hv{fill:#fff}
+.hc-b{flex:1;min-width:0}
+.hs-g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.hs-g6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.hs-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.hs-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.hs-2b{display:grid;grid-template-columns:1.6fr 1fr;gap:10px}
+.hs-main{display:grid;grid-template-columns:1.25fr 1fr;gap:10px}.hs-main>div{display:flex;flex-direction:column;gap:10px}
+.hs-health{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hs-health>div{display:flex;flex-direction:column;gap:10px}
+.hs-site{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px}.hs-site>div{display:flex;flex-direction:column;gap:10px}
+.hs-inj{display:grid;grid-template-columns:1.3fr .9fr 1fr 1fr;gap:10px}.hs-inj>div{display:flex;flex-direction:column;gap:10px}.hs-inj>.hs-2{grid-template-columns:1fr 1fr;display:grid}
+.hs-inc{display:grid;grid-template-columns:1fr 2fr;gap:10px}.hs-inc>div{display:flex;flex-direction:column;gap:10px}.hs-incTop{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
+.hs-aud{display:grid;grid-template-columns:1.6fr 1fr;gap:10px}
+.hs-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.hs-waste{display:grid;grid-template-columns:2.1fr 1fr;gap:10px}.hs-waste>div:first-child{display:flex;flex-direction:column;gap:10px}.hs-wmid{display:grid;grid-template-columns:1fr 1.6fr;gap:10px}.hs-wmid>div{display:flex;flex-direction:column;gap:10px}
+.hbig{font-size:30px;font-weight:700;color:#8661C5;text-align:center;padding:6px 0}
+.hk{background:#fff;border:1px solid #c8c6c4;padding:6px 12px;display:flex;flex-direction:column;justify-content:center;min-width:110px}.hk small{font-size:11.5px;font-weight:700}.hk b{font-size:24px}.hk em{font-style:normal;font-size:12px;color:#605e5c}
+.hk2{display:flex;justify-content:space-around;gap:8px;text-align:center}.hk2>div{display:flex;flex-direction:column;align-items:center}.hk2 b{font-size:22px;font-weight:600}.hk2 small{font-size:12px;color:#605e5c}.hk2 em{font-style:normal;font-size:14px;color:#12239E;font-weight:600}
+.hb{display:flex;flex-direction:column;gap:4px}.hb-r{display:grid;grid-template-columns:minmax(80px,38%) 1fr auto;gap:6px;align-items:center;font-size:12.5px}
+.hb-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;color:#252423}.hb-t{position:relative;height:16px;display:block}.hb-t>i{display:block;height:100%;border-radius:1px}
+.hb-s{display:flex;height:20px}.hb-s>i{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-style:normal;overflow:hidden}
+.hb-v{font-variant-numeric:tabular-nums;color:#12239E;font-size:12px;min-width:34px}
+.hleg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:#605e5c;justify-content:center;margin-top:4px}.hleg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+.hsvg{overflow-x:auto}.hsvg svg{width:100%;min-width:280px;display:block}
+.hv{font-size:10.5px;fill:#12239E;font-weight:600}.hv.w{fill:#fff}.hv.b{fill:#12239E;font-weight:700}.hv.g{fill:#9B7A00}.hx{font-size:10.5px;fill:#605e5c}
+.hg{width:100%;max-width:220px;display:block;margin:0 auto}
+.htm{position:relative;height:200px}.htm>div{position:absolute;box-sizing:border-box;border:1px solid #fff;color:#fff;padding:4px 6px;overflow:hidden;font-size:12px;display:flex;flex-direction:column;justify-content:space-between}.htm b{font-size:12px}
+.hseg{display:flex;flex-wrap:wrap;gap:0;margin-bottom:6px}.hseg button{border:1px solid #8a8886;background:#fff;padding:4px 12px;font-size:12px;cursor:pointer;margin-right:-1px}.hseg button[aria-pressed=true]{background:#252423;color:#fff}
+.hsys{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}.hsys small{display:block;font-weight:700;font-size:12px}.hsys b{font-size:24px;font-weight:500}
+.hs-tbl table{font-size:12.5px}.hs-tbl th{background:#f3f6fb;position:sticky;top:0;z-index:1}.hs-tbl tr.tot td{font-weight:700;border-top:2px solid #c8c6c4}.hs-tbl tr.sec td{background:#f8ddd5;font-weight:600}.hs-tbl td.bad{color:#A4262C;font-weight:600}
+.hs-tbl td.hsc{color:#fff;font-weight:700;text-align:right}.hs-mx th{white-space:nowrap;font-size:11.5px}.hs-mx td:first-child{white-space:nowrap;position:sticky;left:0;background:#fff}.hs-mx tr.sec td:first-child{background:#f8ddd5}
+.hcell{display:inline-block;min-width:90px;text-align:right;padding:2px 6px;color:#fff;background:linear-gradient(90deg,var(--c) var(--w),#cfd8f5 var(--w))}
+.hs-chips{display:flex;gap:0;flex-wrap:wrap}.hs-chips button{border:1px solid #c8c6c4;background:#fff;padding:7px 14px;font-size:13px;cursor:pointer;margin:-1px 0 0 -1px}.hs-chips button[aria-pressed=true]{background:#252423;color:#fff}.hs-chips.sm button{font-size:11.5px;padding:5px 10px}
+.hs-filt{display:flex;flex-wrap:wrap;gap:8px;background:#ddeeff;padding:10px;border:1px solid #9cc3ec}.hs-filt label{display:flex;flex-direction:column;font-size:12px;font-weight:600;gap:3px}.hs-filt select{padding:6px;border:1px solid #8a8886;border-radius:2px;background:#fff;min-width:120px}
+.hs-active{font-size:12.5px;color:#605e5c}.hs-active button,.linkbtn{border:0;background:none;color:#0f6cbd;text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+.hs-note{font-size:12.5px;color:#605e5c;margin:0 0 6px}.hs-warn{background:#fff4ce;border:1px solid #f2d27a;padding:8px 10px;border-radius:3px;color:#5c4400}
+.hs-empty{color:#8a8886;font-size:12.5px;margin:6px 0}
+.hs-in{padding:5px 8px;border:1px solid #8a8886;border-radius:2px;background:#fff;font-size:12.5px;max-width:100%;margin-bottom:6px}
+.hs-proj-h{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.hs-proj-h span{font-size:15px}.hs-proj-h b{font-size:22px}
+.hbody{width:100%;max-width:150px;display:block;margin:6px auto}
+.hs-drill{border:2px solid #117865}
+.hs-tiles{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.hs-tiles>span{font-size:22px;color:#605e5c}
+.hs-tile{background:#fff;border:1px solid #e1dfdd;border-radius:6px;padding:10px 14px;display:flex;gap:10px;align-items:center;flex:1;min-width:150px;position:relative}.hs-tile .ic{font-size:28px}.hs-tile b{font-size:24px;display:block}.hs-tile small{font-size:13px;font-weight:600}.hs-tile em{position:absolute;top:6px;right:8px;font-style:normal;font-size:12px;font-weight:700}
+.hs-acc{display:grid;grid-template-columns:170px 1fr;gap:8px;align-items:center}.hs-acc .hg text{fill:#fff}
+.dt{display:flex;gap:18px;overflow-x:auto;padding:6px 2px}.dt-col{min-width:170px;display:flex;flex-direction:column;gap:6px}.dt-h{font-size:13px;font-weight:700;border-bottom:2px solid #0f6cbd;padding-bottom:3px;display:flex;justify-content:space-between}
+.dt-x{border:0;background:none;color:#605e5c;cursor:pointer;font-size:15px;line-height:1}
+.dt-n{position:relative;padding:3px 4px 4px;font-size:12px;border-radius:2px;cursor:pointer}.dt-n i{display:block;height:10px;background:#0f6cbd;margin-bottom:2px;opacity:.85}.dt-n span{display:block;font-weight:600}.dt-n b{font-weight:400;color:#605e5c}.dt-n.on{background:#e6f1fb;outline:1px solid #0f6cbd}
+.hd-row{display:flex;gap:10px;flex-wrap:wrap}.hd-row>.fld{flex:1;min-width:160px}.hd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}.hd-grid .fld input,.hd-grid .fld select,.hd-row .fld input,.hd-row .fld select{width:100%}
+.panel h3{font-size:14px;margin:14px 0 6px}
+.hot{cursor:pointer}
+@media(max-width:1200px){.hs-inj{grid-template-columns:1fr 1fr}.hs-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}.hs-g6{grid-template-columns:repeat(3,minmax(0,1fr))}.hs-site{grid-template-columns:1fr 1fr}.hs-waste{grid-template-columns:1fr}}
+@media(max-width:900px){.hs{grid-template-columns:1fr}.hs-nav{flex-direction:row;overflow-x:auto;padding:8px;gap:4px}.hs-brand{display:none}.hs-nav button{white-space:nowrap;padding:8px 10px}.hs-nav .hs-entry{margin:0}
+ .hs-g4,.hs-3,.hs-main,.hs-health,.hs-2b,.hs-aud,.hs-inc,.hs-site,.hs-wmid{grid-template-columns:1fr}.hs-g6{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.hs-frame{grid-template-columns:1fr}.hs-strip{flex-direction:row;padding:4px 8px}.hs-strip span{display:none}.hs-2,.hs-inj,.hs-kpi,.hs-inj>.hs-2{grid-template-columns:1fr}.hs-acc{grid-template-columns:1fr}.hs-body{padding:8px}}
+body.hs-full .app{grid-template-columns:1fr}body.hs-full .app>aside,body.hs-full .top{display:none}body.hs-full .view{max-width:none!important;padding:8px!important;margin:0!important}body.hs-full .hs{min-height:calc(100vh - 54px)}
+.hs-tbl th{text-transform:none!important;letter-spacing:0!important;font-size:12px!important;color:#252423!important;font-weight:700!important;white-space:normal!important;padding:6px 8px!important}.hs-tbl td{padding:6px 8px!important}
+.hs-nav .hs-back{font-weight:500;font-size:12.5px;opacity:.9;border:1px solid #ffffff55;text-align:center;margin-bottom:6px}
 </style></head><body>
 <title>NAVO HSE</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -290,9 +369,9 @@ comp:["Compliance Register","List the legal and client requirements that apply i
 train:["Training & Competency","Record inductions, courses and certificates for 2,000 employees and warn before anything expires.",["Training matrix by role and department","Certificate expiry alerts","Induction and toolbox talk attendance","Competency sign-off for critical roles","Training hours KPI"]],
 sugg:["Improvement Suggestions","Let anyone submit an idea, route it to the right department, and show what was done with it.",["Submit from phone with photo","Department review and decision","Recognition and points","Link to MOC when a change is approved"]],
 emer:["Emergency Preparedness","Keep emergency plans, contacts and drill records per site, and measure drill performance.",["Emergency response plan per site","Drill schedule and evaluation","Muster time tracking","Emergency equipment inspections","Contact lists by site"]]};
-const NAV_M=[["#Live system"],["exec","Executive dashboards"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Live actions"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["settings","Structure & settings"],["#Overview"],["dash","Dashboard"],["#Report & investigate"],["inc","Incidents"],["obs","Observations"],["ncr","Non-Conformance"],["capa","Actions (CAPA)"],["#Assure"],["insp","Inspections"],["audit","Audits",1],["comp","Compliance",1],["#Control risk"],["risk","Risk & Bowtie",1],["moc","Management of Change"],["ptw","Permit to Work",1],["#People & environment"],["train","Training",1],["env","Environment & ESG",1],["emer","Emergency",1],["sugg","Suggestions",1],["#Platform"],["mod","All Modules"]];
+const NAV_M=[["#Live system"],["exec","Global HSSE dashboard"],["hdata","Enter HSSE data"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Live actions"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["settings","Structure & settings"],["#Overview"],["dash","Dashboard"],["#Report & investigate"],["inc","Incidents"],["obs","Observations"],["ncr","Non-Conformance"],["capa","Actions (CAPA)"],["#Assure"],["insp","Inspections"],["audit","Audits",1],["comp","Compliance",1],["#Control risk"],["risk","Risk & Bowtie",1],["moc","Management of Change"],["ptw","Permit to Work",1],["#People & environment"],["train","Training",1],["env","Environment & ESG",1],["emer","Emergency",1],["sugg","Suggestions",1],["#Platform"],["mod","All Modules"]];
 const NAV_W=[["home","Home"],["live","Reports"],["lactions","Actions"]];
-const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Live Actions",exec:"Executive Dashboards",settings:"Structure & Settings",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
+const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Live Actions",exec:"Global HSSE Dashboard",hdata:"Enter HSSE Data",settings:"Structure & Settings",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
 const PARENT={incd:"inc",report:"home",ncrd:"ncr",inspd:"insp",mocd:"moc"};
 
 function nav(){const L=st.role==="mgr"?NAV_M:NAV_W;const cur=PARENT[st.view]||st.view;
@@ -366,10 +445,10 @@ function soon(){const [t,desc,feats]=SOON[st.view];
  <div class="panel"><h2>What it will include</h2><div class="plan">${feats.map(x=>`<div>${x}</div>`).join("")}</div></div>
  <div class="panel"><h2>Connected to</h2><div class="links"><span class="pill p-info">Actions (CAPA)</span><span class="pill p-info">Dashboard KPIs</span><span class="pill p-info">Notifications</span><span class="pill p-info">Audit trail</span></div></div>`;}
 
-function render(){nav();const v=document.getElementById("view");
+function render(){nav();const v=document.getElementById("view");document.body.classList.toggle("hs-full",st.view==="exec"&&L.ready);
  document.getElementById("title").textContent=TITLES[st.view]||SOON[st.view][0];
  document.getElementById("crumb").textContent="NAVO · "+(st.country||"All countries")+(st.role==="wrk"?" · Site Worker":" · HSE Manager");
- v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec,leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
+ v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec:()=>hsse(),hdata:()=>hdata(),leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
 
 const demoTag=`<div class="demo"><span>DEMO</span>Sample data for illustration. Your live records replace it after setup.</div>`;
 
@@ -404,7 +483,7 @@ function line(series,labels,{h=150,target,dec=2}={}){const W=560,all=series.flat
  ${labels.map((l,i)=>`<text x="${x(i)}" y="${h+22}" text-anchor="middle" font-size="10" fill="var(--muted)">${l}</text>`).join("")}</svg></div>`;}
 function donut(parts,center,sub,attr){let a=-Math.PI/2;const tot=parts.reduce((s,p)=>s+p[1],0)||1;const R=54,r=36;
  const arcs=parts.map(([n,v,c])=>{const b=a+v/tot*Math.PI*2;const p=(ang,rr)=>[70+rr*Math.cos(ang),70+rr*Math.sin(ang)];const L=b-a>Math.PI?1:0;const[x1,y1]=p(a,R),[x2,y2]=p(b,R),[x3,y3]=p(b,r),[x4,y4]=p(a,r);const d=`M${x1},${y1}A${R},${R} 0 ${L} 1 ${x2},${y2}L${x3},${y3}A${r},${r} 0 ${L} 0 ${x4},${y4}Z`;a=b;const at=attr?attr(n):"";return v?`<path d="${d}" fill="${c}" ${at} ${at?'class="hot"':""}><title>${n}: ${v} (${Math.round(v/tot*100)}%)</title></path>`:""}).join("");
- return`<div class="dn"><svg viewBox="0 0 140 140" width="140" height="140">${arcs}<text x="70" y="72" text-anchor="middle" font-size="22" font-weight="600" fill="var(--fg)" font-family="Barlow Condensed,sans-serif">${center}</text><text x="70" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">${sub}</text></svg><div class="dl">${parts.map(([n,v,c])=>{const at=attr?attr(n):"";return`<span ${at} ${at?'class="hot"':""}><i style="background:${c}"></i>${n}<b>${v}</b></span>`}).join("")}</div></div>`;}
+ return`<div class="dn"><svg viewBox="0 0 140 140" width="140" height="140">${arcs}<text x="70" y="72" text-anchor="middle" font-size="${String(center).length>5?17:22}" font-weight="600" fill="var(--fg)" font-family="Barlow Condensed,sans-serif">${center}</text><text x="70" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">${sub}</text></svg><div class="dl">${parts.map(([n,v,c])=>{const at=attr?attr(n):"";return`<span ${at} ${at?'class="hot"':""}><i style="background:${c}"></i>${n}<b>${v}</b></span>`}).join("")}</div></div>`;}
 function pyramid(items,lagN){const PYR=items||window.PYR_DEMO,LAG=lagN||7,n=PYR.length,rh=30,gap=4,W=320,cx=W/2+8,lx=W+44,H=n*(rh+gap)-gap,yb=LAG*(rh+gap)-gap/2;
  const hw=y=>y<=yb?(W/2)*y/yb:(W/2)*(H-y)/(H-yb);
  const rows=PYR.map(([l,v],i)=>{const y0=i*(rh+gap),y1=y0+rh,ym=y0+rh/2,lag=i<LAG;const a=hw(y0),b=hw(y1),wm=hw(ym);
@@ -596,9 +675,11 @@ function home(){return`<div class="phone"><div class="hello"><span class="net"><
 function report(){const w=st.w;const bars=`<div class="steps">${[0,1,2,3].map(i=>`<i class="${i<=w.step?"on":""}"></i>`).join("")}</div>`;
  const sub=["Step 1 of 4 · What happened","Step 2 of 4 · Photo","Step 3 of 4 · Where","Step 4 of 4 · Details"][w.step];
  let body="";
- if(w.step===0){const opts=w.rt==="Incident"?["Injury","Near Miss","Property Damage","Environmental"]:w.rt==="Good practice"?["Safe behaviour","Good housekeeping","Good planning","Other"]:["Unsafe Act","Unsafe Condition","Equipment defect","Other"];
+ if(w.step===0){const opts=w.rt==="Incident"?["Injury","Near Miss","Property Damage","Environmental","Fire","Process Safety"]:w.rt==="Good practice"?["Safe behaviour","Good housekeeping","Good planning","Other"]:["Unsafe Act","Unsafe Condition","Equipment defect","Other"];
   body=`<div class="fld"><label>${w.rt} type</label><div class="choice">${opts.map(o=>`<button data-pick="${o}" aria-pressed="${w.kind===o}">${o}</button>`).join("")}</div></div>
-  ${w.kind==="Injury"?`<div class="fld"><label>How serious is the injury?</label><div class="choice">${SEVERITIES.map(o=>`<button data-sev="${o}" aria-pressed="${w.sev===o}">${o}</button>`).join("")}</div></div>`:""}
+  ${w.kind==="Injury"?`<div class="fld"><label>How serious is the injury?</label><div class="choice">${SEVERITIES.map(o=>`<button data-sev="${o}" aria-pressed="${w.sev===o}">${o}</button>`).join("")}</div></div>
+  <div class="hd-row"><div class="fld"><label for="wf-pt">Injured person</label><select id="wf-pt" class="wf" data-f="personType">${["Contractor","Employee","Visitor"].map(o=>`<option ${w.personType===o?"selected":""}>${o}</option>`).join("")}</select></div><div class="fld"><label for="wf-it">Injury type</label><select id="wf-it" class="wf" data-f="injuryType"><option value="">Select</option>${INJ_TYPES.map(o=>`<option ${w.injuryType===o?"selected":""}>${o}</option>`).join("")}</select></div><div class="fld"><label for="wf-bp">Body part</label><select id="wf-bp" class="wf" data-f="bodyPart"><option value="">Select</option>${BODY_PARTS.map(o=>`<option ${w.bodyPart===o?"selected":""}>${o}</option>`).join("")}</select></div></div>`:""}
+  ${w.rt==="Incident"&&w.kind!=="Near Miss"?`<div class="fld"><label for="wf-ic">Incident class (if known)</label><select id="wf-ic" class="wf" data-f="incClass"><option value="">Not classified yet</option>${INC_CLASS.map(o=>`<option ${w.incClass===o?"selected":""}>${o}</option>`).join("")}</select></div>`:""}
   ${w.rt!=="Good practice"?`<div class="fld"><label for="cat">High-energy category</label><select id="cat"><option value="">Select if applicable</option>${WHEEL.map(x=>`<option ${w.cat===x?"selected":""}>${x}</option>`).join("")}</select></div>`:""}`;}
  if(w.step===1)body=`<label class="photo" for="ph">${w.img?`<img src="${w.img}" alt="Attached photo">`:svg("cam",34)+"<div>Tap to add a photo</div><small>Optional. With a photo, AI can spot hazards and rate the risk.</small>"}</label><input id="ph" type="file" accept="image/*" hidden>`;
  if(w.step===2&&L.ready&&myProjects().length)body=`<div class="fld"><label for="wp">Project</label><select id="wp">${myProjects().map(p=>`<option value="${esc(p.id)}" ${w.p===p.id?"selected":""}>${esc(p.name)} · ${esc(p.country)}</option>`).join("")}</select></div>
@@ -645,11 +726,11 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,tr");if(!
  if(t.dataset.safe){st.w.safe=t.dataset.safe;const wt=document.getElementById("wt");if(wt)st.w.desc=wt.value;const we=document.getElementById("we");if(we)st.w.when=we.value;render();return}
  if(t.id==="back"){if(st.w.step)st.w.step--;else return go(st.role==="mgr"?"inc":"home");render();return}
  if(t.dataset.anon!==undefined){st.w.anon=t.dataset.anon==="1";st.w.desc=(document.getElementById("wt")||{}).value||st.w.desc;render();return}
- if(t.id==="next"){const g=id=>document.getElementById(id);if(g("cat"))st.w.cat=g("cat").value;if(g("wc"))st.w.c=g("wc").value;if(g("wp"))st.w.p=g("wp").value;if(g("wd"))st.w.dept=g("wd").value;if(g("wl"))st.w.loc=g("wl").value;if(g("wt"))st.w.desc=g("wt").value;if(g("we"))st.w.when=g("we").value;
+ if(t.id==="next"){const g=id=>document.getElementById(id);document.querySelectorAll(".wf").forEach(x=>st.w[x.dataset.f]=x.value);if(g("cat"))st.w.cat=g("cat").value;if(g("wc"))st.w.c=g("wc").value;if(g("wp"))st.w.p=g("wp").value;if(g("wd"))st.w.dept=g("wd").value;if(g("wl"))st.w.loc=g("wl").value;if(g("wt"))st.w.desc=g("wt").value;if(g("we"))st.w.when=g("we").value;
   if(st.w.step===3&&L.ready&&st.w.p){const w=st.w;const btn=t;btn.disabled=true;btn.textContent="Sending…";if(g("wlang"))w.lang=g("wlang").value;
   liveSave(async()=>{let photo=null;if(w.blob&&L.db.uploadPhoto)photo=await L.db.uploadPhoto(w.p,w.blob);
    const english=w.ai&&w.ai.english_text&&!(w.lang||"en").startsWith("en")?w.ai.english_text:null;
-   await L.db.collection("reports").add({rt:w.rt,kind:w.kind||"",severity:w.kind==="Injury"?(w.sev||""):"",cat:w.cat||"",project:w.p,dept:w.dept||"",loc:w.loc||"",desc:(english||w.desc||"").slice(0,2000),originalText:english?(w.desc||"").slice(0,2000):null,lang:w.lang||"en-US",ai:w.ai||null,photo,safe:w.safe||"",by:w.anon?null:L.me.id,ts:Date.now(),eventTs:w.when?new Date(w.when).getTime():null,status:"Open"})},
+   await L.db.collection("reports").add({rt:w.rt,kind:w.kind||"",severity:w.kind==="Injury"?(w.sev||""):"",personType:w.kind==="Injury"?(w.personType||"Contractor"):null,injuryType:w.kind==="Injury"?(w.injuryType||null):null,bodyPart:w.kind==="Injury"?(w.bodyPart||null):null,incClass:w.rt==="Incident"?(w.incClass||null):null,cat:w.cat||"",project:w.p,dept:w.dept||"",loc:w.loc||"",desc:(english||w.desc||"").slice(0,2000),originalText:english?(w.desc||"").slice(0,2000):null,lang:w.lang||"en-US",ai:w.ai||null,photo,safe:w.safe||"",by:w.anon?null:L.me.id,ts:Date.now(),eventTs:w.when?new Date(w.when).getTime():null,status:"Open"})},
    "Report sent to the "+projName(w.p)+" HSE team").then(ok=>{if(ok)go("live");else{btn.disabled=false;btn.textContent="Submit report"}});return}
   if(st.w.step===0&&!st.w.kind){toast("Choose a type to continue");return}
   if(st.w.step<3){st.w.step++;render();return}
@@ -689,7 +770,7 @@ async function liveInit(){try{
  L.db.collection("admin/rv/months").onSnapshot(s=>{L.reviews={};s.docs.forEach(d=>L.reviews[d.id]=d.data());if(["sc","entry"].includes(st.view))render()},err);
 }catch(e){L.state="offline";render()}}
 // Subscribe per project for non-admins (the server only lets them read their own projects), whole collections for admins.
-const COLS=[["reports","reports",["live","sc","entry","exec","leaders"]],["actions","actions",["lactions","sc","entry","exec","leaders"]],["inspections","inspections",["sc","entry","insp","exec","leaders"]],["activities","activities",["activity","sc","entry","exec","leaders"]]];
+const COLS=[["reports","reports",["live","sc","entry","exec","leaders"]],["actions","actions",["lactions","sc","entry","exec","leaders"]],["inspections","inspections",["sc","entry","insp","exec","leaders"]],["activities","activities",["activity","sc","entry","exec","leaders"]],["records","records",["exec","hdata"]]];
 function resub(){if(!L.ready)return;const role=myRole();const key=role==="admin"?"*":myProjects().map(p=>p.id).sort().join(",");if(key===L.subKey)return;L.subKey=key;
  (L.unsubs||[]).forEach(u=>u());L.unsubs=[];COLS.forEach(([c,k])=>L[k]=[]);if(!role)return;
  COLS.forEach(([c,k,views])=>{const parts={};const merge=()=>{L[k]=Object.values(parts).flat();if(k==="reports")L[k].sort((a,b)=>b.ts-a.ts);if(views.includes(st.view))render()};
@@ -1044,17 +1125,19 @@ async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;
  slots.forEach(([pl,b,c],i)=>{const id="demo-p"+String(i+1).padStart(2,"0");const country=COUNTRIES[i%COUNTRIES.length];const hc=pick([90,140,220,310,460,650]);const pi=pick([4,6,8,10]);const pw=pick([2,3,4,6]);
   projects.push({id,name:`${country} ${c||b} ${pick(NAMES)}`,country,platform:pl,division:b,cluster:c||"",headcount:hc,planInsp:pi,planWalk:pw});
   const q=.45+R()*.55;
-  for(let d=88;d>=0;d--){const t=now-d*day-Math.floor(R()*8)*3600e3;
-   if(R()<Math.min(.95,hc/380*(.6+q*.6))){const r=R();const rt=r<.12?"Incident":r<.82?"Hazard":"Good practice";const kind=rt==="Incident"?pick(["Near Miss","Near Miss","First Aid","Property Damage"]):rt==="Hazard"?(R()<.25?"Near Miss":pick(["Unsafe Condition","Unsafe Act","Equipment defect"])):"Safe behaviour";
+  for(let d=364;d>=0;d--){const t=now-d*day-Math.floor(R()*8)*3600e3;
+   if(R()<Math.min(.95,hc/380*(.6+q*.6))){const r=R();const rt=r<.12?"Incident":r<.82?"Hazard":"Good practice";const kind=rt==="Incident"?pick(["Near Miss","Near Miss","Near Miss","Injury","Injury","Property Damage","Property Damage","Environmental","Fire","Process Safety"]):rt==="Hazard"?(R()<.25?"Near Miss":pick(["Unsafe Condition","Unsafe Act","Equipment defect"])):"Safe behaviour";
     const late=R()>q*.95;const cat=rt!=="Good practice"&&R()<.55?pick(WHEEL):"";const old=d>14;const status=(old&&R()<q+.15)||(!old&&R()<q*.6)?"Closed":"Open";
     reports.push({rt:kind==="Near Miss"&&rt==="Hazard"?"Incident":rt,kind,cat,project:id,dept:pick(DEPTS),loc:"",desc:pick(rt==="Good practice"?["Good housekeeping in laydown area","Spotter used for reversing","Correct LOTO applied"]:["Unsecured materials at height","Missing barricade at open edge","Damaged sling in use","Blocked fire exit","Dropped object near walkway","Forklift reversing without spotter"]),safe:"Yes",by:null,ts:t,eventTs:t-(late?(30+R()*40):(1+R()*9))*3600e3,status});
+    {const rr=reports[reports.length-1];if(rr.rt==="Incident"){const D={Injury:["Hand caught between pipe and support","Worker slipped on wet stairs","Cut from sharp sheet edge","Heat stress during afternoon shift","Struck by falling object","Twisted ankle on uneven ground"],"Property Damage":["Excavator struck parked vehicle","Crane boom contacted structure","Forklift damaged rack","Dump truck body collapse while offloading"],Environmental:["Hydraulic oil leak to ground","Diesel spill at refuelling point","Sewage tank overflow"],Fire:["Small fire at hot work area","Generator fire, extinguished","Electrical panel smoke"],"Process Safety":["Loss of containment at flange","Pressure relief valve lifted","Gas detector alarm in process area"],"Near Miss":["Load swung close to worker","Unsecured scaffold board fell","Vehicle reversed without banksman"]};if(D[rr.kind])rr.desc=pick(D[rr.kind]);
+     if(rr.kind==="Injury"){const s=R();rr.severity=s<.006?"Fatality":s<.07?"Lost Time":s<.17?"Restricted Work":s<.4?"Medical Treatment":"First Aid";hsInjuryDemo(rr,R)}else if(rr.kind!=="Near Miss")rr.incClass=pick(["Class B","Class C","Class C","Class D","Class D"])}}
     if(rt!=="Good practice"&&R()<.45){const due=t+pick([3,7,14])*day;let closedAt=null;if(due<now&&R()<q+.1)closedAt=R()<q?due-Math.floor(R()*2)*day:due+(2+Math.floor(R()*7))*day;else if(due>=now&&R()<.3)closedAt=now-5*3600e3;
      actions.push({title:"Follow up: "+reports[reports.length-1].desc.toLowerCase(),project:id,owner:pick(["Site Supervisor","HSE Engineer","Area Engineer","Foreman"]),due,priority:cat&&R()<.4?"High":"Normal",report:null,ts:t,by:null,closedAt})}}
    if(R()<pi/30*(.5+q*.6))insp.push({project:id,tpl:pick(Object.keys(TEMPLATES)),items:6,fails:R()<q?0:Math.ceil(R()*3),ts:t,by:null});
    if(R()<pw/30*(.4+q*.7))acts.push({type:"Leadership walkthrough",project:id,date:t,count:1,by:null,ts:now});
    if(d%7===0)acts.push({type:"Toolbox talk",project:id,date:t,count:Math.max(1,Math.round(hc/12)),by:null,ts:now})}});
  await liveSave(async()=>{await L.db.doc("admin/projects").set({list:[...L.projects.filter(p=>!String(p.id).startsWith("demo-")),...projects]});
-  await L.db.bulkInsert("reports",reports);await L.db.bulkInsert("actions",actions);await L.db.bulkInsert("inspections",insp);await L.db.bulkInsert("activities",acts)},
+  await L.db.bulkInsert("reports",reports);await L.db.bulkInsert("actions",actions);await L.db.bulkInsert("inspections",insp);await L.db.bulkInsert("activities",acts);await L.db.bulkInsert("hsse_records",hsDemo(projects,R))},
   `Demo data loaded: ${projects.length} projects, ${reports.length} reports`);L.subKey=null;resub()}
 
 /* ---- Projects & access ---- */
@@ -1136,5 +1219,6 @@ document.addEventListener("change",e=>{if(e.target.id==="np-plat"){L.np={plat:e.
 
 render();liveInit();
 </script>
+<script src="hsse.js"></script>
 
 </body></html>
