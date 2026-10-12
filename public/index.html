@@ -1151,9 +1151,11 @@ async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;
    if(R()<pi/30*(.5+q*.6))insp.push({project:id,tpl:pick(Object.keys(TEMPLATES)),items:6,fails:R()<q?0:Math.ceil(R()*3),ts:t,by:null});
    if(R()<pw/30*(.4+q*.7))acts.push({type:"Leadership walkthrough",project:id,date:t,count:1,by:null,ts:now});
    if(d%7===0)acts.push({type:"Toolbox talk",project:id,date:t,count:Math.max(1,Math.round(hc/12)),by:null,ts:now});if(d%7===2)acts.push({type:"STARRT briefing",project:id,date:t,count:Math.max(1,Math.round(hc/25)),by:null,ts:now});if(d%14===3)acts.push({type:"Behaviour safety leadership engagement",project:id,date:t,count:1,by:null,ts:now});if(d%30===5)acts.push({type:"Inter-division / facility tour",project:id,date:t,count:1,by:null,ts:now});if(d%45===9)acts.push({type:"OHS campaign",project:id,date:t,count:1,by:null,ts:now});if(d%60===11)acts.push({type:"Emergency drill",project:id,date:t,count:1,by:null,ts:now})}});
- await liveSave(async()=>{await L.db.doc("admin/projects").set({list:[...L.projects.filter(p=>!String(p.id).startsWith("demo-")),...projects]});
-  await L.db.bulkInsert("reports",reports);await L.db.bulkInsert("actions",actions);await L.db.bulkInsert("inspections",insp);await L.db.bulkInsert("activities",acts);await L.db.bulkInsert("hsse_records",hsDemo(projects,R))},
-  `Sample data loaded: ${projects.length} projects, ${reports.length} reports, ${actions.length} actions, ${insp.length} inspections`);L.subKey=null;resub()}
+ const prog=m=>{const b=document.getElementById("demo-load");if(b)b.textContent=m};const BI=L.db.bulkInsert;L.db.bulkInsert=async(t,rows)=>{for(let i=0;i<rows.length;i+=200){prog(`Loading ${t} ${Math.min(i+200,rows.length)} / ${rows.length}…`);await BI(t,rows.slice(i,i+200))}};
+ try{await (async()=>{await L.db.doc("admin/projects").set({list:[...L.projects.filter(p=>!String(p.id).startsWith("demo-")),...projects]});
+  await L.db.bulkInsert("reports",reports);await L.db.bulkInsert("actions",actions);await L.db.bulkInsert("inspections",insp);await L.db.bulkInsert("activities",acts);await L.db.bulkInsert("hsse_records",hsDemo(projects,R))})();toast(`Sample data loaded: ${projects.length} projects, ${reports.length} reports, ${actions.length} actions, ${insp.length} inspections`)}
+ catch(e){const m=String(e?.message||e);alert("Loading sample data stopped: "+m+(/column|schema cache/i.test(m)?"\n\nRun the SQL update in Supabase (supabase/007_exec_kpis.sql), then press Remove sample data and Load sample data again.":""))}
+ finally{L.db.bulkInsert=BI;render()}L.subKey=null;resub()}
 
 /* ---- Projects & access ---- */
 function access(){const g=liveGate();if(g)return g;if(myRole()!=="admin")return liveTag()+`<div class="panel"><h2>Only HSE Admins manage projects and access</h2><p style="margin:0;color:var(--muted)">Your projects: ${myProjects().map(p=>esc(p.name)).join(", ")||"none"}.</p></div>`;
