@@ -581,7 +581,265 @@ BUILDERS = {
 }
 
 
+
+
+# ---------------- Executive summary (Corporation / Construction / Non-Construction) ----------------
+NAVY = "0B4F3C"
+
+
+def _n(v, dec=0):
+    if v is None:
+        return "—"
+    try:
+        v = float(v)
+    except Exception:
+        return str(v)
+    if abs(v) >= 1e6:
+        return f"{v/1e6:.2f}M"
+    return f"{v:,.{dec}f}"
+
+
+def _exec_rows(d):
+    c, p = d.get("cur", {}), d.get("prev", {})
+    rows = [("Fatalities", "fat", 0), ("Lost time injuries", "lti", 0), ("Total recordable cases", "trc", 0), ("First aid cases", "fac", 0),
+            ("Near misses", "nm", 0), ("Lost workdays", "lost", 0)]
+    lead = [("Inspections", "insp", 0), ("Walkthroughs", "walks", 0), ("Safety observations", "obs", 0), ("Training hours", "trainH", 0),
+            ("Training completion %", "trainPct", 0), ("Audits", "audits", 0), ("Critical control checks", "cc", 0), ("Emergency drills", "drills", 0)]
+    acts = [("Total actions", "acts", 0), ("Open", "open", 0), ("Closed", "closed", 0), ("Overdue", "over", 0), ("Closure %", "closePct", 0),
+            ("High priority", "crit", 0), ("Avg. days to close", "avgClose", 1)]
+    work = [("Total projects", "projects", 0), ("Active projects", "active", 0), ("Total manpower", "manpower", 0), ("Man-hours (latest month)", "monthHours", 0),
+            ("Cumulative man-hours", "hours", 0)]
+    f = lambda L: [(lbl, _n(c.get(k), dec), _n(p.get(k), dec)) for lbl, k, dec in L]
+    return f(work), f(rows), f(lead), f(acts)
+
+
+def build_exec_pptx(d):
+    from pptx import Presentation
+    from pptx.util import Inches, Pt
+    from pptx.dml.color import RGBColor
+    from pptx.chart.data import CategoryChartData
+    from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
+    from pptx.enum.shapes import MSO_SHAPE
+    prs = Presentation()
+    prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
+    blank = prs.slide_layouts[6]
+    rgb = lambda h: RGBColor.from_string(h)
+    tg, c, p = d.get("targets", {}), d.get("cur", {}), d.get("prev", {})
+
+    def text(s, x, y, w, h, t, size=14, bold=False, color="252423", align=None):
+        tb = s.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+        tf = tb.text_frame
+        tf.word_wrap = True
+        para = tf.paragraphs[0]
+        para.text = str(t)
+        para.font.size, para.font.bold, para.font.name = Pt(size), bold, FONT
+        para.font.color.rgb = rgb(color)
+        if align:
+            para.alignment = align
+        return tb
+
+    def frame(title):
+        s = prs.slides.add_slide(blank)
+        bar = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, Inches(0.9))
+        bar.fill.solid(); bar.fill.fore_color.rgb = rgb(NAVY); bar.line.fill.background()
+        text(s, 0.4, 0.15, 10, 0.6, title, 24, True, "FFFFFF")
+        text(s, 9.3, 0.25, 3.8, 0.5, d.get("period", ""), 14, False, "D9F2E6")
+        foot = f'{d.get("brand","NAVO")} · {d.get("title","")} · {d.get("country","")} · generated {d.get("generated","")}'
+        if d.get("illustrative"):
+            foot += " · ILLUSTRATIVE DATA – not verified company performance"
+        text(s, 0.4, 7.05, 12.5, 0.35, foot, 9, False, "8A8886")
+        return s
+
+    def table(s, x, y, w, rows, head, colw=None):
+        t = s.shapes.add_table(len(rows) + 1, len(head), Inches(x), Inches(y), Inches(w), Inches(0.32 * (len(rows) + 1))).table
+        for j, hd in enumerate(head):
+            cell = t.cell(0, j); cell.text = hd
+            cell.fill.solid(); cell.fill.fore_color.rgb = rgb(NAVY)
+            pr = cell.text_frame.paragraphs[0]; pr.font.size = Pt(11); pr.font.bold = True; pr.font.color.rgb = rgb("FFFFFF"); pr.font.name = FONT
+        for i, r in enumerate(rows, 1):
+            for j, v in enumerate(r):
+                cell = t.cell(i, j); cell.text = str(v)
+                cell.fill.solid(); cell.fill.fore_color.rgb = rgb("FFFFFF" if i % 2 else "F2F6F4")
+                pr = cell.text_frame.paragraphs[0]; pr.font.size = Pt(10.5); pr.font.name = FONT
+        if colw:
+            for j, cw in enumerate(colw):
+                t.columns[j].width = Inches(cw)
+        return t
+
+    # 1. cover
+    s = prs.slides.add_slide(blank)
+    bg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, prs.slide_height)
+    bg.fill.solid(); bg.fill.fore_color.rgb = rgb(NAVY); bg.line.fill.background()
+    text(s, 0.8, 2.2, 11.5, 1.2, d.get("title", "Executive Summary"), 40, True, "FFFFFF")
+    text(s, 0.8, 3.4, 11.5, 0.6, f'HSE performance · {d.get("period","")} · compared with {d.get("prevPeriod","")}', 18, False, "D9F2E6")
+    text(s, 0.8, 4.0, 11.5, 0.6, d.get("country", ""), 14, False, "D9F2E6")
+    if d.get("illustrative"):
+        text(s, 0.8, 5.2, 11.5, 0.6, "ILLUSTRATIVE DATA – figures are generated sample records, not verified company performance", 13, True, "F5B82E")
+    text(s, 0.8, 6.6, 11.5, 0.5, f'{d.get("brand","NAVO")} HSE · generated {d.get("generated","")}', 12, False, "B8D8CC")
+
+    # 2. KPIs actual vs target
+    s = frame("Safety performance · actual vs target")
+    mult = d.get("mult", 200000)
+    for i, (lbl, k) in enumerate([("LTIFR", "ltifr"), ("LTISR", "ltisr"), ("TRCF", "trcf")]):
+        act, t = float(c.get(k) or 0), float(tg.get(k) or 0)
+        ok = act <= t
+        box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.5 + i * 4.2), Inches(1.2), Inches(3.9), Inches(1.9))
+        box.fill.solid(); box.fill.fore_color.rgb = rgb("E6F5EC" if ok else "FDECEC"); box.line.color.rgb = rgb(GREEN if ok else RED)
+        col = "1E7A3C" if ok else "B3261E"
+        text(s, 0.7 + i * 4.2, 1.3, 3.5, 0.4, lbl, 16, True, col)
+        text(s, 0.7 + i * 4.2, 1.7, 3.5, 0.8, f"{act:.2f}", 40, True, col)
+        text(s, 0.7 + i * 4.2, 2.55, 3.5, 0.4, f'Target {t:.2f} · previous {float(p.get(k) or 0):.2f}', 12, False, "444444")
+    cd = CategoryChartData(); cd.categories = ["LTIFR", "LTISR", "TRCF"]
+    cd.add_series("Actual", [float(c.get(k) or 0) for k in ("ltifr", "ltisr", "trcf")])
+    cd.add_series("Target", [float(tg.get(k) or 0) for k in ("ltifr", "ltisr", "trcf")])
+    ch = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.5), Inches(3.3), Inches(7.5), Inches(3.6), cd).chart
+    ch.has_legend = True; ch.legend.position = XL_LEGEND_POSITION.BOTTOM; ch.legend.include_in_layout = False
+    ch.plots[0].has_data_labels = True; ch.plots[0].data_labels.number_format = "0.00"; ch.plots[0].data_labels.number_format_is_linked = False
+    ch.series[0].format.fill.solid(); ch.series[0].format.fill.fore_color.rgb = rgb(NAVY)
+    ch.series[1].format.fill.solid(); ch.series[1].format.fill.fore_color.rgb = rgb("F5B82E")
+    text(s, 8.3, 3.4, 4.6, 3.4, f"Rates per {int(mult):,} man-hours.\n\nLTIFR = lost time injuries × {int(mult):,} ÷ man-hours\nLTISR = lost workdays × {int(mult):,} ÷ man-hours\nTRCF = recordable cases (LTI + RWC + MTC) × {int(mult):,} ÷ man-hours\n\nInjury-free man-hours: {_n(d.get('safeHours'))}", 12, False, "333333")
+
+    work, lag, lead, acts = _exec_rows(d)
+    # 3. Workforce, lagging, leading
+    s = frame("Workforce, safety statistics and leading indicators")
+    table(s, 0.4, 1.15, 4.1, work + lag, ["Indicator", "Current", "Previous"], [2.3, 0.9, 0.9])
+    table(s, 4.8, 1.15, 4.0, lead, ["Leading indicator", "Current", "Previous"], [2.2, 0.9, 0.9])
+    table(s, 9.1, 1.15, 3.9, acts, ["Corrective actions", "Current", "Previous"], [2.1, 0.9, 0.9])
+
+    # 4. trend + actions
+    s = frame("Monthly performance trend")
+    months = d.get("months", [])
+    cd = CategoryChartData(); cd.categories = months
+    cd.add_series("Recordable cases (previous year)", [v or 0 for v in d.get("trendTrcPrev", [])])
+    cd.add_series("Recordable cases (this year)", [v or 0 for v in d.get("trendTrc", [])])
+    ch = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.4), Inches(1.1), Inches(7.6), Inches(2.9), cd).chart
+    ch.has_legend = True; ch.legend.position = XL_LEGEND_POSITION.BOTTOM; ch.legend.include_in_layout = False
+    ch.series[0].format.fill.solid(); ch.series[0].format.fill.fore_color.rgb = rgb("B9C7E4")
+    ch.series[1].format.fill.solid(); ch.series[1].format.fill.fore_color.rgb = rgb(NAVY)
+    cd = CategoryChartData(); cd.categories = months
+    cd.add_series("LTIFR", [v or 0 for v in d.get("trendLtifr", [])]); cd.add_series("Target", [float(tg.get("ltifr") or 0)] * len(months))
+    ch = s.shapes.add_chart(XL_CHART_TYPE.LINE_MARKERS, Inches(0.4), Inches(4.05), Inches(7.6), Inches(2.9), cd).chart
+    ch.has_legend = True; ch.legend.position = XL_LEGEND_POSITION.BOTTOM; ch.legend.include_in_layout = False
+    cd = CategoryChartData(); cd.categories = ["Closed", "Open, on time", "Overdue"]
+    cd.add_series("Actions", [c.get("closed") or 0, max(0, (c.get("open") or 0) - (c.get("over") or 0)), c.get("over") or 0])
+    ch = s.shapes.add_chart(XL_CHART_TYPE.DOUGHNUT, Inches(8.3), Inches(1.1), Inches(4.7), Inches(4.2), cd).chart
+    ch.has_legend = True; ch.legend.position = XL_LEGEND_POSITION.BOTTOM; ch.legend.include_in_layout = False
+    ch.plots[0].has_data_labels = True
+    for i, col in enumerate([GREEN, BLUE, RED]):
+        pt = ch.plots[0].series[0].points[i]; pt.format.fill.solid(); pt.format.fill.fore_color.rgb = rgb(col)
+    text(s, 8.3, 5.4, 4.7, 1.4, f'Action closure {c.get("closePct") if c.get("closePct") is not None else "—"}% · {c.get("over",0)} overdue · average {c.get("avgClose") or "—"} days to close', 13, True, "333333")
+
+    # 5. divisions
+    s = frame("Division comparison")
+    divs = d.get("divisions", [])[:14]
+    table(s, 0.4, 1.15, 12.5, [(x["name"], _n(x["hours"]), f'{x["ltifr"]:.2f}', f'{x["trcf"]:.2f}', x["lti"], x["trc"], x["insp"], "—" if x["closure"] is None else f'{x["closure"]}%') for x in divs],
+          ["Division", "Man-hours", "LTIFR", "TRCF", "LTI", "Recordables", "Inspections", "Action closure"], [3.3, 1.5, 1.1, 1.1, 1.0, 1.4, 1.4, 1.7])
+
+    # 6. projects + risk
+    s = frame("Project ranking and critical risk distribution")
+    pr = d.get("projects", [])[:12]
+    table(s, 0.4, 1.15, 7.4, [(i + 1, x["name"], x["division"], f'{x["trcf"]:.2f}', x["over"]) for i, x in enumerate(pr)], ["#", "Project", "Division", "TRCF", "Overdue actions"], [0.4, 3.0, 1.8, 0.9, 1.3])
+    risk = d.get("risk", [])
+    if risk:
+        cd = CategoryChartData(); cd.categories = [r[0] for r in risk]; cd.add_series("Reports", [r[1] for r in risk])
+        ch = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, Inches(8.1), Inches(1.15), Inches(4.9), Inches(5.6), cd).chart
+        ch.has_legend = False; ch.plots[0].has_data_labels = True
+        ch.series[0].format.fill.solid(); ch.series[0].format.fill.fore_color.rgb = rgb(NAVY)
+    out = io.BytesIO(); prs.save(out); return out.getvalue()
+
+
+def build_exec_pdf(d):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_pdf import PdfPages
+    from matplotlib.patches import FancyBboxPatch, Rectangle
+    tg, c, p = d.get("targets", {}), d.get("cur", {}), d.get("prev", {})
+    navy, red, green = "#" + NAVY, "#B3261E", "#1E7A3C"
+    out = io.BytesIO()
+    foot = f'{d.get("brand","NAVO")} · {d.get("title","")} · {d.get("country","")} · generated {d.get("generated","")}' + (" · ILLUSTRATIVE DATA – not verified company performance" if d.get("illustrative") else "")
+
+    def page(title):
+        fig = plt.figure(figsize=(11.69, 8.27), dpi=150)
+        fig.patches.append(Rectangle((0, .92), 1, .08, transform=fig.transFigure, color=navy, zorder=-1))
+        fig.text(.03, .945, title, color="white", fontsize=18, weight="bold", va="center")
+        fig.text(.97, .945, d.get("period", ""), color="#D9F2E6", fontsize=12, ha="right", va="center")
+        fig.text(.03, .02, foot, color="#8A8886", fontsize=7.5)
+        return fig
+
+    def tbl(fig, rect, rows, head, cw=None):
+        ax = fig.add_axes(rect); ax.axis("off")
+        t = ax.table(cellText=[[str(v) for v in r] for r in rows] or [["—"] * len(head)], colLabels=head, loc="upper center", cellLoc="left", colWidths=cw)
+        t.auto_set_font_size(False); t.set_fontsize(8.5); t.scale(1, 1.35)
+        for (i, j), cell in t.get_celld().items():
+            cell.set_edgecolor("#DDDDDD")
+            if i == 0:
+                cell.set_facecolor(navy); cell.get_text().set_color("white"); cell.get_text().set_weight("bold")
+            elif i % 2 == 0:
+                cell.set_facecolor("#F2F6F4")
+
+    with PdfPages(out) as pdf:
+        # cover + KPI tiles
+        fig = page(d.get("title", "Executive Summary"))
+        fig.text(.03, .86, f'HSE performance · {d.get("period","")} compared with {d.get("prevPeriod","")} · {d.get("country","")}', fontsize=12, color="#333333")
+        if d.get("illustrative"):
+            fig.text(.03, .82, "ILLUSTRATIVE DATA – generated sample records, not verified company performance", fontsize=10, color="#9A6B00", weight="bold")
+        for i, (lbl, k) in enumerate([("LTIFR", "ltifr"), ("LTISR", "ltisr"), ("TRCF", "trcf")]):
+            act, t = float(c.get(k) or 0), float(tg.get(k) or 0); ok = act <= t; col = green if ok else red
+            x = .03 + i * .32
+            fig.patches.append(FancyBboxPatch((x, .55), .3, .22, boxstyle="round,pad=0.005", transform=fig.transFigure, facecolor="#E6F5EC" if ok else "#FDECEC", edgecolor=col))
+            fig.text(x + .015, .735, lbl, fontsize=14, weight="bold", color=col)
+            fig.text(x + .015, .63, f"{act:.2f}", fontsize=34, weight="bold", color=col)
+            fig.text(x + .015, .575, f'Target {t:.2f} · previous {float(p.get(k) or 0):.2f}', fontsize=10, color="#444444")
+        mult = int(d.get("mult", 200000))
+        fig.text(.03, .5, f"Rates per {mult:,} man-hours. LTIFR = lost time injuries × {mult:,} ÷ man-hours · LTISR = lost workdays × {mult:,} ÷ man-hours · TRCF = recordable cases × {mult:,} ÷ man-hours.", fontsize=8.5, color="#555555")
+        work, lag, lead, acts = _exec_rows(d)
+        tbl(fig, [.03, .06, .3, .4], work + lag, ["Indicator", "Current", "Previous"], [.55, .22, .23])
+        tbl(fig, [.36, .06, .3, .4], lead, ["Leading indicator", "Current", "Previous"], [.55, .22, .23])
+        tbl(fig, [.69, .06, .28, .4], acts, ["Corrective actions", "Current", "Previous"], [.55, .22, .23])
+        pdf.savefig(fig); plt.close(fig)
+        # trends
+        fig = page("Monthly performance trend")
+        months = d.get("months", []); xs = range(len(months))
+        ax = fig.add_axes([.06, .53, .55, .33])
+        ax.bar([x - .2 for x in xs], [v or 0 for v in d.get("trendTrcPrev", [])], .4, color="#B9C7E4", label="Recordables previous year")
+        ax.bar([x + .2 for x in xs], [v or 0 for v in d.get("trendTrc", [])], .4, color=navy, label="Recordables this year")
+        ax.set_xticks(list(xs)); ax.set_xticklabels(months, fontsize=8); ax.legend(fontsize=8, frameon=False); ax.spines[["top", "right"]].set_visible(False)
+        ax = fig.add_axes([.06, .1, .55, .33])
+        ax.plot(list(xs), [v if v is not None else float("nan") for v in d.get("trendLtifr", [])], marker="o", color="#E66C37", label="LTIFR")
+        ax.axhline(float(tg.get("ltifr") or 0), color=red, ls="--", label="Target")
+        ax.set_xticks(list(xs)); ax.set_xticklabels(months, fontsize=8); ax.legend(fontsize=8, frameon=False); ax.spines[["top", "right"]].set_visible(False)
+        ax = fig.add_axes([.67, .45, .3, .4])
+        vals = [c.get("closed") or 0, max(0, (c.get("open") or 0) - (c.get("over") or 0)), c.get("over") or 0]
+        if sum(vals):
+            ax.pie(vals, labels=["Closed", "Open, on time", "Overdue"], colors=[green, "#2D6AA6", red], wedgeprops=dict(width=.38), autopct="%1.0f%%", textprops=dict(fontsize=8))
+        ax.set_title("Corrective actions", fontsize=11)
+        fig.text(.67, .38, f'Closure {c.get("closePct") if c.get("closePct") is not None else "—"}% · {c.get("over",0)} overdue\nAverage {c.get("avgClose") or "—"} days to close · {c.get("crit",0)} high priority', fontsize=10)
+        pdf.savefig(fig); plt.close(fig)
+        # divisions + projects + risk
+        fig = page("Divisions, projects and critical risks")
+        divs = d.get("divisions", [])[:14]
+        tbl(fig, [.03, .47, .94, .42], [(x["name"], _n(x["hours"]), f'{x["ltifr"]:.2f}', f'{x["trcf"]:.2f}', x["lti"], x["trc"], x["insp"], "—" if x["closure"] is None else f'{x["closure"]}%') for x in divs],
+            ["Division", "Man-hours", "LTIFR", "TRCF", "LTI", "Recordables", "Inspections", "Action closure"], [.24, .12, .09, .09, .08, .12, .12, .14])
+        pr = d.get("projects", [])[:10]
+        tbl(fig, [.03, .05, .55, .38], [(i + 1, x["name"], x["division"], f'{x["trcf"]:.2f}', x["over"]) for i, x in enumerate(pr)], ["#", "Project", "Division", "TRCF", "Overdue"], [.06, .44, .24, .12, .14])
+        risk = d.get("risk", [])
+        if risk:
+            ax = fig.add_axes([.74, .07, .23, .33])
+            ax.barh([r[0] for r in risk][::-1], [r[1] for r in risk][::-1], color=navy)
+            ax.tick_params(labelsize=7.5); ax.set_title("Critical risk distribution", fontsize=10); ax.spines[["top", "right"]].set_visible(False)
+        pdf.savefig(fig); plt.close(fig)
+    return out.getvalue()
+
+
 def make(fmt, data):
+    if data.get("kind") == "exec":
+        data.setdefault("generated", datetime.utcnow().strftime("%d %b %Y"))
+        if fmt == "pdf":
+            return build_exec_pdf(data), "application/pdf"
+        if fmt == "pptx":
+            return build_exec_pptx(data), "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        raise ValueError("Executive summaries export as pptx or pdf")
     if fmt not in BUILDERS:
         raise ValueError("Unknown format")
     data.setdefault("generated", datetime.utcnow().strftime("%d %b %Y"))
