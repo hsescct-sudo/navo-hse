@@ -93,6 +93,24 @@ body.hs-full .app{grid-template-columns:1fr}body.hs-full .app>aside,body.hs-full
 .xattn{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
 .hc.flat{box-shadow:none}
 @media(max-width:700px){.xkpis{grid-template-columns:1fr}}
+.mx-in{padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);min-width:0;width:100%;font:inherit}
+.filters .mx-in{width:auto;min-width:170px;flex:1}
+.mx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:8px}
+.mx-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;margin-top:10px}.mx-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mx-dl{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;margin:0;font-size:13.5px}.mx-dl dt{color:var(--muted);font-weight:600}.mx-dl dd{margin:0}
+.mx-detail{border:2px solid var(--brand)}.mx-detail h2{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}.mx-detail h2 span{display:flex;gap:6px;flex-wrap:wrap}.mx-detail h3{font-size:14px;margin:14px 0 6px}
+.mx-muted{color:var(--muted);font-size:13px;margin:4px 0}.mx-ev{background:var(--ok-bg);border-radius:8px;padding:8px 10px;margin:0}
+.mx-form{background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:12px}
+.flow{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.flow span{position:relative;font-size:12px;font-weight:600;padding:6px 14px 6px 12px;background:#eef1f0;color:var(--muted);clip-path:polygon(0 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,0 100%,8px 50%)}
+.flow span.done{background:#d6eee0;color:#1e6b3d}.flow span.now{background:var(--brand);color:#fff}
+.hist{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:13px}.hist li b{display:block;font-weight:600}.hist li small{color:var(--muted)}
+.seg3{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.seg3 button{border:0;background:var(--surface);padding:6px 12px;font-size:13px}.seg3 button[aria-pressed=true][data-v=Yes]{background:#2f8a57;color:#fff}.seg3 button[aria-pressed=true][data-v=No]{background:#c2392f;color:#fff}.seg3 button[aria-pressed=true][data-v="N/A"]{background:#777;color:#fff}
+table.qa td{vertical-align:middle}.bad{color:var(--crit)}td.bad{background:#fbecea}
+.mx-cb{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px}.cl-list{display:flex;flex-direction:column;gap:4px;max-height:720px;overflow:auto}.cl-list button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;font-weight:600}.cl-list button small{display:block;font-weight:400;color:var(--muted);font-size:12px}.cl-list button[aria-current=true]{border-color:var(--brand);background:#e7f3ee}.cl-list button.off,tr.off{opacity:.55}
+.chips{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}.chips label{display:flex;gap:4px;align-items:center}
+.wf-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:12px}.wf-card{border:1px solid var(--line);border-radius:12px;padding:12px}.wf-card h3{margin:0 0 6px;font-size:16px}.wf-card dd[contenteditable=true]{border-bottom:1px dashed var(--line);outline:none}.wf-card dd[contenteditable=true]:focus{background:#fff9e6}
+.kpi.hot{cursor:pointer}.kpi.hot:hover{outline:2px solid var(--brand)}
+@media(max-width:900px){.mx-2,.mx-3,.mx-cb{grid-template-columns:1fr}.mx-dl{grid-template-columns:120px 1fr}.wf-cards{grid-template-columns:1fr}}
 </style></head><body>
 <title>NAVO HSE</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -382,9 +400,9 @@ comp:["Compliance Register","List the legal and client requirements that apply i
 train:["Training & Competency","Record inductions, courses and certificates for 2,000 employees and warn before anything expires.",["Training matrix by role and department","Certificate expiry alerts","Induction and toolbox talk attendance","Competency sign-off for critical roles","Training hours KPI"]],
 sugg:["Improvement Suggestions","Let anyone submit an idea, route it to the right department, and show what was done with it.",["Submit from phone with photo","Department review and decision","Recognition and points","Link to MOC when a change is approved"]],
 emer:["Emergency Preparedness","Keep emergency plans, contacts and drill records per site, and measure drill performance.",["Emergency response plan per site","Drill schedule and evaluation","Muster time tracking","Emergency equipment inspections","Contact lists by site"]]};
-const NAV_M=[["#Live system"],["exec","Global HSSE dashboard"],["hdata","Enter HSSE data"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Live actions"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["settings","Structure & settings"]];
+const NAV_M=[["#Live system"],["exec","Global HSSE dashboard"],["hdata","Enter HSSE data"],["leaders","Leadership engagement"],["live","Live reports"],["sc","Project score card"],["lactions","Action management"],["inspm","Inspections"],["incm","Incident management"],["walk","HSE walkthroughs"],["train","Training"],["activity","Activity log"],["entry","Admin review"],["access","Projects & access"],["chk","Checklist builder"],["flows","Workflows"],["settings","Structure & settings"]];
 const NAV_W=[["home","Home"],["live","Reports"],["lactions","Actions"]];
-const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Live Actions",exec:"Global HSSE Dashboard",hdata:"Enter HSSE Data",settings:"Structure & Settings",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
+const TITLES={dash:"HSE Performance",inc:"Incidents & Near Misses",obs:"Observations",capa:"Corrective & Preventive Actions",mod:"Modules",home:"Report from Site",incd:"Incident Investigation",report:"New Report",ncr:"Non-Conformance Reports",ncrd:"Non-Conformance",insp:"Inspections",inspd:"Inspection",moc:"Management of Change",mocd:"Change Request",live:"Live Reports",sc:"Project Score Card",entry:"Score Card Admin Review",lactions:"Action Management",exec:"Global HSSE Dashboard",inspm:"Inspection Management",incm:"Incident Management",walk:"HSE Walkthroughs",train:"Training Management",chk:"Checklist Builder",flows:"Workflows",hdata:"Enter HSSE Data",settings:"Structure & Settings",leaders:"Leadership Engagement",activity:"Activity Log",access:"Projects & Access"};
 const PARENT={incd:"inc",report:"home",ncrd:"ncr",inspd:"insp",mocd:"moc"};
 
 function nav(){const L=st.role==="mgr"?NAV_M:NAV_W;const cur=PARENT[st.view]||st.view;
@@ -461,7 +479,7 @@ function soon(){const [t,desc,feats]=SOON[st.view];
 function render(){nav();const v=document.getElementById("view");document.body.classList.toggle("hs-full",st.view==="exec"&&L.ready);
  document.getElementById("title").textContent=TITLES[st.view]||SOON[st.view][0];
  document.getElementById("crumb").textContent="NAVO · "+(st.country||"All countries")+(st.role==="wrk"?" · Site Worker":" · HSE Manager");
- v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions,activity,exec:()=>typeof hsse==="function"?hsse():"",hdata:()=>typeof hdata==="function"?hdata():"",leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
+ v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions:()=>typeof actionsPage==="function"?actionsPage():lactions(),inspm:()=>inspPage(),incm:()=>incPage(),walk:()=>walkPage(),train:()=>trainPage(),chk:()=>chkPage(),flows:()=>flowsPage(),activity,exec:()=>typeof hsse==="function"?hsse():"",hdata:()=>typeof hdata==="function"?hdata():"",leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
 
 const demoTag=`<div class="demo"><span>SAMPLE</span>Illustrative data. Your live records replace it after setup.</div>`;
 
@@ -778,16 +796,16 @@ async function liveInit(){try{
  if(!L.db||!L.user){L.state="offline";render();return}
  L.me=await L.user.me();L.owner=await L.user.isOwner();
  if(!L.me.id){L.state="signedout";render();return}
- L.db.doc("admin/structure").onSnapshot(s=>{if(s.exists){applyStructure(s.data());render()}},err);
+ L.db.doc("admin/structure").onSnapshot(s=>{if(s.exists){applyStructure(s.data());render()}},err);L.db.doc("admin/checklists").onSnapshot(s=>{L.checklists=s.exists?s.data():null;if(["inspm","chk"].includes(st.view))render()},err);L.db.doc("admin/workflows").onSnapshot(s=>{L.workflows=s.exists?s.data():null;if(st.view==="flows")render()},err);
  L.db.doc("admin/projects").onSnapshot(s=>{L.projects=(s.data()?.list)||[];L.ready=true;L.state="ok";resub();render()},err);
  L.db.doc("admin/members").onSnapshot(s=>{L.members=(s.data()?.map)||{};resub();render()},err);
  L.db.collection("admin/rv/months").onSnapshot(s=>{L.reviews={};s.docs.forEach(d=>L.reviews[d.id]=d.data());if(["sc","entry"].includes(st.view))render()},err);
 }catch(e){L.state="offline";render()}}
 // Subscribe per project for non-admins (the server only lets them read their own projects), whole collections for admins.
-const COLS=[["reports","reports",["live","sc","entry","exec","leaders"]],["actions","actions",["lactions","sc","entry","exec","leaders"]],["inspections","inspections",["sc","entry","insp","exec","leaders"]],["activities","activities",["activity","sc","entry","exec","leaders"]],["records","records",["exec","hdata"]]];
+const COLS=[["reports","reports",["live","sc","entry","exec","leaders","incm","lactions"]],["actions","actions",["lactions","sc","entry","exec","leaders","inspm","incm","walk"]],["inspections","inspections",["sc","entry","insp","exec","leaders","inspm"]],["activities","activities",["activity","sc","entry","exec","leaders"]],["records","records",["exec","hdata","walk","train"]]];
 function resub(){if(!L.ready)return;const role=myRole();const key=role==="admin"?"*":myProjects().map(p=>p.id).sort().join(",");if(key===L.subKey)return;L.subKey=key;
  (L.unsubs||[]).forEach(u=>u());L.unsubs=[];COLS.forEach(([c,k])=>L[k]=[]);if(!role)return;
- COLS.forEach(([c,k,views])=>{const parts={};const merge=()=>{L[k]=Object.values(parts).flat();if(k==="reports")L[k].sort((a,b)=>b.ts-a.ts);if(views.includes(st.view))render()};
+ COLS.forEach(([c,k,views])=>{const parts={};const merge=()=>{L[k]=Object.values(parts).flat();if(k==="inspections"){L.inspAll=L[k];L[k]=L[k].filter(i=>i.status!=="Scheduled")}if(k==="reports")L[k].sort((a,b)=>b.ts-a.ts);if(views.includes(st.view))render()};
   const qs=key==="*"?[["*",L.db.collection(c)]]:myProjects().map(p=>[p.id,L.db.collection(c).where("project","==",p.id)]);
   qs.forEach(([pk,q])=>L.unsubs.push(q.onSnapshot(s=>{parts[pk]=s.docs.map(d=>({id:d.id,...d.data()}));merge()},err)))})}
 function err(e){if(e?.code==="revoked"||e?.code==="not_granted"){L.state="offline";render()}}
@@ -1141,7 +1159,7 @@ async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;
   projects.push({id,name:`${country} ${c||b} ${pick(NAMES)}`,country,platform:pl,division:b,cluster:c||"",headcount:hc,planInsp:pi,planWalk:pw});
   const q=.45+R()*.55;
   const dmax=Math.round((now-new Date(new Date().getFullYear()-1,0,1).getTime())/day);for(let d=dmax;d>=0;d--){const t=now-d*day-Math.floor(R()*8)*3600e3;
-   if(R()<Math.min(.95,hc/380*(.6+q*.6))*.62){const r=R();const rt=r<.06?"Incident":r<.82?"Hazard":"Good practice";const kind=rt==="Incident"?pick(["Near Miss","Near Miss","Near Miss","Dangerous Occurrence","Injury","Injury","Injury","Property Damage","Property Damage","Road Traffic Accident","Heat Related Illness","Occupational Disease","Injury to Member of Public","Environmental","Fire"]):rt==="Hazard"?(R()<.25?"Near Miss":pick(["Unsafe Condition","Unsafe Act","Equipment defect"])):"Safe behaviour";
+   if(R()<Math.min(.95,hc/380*(.6+q*.6))*.62){const r=R();const rt=r<.06?"Incident":r<.82?"Hazard":"Good practice";const kind=rt==="Incident"?pick(["Near Miss","Near Miss","Near Miss","Dangerous Occurrence","Injury","Injury","Injury","Property Damage","Property Damage","Road Traffic Accident","Heat Related Illness","Occupational Disease","Injury to Member of Public","Environmental","Fire"]):rt==="Hazard"?(R()<.07?"Near Miss":pick(["Unsafe Condition","Unsafe Act","Equipment defect"])):"Safe behaviour";
     const late=R()>q*.95;const cat=rt!=="Good practice"&&R()<.55?pick(WHEEL):"";const old=d>14;const status=(old&&R()<q+.15)||(!old&&R()<q*.6)?"Closed":"Open";
     reports.push({rt:kind==="Near Miss"&&rt==="Hazard"?"Incident":rt,kind,cat,project:id,dept:pick(DEPTS),loc:"",desc:pick(rt==="Good practice"?["Good housekeeping in laydown area","Spotter used for reversing","Correct LOTO applied"]:["Unsecured materials at height","Missing barricade at open edge","Damaged sling in use","Blocked fire exit","Dropped object near walkway","Forklift reversing without spotter"]),safe:"Yes",by:null,ts:t,eventTs:t-(late?(30+R()*40):(1+R()*9))*3600e3,status});
     {const rr=reports[reports.length-1];rr.contractor=R()<.75?pick(PC):null;if(rr.rt==="Incident"){const D={Injury:["Hand caught between pipe and support","Worker slipped on wet stairs","Cut from sharp sheet edge","Heat stress during afternoon shift","Struck by falling object","Twisted ankle on uneven ground"],"Property Damage":["Excavator struck parked vehicle","Crane boom contacted structure","Forklift damaged rack","Dump truck body collapse while offloading"],Environmental:["Hydraulic oil leak to ground","Diesel spill at refuelling point","Sewage tank overflow"],Fire:["Small fire at hot work area","Generator fire, extinguished","Electrical panel smoke"],"Process Safety":["Loss of containment at flange","Pressure relief valve lifted","Gas detector alarm in process area"],"Dangerous Occurrence":["Crane outrigger sank during lift","Scaffold partially collapsed, no injuries","Trench wall collapse, area was barricaded"],"Road Traffic Accident":["Pickup collided with water tanker at site gate","Bus rear-ended on highway to camp","Light vehicle rollover on access road"],"Heat Related Illness":["Worker fainted from heat exhaustion","Heat cramps during concrete pour"],"Occupational Disease":["Noise-induced hearing loss confirmed","Contact dermatitis from cement"],"Injury to Member of Public":["Pedestrian hit by falling debris outside hoarding","Passer-by tripped over site cable"],"Near Miss":["Load swung close to worker","Unsecured scaffold board fell","Vehicle reversed without banksman"]};if(D[rr.kind])rr.desc=pick(D[rr.kind]);
@@ -1152,8 +1170,9 @@ async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;
    if(R()<pw/30*(.4+q*.7))acts.push({type:"Leadership walkthrough",project:id,date:t,count:1,by:null,ts:now});
    if(d%7===0)acts.push({type:"Toolbox talk",project:id,date:t,count:Math.max(1,Math.round(hc/12)),by:null,ts:now});if(d%7===2)acts.push({type:"STARRT briefing",project:id,date:t,count:Math.max(1,Math.round(hc/25)),by:null,ts:now});if(d%14===3)acts.push({type:"Behaviour safety leadership engagement",project:id,date:t,count:1,by:null,ts:now});if(d%30===5)acts.push({type:"Inter-division / facility tour",project:id,date:t,count:1,by:null,ts:now});if(d%45===9)acts.push({type:"OHS campaign",project:id,date:t,count:1,by:null,ts:now});if(d%60===11)acts.push({type:"Emergency drill",project:id,date:t,count:1,by:null,ts:now})}});
  const prog=m=>{const b=document.getElementById("demo-load");if(b)b.textContent=m};const BI=L.db.bulkInsert;L.db.bulkInsert=async(t,rows)=>{for(let i=0;i<rows.length;i+=200){prog(`Loading ${t} ${Math.min(i+200,rows.length)} / ${rows.length}…`);await BI(t,rows.slice(i,i+200))}};
+ const mxr=mxSample(projects,reports,actions,insp,R);
  try{await (async()=>{await L.db.doc("admin/projects").set({list:[...L.projects.filter(p=>!String(p.id).startsWith("demo-")),...projects]});
-  await L.db.bulkInsert("reports",reports);await L.db.bulkInsert("actions",actions);await L.db.bulkInsert("inspections",insp);await L.db.bulkInsert("activities",acts);await L.db.bulkInsert("hsse_records",hsDemo(projects,R))})();toast(`Sample data loaded: ${projects.length} projects, ${reports.length} reports, ${actions.length} actions, ${insp.length} inspections`)}
+  await L.db.bulkInsert("reports",reports);await L.db.bulkInsert("actions",actions);await L.db.bulkInsert("inspections",insp);await L.db.bulkInsert("activities",acts);await L.db.bulkInsert("hsse_records",hsDemo(projects,R).concat(mxr))})();toast(`Sample data loaded: ${projects.length} projects, ${reports.length} reports, ${actions.length} actions, ${insp.length} inspections`)}
  catch(e){const m=String(e?.message||e);alert("Loading sample data stopped: "+m+(/column|schema cache/i.test(m)?"\n\nRun the SQL update in Supabase (supabase/007_exec_kpis.sql), then press Remove sample data and Load sample data again.":""))}
  finally{L.db.bulkInsert=BI;render()}L.subKey=null;resub()}
 
@@ -1257,5 +1276,7 @@ document.addEventListener("click",async e=>{const t=e.target.closest("#br-defaul
 applyBrand();
 </script>
 <script src="hsse.js"></script>
+<script src="checklists.js"></script>
+<script src="modules.js"></script>
 
 </body></html>

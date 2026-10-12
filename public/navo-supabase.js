@@ -7,7 +7,7 @@
   const authed = new Promise(r => (resolveAuthed = r));
 
   // App field names <-> table column names
-  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target", originalText: "original_text", personType: "person_type", injuryType: "injury_type", bodyPart: "body_part", incClass: "inc_class", lostDays: "lost_days" };
+  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target", originalText: "original_text", personType: "person_type", injuryType: "injury_type", bodyPart: "body_part", incClass: "inc_class", lostDays: "lost_days", sourceId: "source_id" };
   const TO_FIELD = Object.fromEntries(Object.entries(TO_COL).map(([a, b]) => [b, a]));
   const toRow = o => Object.fromEntries(Object.entries(o).filter(([k]) => k !== "id").map(([k, v]) => [TO_COL[k] || k, typeof v === "number" && Math.abs(v) > 1e11 ? Math.round(v) : v]));
   const fromRow = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [TO_FIELD[k] || k, v]));
@@ -69,6 +69,12 @@
       get: async () => snapDoc(id, membersFromRows(await run(sb.from("members").select("*")))),
       set: async d => syncList("members", "user_id", Object.entries(d.map || {}).map(([uid, m]) => ({ user_id: uid, role: m.role, projects: m.projects || [], leader: !!m.leader, walk_target: m.walkTarget ?? null })))
     };
+    if (path === "admin/checklists" || path === "admin/workflows") { const sid = path.split("/")[1]; return {
+      id, path,
+      onSnapshot: (n, e) => watch("settings", ["id", sid], rows => n(snapDoc(id, rows[0] ? rows[0].data : undefined)), e),
+      get: async () => { const r = await run(sb.from("settings").select("*").eq("id", sid).maybeSingle()); return snapDoc(id, r ? r.data : undefined); },
+      set: async d => run(sb.from("settings").upsert({ id: sid, data: d }))
+    }; }
     if (path === "admin/structure") return {
       id, path,
       onSnapshot: (n, e) => watch("settings", ["id", "structure"], rows => n(snapDoc(id, rows[0] ? rows[0].data : undefined)), e),
@@ -103,7 +109,7 @@
   }
   const db = { doc: docRef, collection: p => collection(p),
     // Bulk helpers used by the admin demo-data tools.
-    bulkInsert: async (table, rows) => { for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(toRow))); },
+    bulkInsert: async (table, rows) => { for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(r => r.id ? { id: r.id, ...toRow(r) } : toRow(r)))); },
     removeDemo: async () => run(sb.from("projects").delete().like("id", "demo-%")),
     ai: async (action, payload) => {
       const r = await fetch("/api/ai", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ action, ...payload }) });
