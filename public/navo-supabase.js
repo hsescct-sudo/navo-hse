@@ -109,7 +109,7 @@
   }
   const db = { doc: docRef, collection: p => collection(p),
     // Bulk helpers used by the admin demo-data tools.
-    bulkInsert: async (table, rows) => { for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(r => r.id ? { id: r.id, ...toRow(r) } : toRow(r)))); },
+    bulkInsert: async (table, rows) => { for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(r => ({ id: r.id || crypto.randomUUID(), ...toRow(r) })))); },
     removeDemo: async () => run(sb.from("projects").delete().like("id", "demo-%")),
     ai: async (action, payload) => {
       const r = await fetch("/api/ai", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ action, ...payload }) });
