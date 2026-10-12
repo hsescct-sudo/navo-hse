@@ -109,7 +109,13 @@
   }
   const db = { doc: docRef, collection: p => collection(p),
     // Bulk helpers used by the admin demo-data tools.
-    bulkInsert: async (table, rows) => { for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(r => ({ id: r.id || crypto.randomUUID(), ...toRow(r) })))); },
+    bulkInsert: async (table, rows) => {
+      // Every row in a batch must carry the same columns, or Postgres stores NULL instead of the column default.
+      const keys = new Set(); rows.forEach(r => Object.keys(toRow(r)).forEach(k => keys.add(k)));
+      const fill = { history: [], status: table === "reports" ? "Open" : null };
+      const norm = r => { const o = { id: r.id || crypto.randomUUID(), ...toRow(r) }; keys.forEach(k => { if (o[k] === undefined) o[k] = k in fill ? fill[k] : null; }); return o; };
+      for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(norm)));
+    },
     removeDemo: async () => run(sb.from("projects").delete().like("id", "demo-%")),
     ai: async (action, payload) => {
       const r = await fetch("/api/ai", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ action, ...payload }) });
