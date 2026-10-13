@@ -24,7 +24,7 @@
     const afterNext=new Date(date.getTime()+(14-offset)*864e5).toISOString().slice(0,10);
     return due<nextMonday?'Due this week':due<afterNext?'Due next week':'Not due';
   }
-  function sections(type){return ['Where and What',...(type==='Accident'?['General classifications','Consequences','Involved persons','Loss potential','Causes']:type==='Observation'||type==='Near miss'?['Loss potential']:type==='Inspection'?['Involved persons','Check list']:['Involved persons']), 'Actions','Attachments','Comments','Signatures','Connected cases','Processing'];}
+  function sections(type){return ['Where and What','Risk assessment & prevention',...(type==='Accident'?['General classifications','Consequences','Involved persons','Loss potential','Causes']:type==='Observation'||type==='Near miss'?['Loss potential']:type==='Inspection'?['Involved persons','Check list']:['Involved persons']), 'Actions','Attachments','Comments','Signatures','Connected cases','Processing'];}
   function validate(row){
     const b=row.body||{},errors=[];
     const required={title:row.title,description:b.description,date:b.date,location:b.location,responsibleDepartment:b.responsibleDepartment,reportedDepartment:b.reportedDepartment,departmentInCharge:b.departmentInCharge,due:b.due};

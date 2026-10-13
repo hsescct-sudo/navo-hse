@@ -1,6 +1,11 @@
 {
   "name": "navo-case-workspace-validation",
   "private": true,
-  "scripts": { "test": "node cases-core.cjs && node cases-sql.cjs && node cases-ui.cjs" },
-  "devDependencies": { "@electric-sql/pglite": "0.3.14", "playwright": "1.56.1" }
+  "scripts": {
+    "test": "node cases-core.cjs && node client-core.cjs && node cases-sql.cjs && node cases-ui.cjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
+    "playwright": "1.56.1"
+  }
 }
