@@ -801,15 +801,15 @@ async function liveInit(){try{
  L.db.doc("admin/structure").onSnapshot(s=>{if(s.exists){applyStructure(s.data());render()}},err);L.db.doc("admin/checklists").onSnapshot(s=>{L.checklists=s.exists?s.data():null;if(["inspm","chk"].includes(st.view))render()},err);L.db.doc("admin/workflows").onSnapshot(s=>{L.workflows=s.exists?s.data():null;if(st.view==="flows")render()},err);
  L.db.doc("admin/projects").onSnapshot(s=>{L.projects=(s.data()?.list)||[];L.ready=true;L.state="ok";resub();render()},err);
  L.db.doc("admin/members").onSnapshot(s=>{L.members=(s.data()?.map)||{};resub();render()},err);
- L.db.collection("admin/rv/months").onSnapshot(s=>{L.reviews={};s.docs.forEach(d=>L.reviews[d.id]=d.data());if(["sc","entry"].includes(st.view))render()},err);
+ L.db.collection("admin/rv/months").onSnapshot(s=>{L.reviews={};s.docs.forEach(d=>L.reviews[d.id]=d.data());if(["sc","entry","casehome","casesearch","caseedit"].includes(st.view))render()},err);
 }catch(e){L.state="offline";render()}}
 // Subscribe per project for non-admins (the server only lets them read their own projects), whole collections for admins.
 const COLS=[["reports","reports",["live","sc","entry","exec","leaders","incm","lactions"]],["actions","actions",["lactions","sc","entry","exec","leaders","inspm","incm","walk"]],["inspections","inspections",["sc","entry","insp","exec","leaders","inspm"]],["activities","activities",["activity","sc","entry","exec","leaders"]],["records","records",["exec","hdata","walk","train"]]];
 function resub(){if(!L.ready)return;const role=myRole();const key=role==="admin"?"*":myProjects().map(p=>p.id).sort().join(",");if(key===L.subKey)return;L.subKey=key;
- (L.unsubs||[]).forEach(u=>u());L.unsubs=[];COLS.forEach(([c,k])=>L[k]=[]);if(!role)return;
- COLS.forEach(([c,k,views])=>{const parts={};const merge=()=>{L[k]=Object.values(parts).flat();if(k==="inspections"){L.inspAll=L[k];L[k]=L[k].filter(i=>i.status!=="Scheduled")}if(k==="reports")L[k].sort((a,b)=>b.ts-a.ts);if(views.includes(st.view))render()};
+ (L.unsubs||[]).forEach(u=>u());L.unsubs=[];L.dataLoads={};COLS.forEach(([c,k])=>{L[k]=[];L.dataLoads[k]='loading';});if(!role)return;
+ COLS.forEach(([c,k,views])=>{const parts={};const merge=()=>{L[k]=Object.values(parts).flat();if(k==="inspections"){L.inspAll=L[k];L[k]=L[k].filter(i=>i.status!=="Scheduled")}if(k==="reports")L[k].sort((a,b)=>b.ts-a.ts);if(views.includes(st.view)||["casehome","casesearch","caseedit"].includes(st.view))render()};
   const qs=key==="*"?[["*",L.db.collection(c)]]:myProjects().map(p=>[p.id,L.db.collection(c).where("project","==",p.id)]);
-  qs.forEach(([pk,q])=>L.unsubs.push(q.onSnapshot(s=>{parts[pk]=s.docs.map(d=>({id:d.id,...d.data()}));merge()},err)))})}
+  qs.forEach(([pk,q])=>L.unsubs.push(q.onSnapshot(s=>{parts[pk]=s.docs.map(d=>({id:d.id,...d.data()}));if(Object.keys(parts).length===qs.length)L.dataLoads[k]='ready';merge()},e=>{L.dataLoads[k]='error';err(e);if(['exec','casehome','casesearch'].includes(st.view))render();})))})}
 function err(e){if(e?.code==="revoked"||e?.code==="not_granted"){L.state="offline";render()}}
 
 function liveGate(){if(L.state==="offline")return`<div class="panel"><h2>Live data is not available here</h2><p style="margin:0;color:var(--muted)">Check your internet connection and reload the page.</p></div>`;
@@ -1287,5 +1287,7 @@ applyBrand();
 <script src="case-lookups.js"></script>
 <script src="cases.js"></script>
 <script src="client-review.js"></script>
+<link rel="stylesheet" href="experience.css">
+<script src="experience.js"></script>
 
 </body></html>

@@ -20,9 +20,9 @@ const user=async name=>db.query(`select set_config('request.jwt.claim.sub',$1,fa
 const body={description:'Validation case',date:'2026-10-13T14:00',location:'Test site',responsibleDepartment:'HSE',reportedDepartment:'HSE',departmentInCharge:'HSE',due:'2026-10-20',likelihood:'3',riskSeverity:'5',category:'Unsafe act',technology:'CCGT',endDate:'2026-10-14T14:00',actions:[],potential:[]};
 await user('worker');
 let r=(await db.query(`insert into navo_cases(project,case_type,body) values('p1','Observation',$1) returning *`,[body])).rows[0];
-assert.equal(r.case_no,null);let denied=false;try{await db.query(`insert into navo_cases(project,case_type) values('p2','Observation')`);}catch{denied=true;}assert(denied,'cross-project insertion denied');
+assert.equal(+r.case_no,1000000);const permanentDraftNumber=r.case_no;let denied=false;try{await db.query(`insert into navo_cases(project,case_type) values('p2','Observation')`);}catch{denied=true;}assert(denied,'cross-project insertion denied');
 await user('hse');assert.equal((await db.query('select * from navo_cases')).rows.length,0,'other person cannot read private draft');
-await user('worker');r=(await db.query(`update navo_cases set title='Worker observation',status='Registered' where id=$1 returning *`,[r.id])).rows[0];assert.equal(+r.case_no,1000000);assert.equal((await db.query('select case_no from reports where id=$1',[r.id])).rows[0].case_no,r.case_no,'source and case numbers agree');assert.equal((await db.query(`select * from reports where id=$1`,[r.id])).rows.length,1);assert.equal((await db.query(`select event_ts from reports where id=$1`,[r.id])).rows[0].event_ts,Date.parse('2026-10-13T14:00:00+03:00'));
+await user('worker');r=(await db.query(`update navo_cases set title='Worker observation',status='Registered' where id=$1 returning *`,[r.id])).rows[0];assert.equal(r.case_no,permanentDraftNumber);assert.equal((await db.query('select case_no from reports where id=$1',[r.id])).rows[0].case_no,r.case_no,'source and case numbers agree');assert.equal((await db.query(`select * from reports where id=$1`,[r.id])).rows.length,1);assert.equal((await db.query(`select event_ts from reports where id=$1`,[r.id])).rows[0].event_ts,Date.parse('2026-10-13T14:00:00+03:00'));
 await db.query(`insert into navo_case_notes(case_id,kind,content,revision,created_by,created_at) values($1,'Signature','Reviewed',$2,$3,'1990-01-01')`,[r.id,r.revision,ids.hse]);const note=(await db.query('select * from navo_case_notes')).rows[0];assert.equal(note.created_by,ids.worker,'cannot forge signature author');assert(new Date(note.created_at).getFullYear()>2025,'server signature timestamp');
 await user('other');assert.equal((await db.query('select * from navo_cases')).rows.length,0);assert.equal((await db.query('select * from navo_case_notes')).rows.length,0);
 await user('hse');
@@ -47,5 +47,24 @@ c=(await db.query('select * from navo_cases where id=$1',[c.id])).rows[0];assert
 const stale=(await db.query(`update navo_cases set title='stale' where id=$1 and revision=$2 returning *`,[c.id,c.revision-1])).rows;assert.equal(stale.length,0);
 await db.query(`insert into navo_case_medical(case_id,data) values($1,'{"age":40}')`,[c.id]);await user('worker');assert.equal((await db.query('select * from navo_case_medical')).rows.length,0);assert.equal((await db.query(`update navo_cases set title='Unauthorized' where id=$1 returning *`,[c.id])).rows.length,0);
 await db.exec('reset role');for(const file of releaseMigrations)await db.exec(fs.readFileSync(path.isAbsolute(file)?file:path.join(__dirname,base,file),'utf8'));const config=(await db.query("select data from settings where id='structure'")).rows[0].data;assert.equal(config.kpi.mult,1000000);assert.equal(config.keepMe,true);assert.equal(config.kpi.targets.Construction.ltifr,0.14);assert.equal(config.kpi.targets['Non-Construction'].ltisr,7.62);
+
+await user('admin');await db.exec('set role authenticated');
+const extra=[];
+for(const sql of [
+ "insert into reports(project,rt,ts,case_no) values('p1','Hazard',1,2) returning case_no",
+ "insert into inspections(project,ts,case_no) values('p1',1,2) returning case_no",
+ "insert into actions(project,title,ts,case_no) values('p1','Standalone action',1,2) returning case_no",
+ "insert into activities(project,type,date,ts,case_no) values('p1','Training',1,1,2) returning case_no",
+ "insert into hsse_records(project,kind,ts,case_no) values('p1','monthly',1,2) returning case_no",
+ "insert into reviews(id,ts,case_no) values('p1_2026-10',1,2) returning case_no"
+])extra.push((await db.query(sql)).rows[0].case_no);
+assert.equal(new Set(extra).size,6,'all reporting streams reserve different numbers');assert(extra.every(n=>+n>=1000000),'client-supplied numbers ignored');
+const reviewNumber=extra[5];await db.query("insert into reviews(id,ts) values('p1_2026-10',2) on conflict(id) do update set ts=excluded.ts");assert.equal((await db.query("select case_no from reviews where id='p1_2026-10'")).rows[0].case_no,reviewNumber,'upsert retains permanent number');
+let crossFamily=false;try{await db.query("insert into actions(id,project,title,ts) values($1,'p1','Wrong identity',1)",[r.id]);}catch(e){crossFamily=/reserved/.test(e.message);}assert(crossFamily,'event identity cannot be reused as an action');
+assert.equal((await db.query('select * from navo_private.record_identity')).rows.length,0,'private reservation ledger cannot be read directly');
+const draft=(await db.query("insert into navo_cases(project,case_type) values('p1','Observation') returning id,case_no")).rows[0];await db.query('delete from navo_cases where id=$1',[draft.id]);const next=(await db.query("insert into navo_cases(project,case_type) values('p1','Observation') returning case_no")).rows[0];assert(+next.case_no>+draft.case_no,'discarded draft numbers are never reused');
+await db.exec('reset role');assert.equal((await db.query('select count(*)::int n from navo_private.record_identity where record_id=$1',[draft.id])).rows[0].n,1,'reservation survives deletion');
+const maxNo=(await db.query('select max(case_no) n from navo_private.record_identity')).rows[0].n;await db.query("select setval('public.navo_case_number',1000000,false)");await db.exec('set role authenticated');let collision=false;try{await db.query("insert into activities(project,type,date,ts) values('p1','Training',1,1)");}catch(e){collision=/unique|duplicate/i.test(e.message);}assert(collision,'global ledger rejects sequence-reset collision across tables');await db.exec('reset role');await db.query("select setval('public.navo_case_number',$1,true)",[maxNo]);
+console.log('PASS: global identity across six legacy streams, draft-to-submission stability, upserts, tombstones, spoofing and cross-table collision rejection');
 console.log('PASS: numbering, seven forms, idempotence, projection, deadlines, revision conflicts, project isolation, private drafts, authentic signatures, medical privacy');await db.close();
 })().catch(e=>{console.error(e.message,e.stack);process.exit(1)});
