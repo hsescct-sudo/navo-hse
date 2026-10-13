@@ -9,7 +9,7 @@ const cxEdit=r=>!r.legacy&&(r.status==='Draft'?r.created_by===L.me?.id:canVerify
 const cxWho=id=>id===L.me?.id?(L.me.name||'You'):id||'—';
 const cxDate=d=>d?new Date(d).toLocaleString('en-GB',{timeZone:'Asia/Riyadh',dateStyle:'medium',timeStyle:'short'}):'—';
 function cxAll(){
-  const seen=new Set(CX.rows.map(r=>r.id)),ids=myIds();
+  const seen=new Set(CX.rows.map(r=>r.id)),ids=myIds(),actionsBySource=new Map();for(const action of L.actions){for(const source of new Set([action.sourceId,action.report].filter(Boolean))){if(!actionsBySource.has(source))actionsBySource.set(source,[]);actionsBySource.get(source).push(action);}}
   const legacy=[...L.reports.map(r=>({source:'report',record:r})),...(L.inspAll||L.inspections).map(r=>({source:'inspection',record:r}))]
     .filter(x=>ids.has(x.record.project)&&!seen.has(x.record.id)).map(({source,record:r})=>({
       id:r.id,legacy:source,project:r.project,created_by:r.by,created_at:new Date(r.ts||Date.now()).toISOString(),updated_at:new Date(r.ts||Date.now()).toISOString(),
@@ -17,7 +17,7 @@ function cxAll(){
       title:source==='inspection'?r.tpl:(r.desc||r.kind||r.rt),status:r.status==='Closed'?'Closed':'Processing',closed_at:r.status==='Closed'?new Date(r.ts).toISOString():null,
       history:[],body:{date:new Date((r.eventTs||r.ts||Date.now())+3*36e5).toISOString().slice(0,16),description:r.desc||r.tpl||'',location:r.loc||r.area||projName(r.project),
         responsibleDepartment:r.dept,reportedDepartment:r.dept,departmentInCharge:r.dept,category:r.kind,company:r.contractor,attachments:r.photo?[{name:'Report photo',path:r.photo}]:[],
-        actions:L.actions.filter(a=>a.sourceId===r.id||a.report===r.id).map(a=>({id:a.id,title:a.title,owner:a.owner,ownerName:a.owner,type:a.action_type||'Corrective',due:a.due?CXC.day(a.due):'',department:r.dept}))}
+        actions:(actionsBySource.get(r.id)||[]).map(a=>({id:a.id,title:a.title,owner:a.owner,ownerName:a.owner,type:a.action_type||'Corrective',due:a.due?CXC.day(a.due):'',department:r.dept}))}
     }));
   return [...CX.rows,...legacy];
 }

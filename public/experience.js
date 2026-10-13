@@ -20,10 +20,10 @@ function nxNav(){
 }
 nav=nxNav;
 const nxOriginalRender=render;
-render=function(){nxOriginalRender();document.body.classList.remove('hs-full');document.body.classList.add('nx-app');document.getElementById('crumb').textContent=nxGroup()[1]+' / '+(st.country||'All countries');const exports=document.querySelector('#view .xexp');if(exports){const disclosure=document.createElement('details');disclosure.className='nx-exports';const summary=document.createElement('summary');summary.textContent='Executive summary exports';disclosure.append(summary);exports.before(disclosure);disclosure.append(exports);}};
+render=function(){nxOriginalRender();document.body.classList.remove('hs-full');document.body.classList.add('nx-app');document.body.classList.toggle('nx-executive',st.view==='exec');document.getElementById('crumb').textContent=nxGroup()[1]+' / '+(st.country||'All countries');const exports=document.querySelector('#view .xexp');if(exports){const disclosure=document.createElement('details');disclosure.className='nx-exports';const summary=document.createElement('summary');summary.textContent='Executive summary exports';disclosure.append(summary);exports.before(disclosure);disclosure.append(exports);}};
 
-function nxHero(eyebrow,title,description,graphic,action=''){
- return `<div class="nx-hero"><div><span class="nx-eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2><p>${esc(description)}</p>${action}</div><div class="nx-hero-art" aria-hidden="true">${graphic}</div></div>`;
+function nxHero(eyebrow,title,description,graphic,action='',className=''){
+ return `<div class="nx-hero ${className}"><div><span class="nx-eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2><p>${esc(description)}</p>${action}</div><div class="nx-hero-art" aria-hidden="true">${graphic}</div></div>`;
 }
 const nxShield=`<svg viewBox="0 0 280 180" fill="none"><circle cx="158" cy="88" r="66" stroke="#ffffff12"/><circle cx="158" cy="88" r="83" stroke="#ffffff12"/><path d="M158 36l43 17v39c0 24-21 43-43 55-23-12-43-31-43-55V53z" fill="#13c9b522" stroke="#56dfca" stroke-width="2"/><path d="M137 89l15 15 30-33" stroke="#7ef0da" stroke-width="5" stroke-linecap="round"/><path d="M20 132h42l17-34 19 14h25M204 66h30l15-19h21" stroke="#46bbd1" stroke-width="2"/><circle cx="79" cy="98" r="4" fill="#70e8d0"/><circle cx="249" cy="47" r="4" fill="#70e8d0"/></svg>`;
 const nxRecordsArt=`<svg viewBox="0 0 280 180" fill="none"><rect x="85" y="24" width="132" height="137" rx="16" fill="#fff" fill-opacity=".06" stroke="#ffffff30"/><rect x="62" y="41" width="132" height="137" rx="16" fill="#152f48" stroke="#57cbbc"/><path d="M87 75h81M87 95h55M87 134h36" stroke="#92c8d0" stroke-width="5" stroke-linecap="round"/><circle cx="175" cy="132" r="23" fill="#1da691"/><path d="M165 132l7 7 14-16" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="233" cy="65" r="6" fill="#63e4d0"/><path d="M217 65h10M38 108h24" stroke="#63e4d0"/></svg>`;
@@ -34,8 +34,8 @@ hsse=function(){
  const loading=nxLoading();if(loading)return loading;const result=nxOriginalHsse();if(!result.includes('class="hs"'))return result;
  const h=hsInit(),sec=HSEC.find(s=>s[0]===h.sec)||HSEC[0];
  const clean=result.replace(/<nav class="hs-nav">[\s\S]*?<\/nav>/,'').replace(/<aside class="hs-strip">[\s\S]*?<\/aside>/,'');
- const tabs=`<div class="nx-dashboard-tabs" role="navigation" aria-label="Dashboard views">${HSEC.map(s=>`<button data-hsec="${s[0]}" aria-current="${s[0]===sec[0]}">${s[1]}</button>`).join('')}</div>`;
- return nxHero('NAVO / EXECUTIVE INTELLIGENCE','Protect people. Strengthen performance.','One view of safety, risk and action across your projects and facilities.',nxShield,`<div class="nx-hero-actions"><button class="nx-primary" data-go="casehome">View records ${svg('live',16)}</button><button class="nx-ghost" data-hfilt>Filter dashboard</button></div>`)+tabs+clean;
+ const tabs=`<div class="nx-dashboard-tabs" role="navigation" aria-label="Dashboard views">${HSEC.filter(s=>['exe','health','site'].includes(s[0])).map(s=>`<button data-hsec="${s[0]}" aria-current="${s[0]===sec[0]}">${s[1]}</button>`).join('')}<button data-go="sc">Project performance</button><select data-nx-dashboard aria-label="More dashboard views"><option value="">More dashboards</option>${HSEC.filter(s=>!['exe','health','site'].includes(s[0])).map(s=>`<option value="${s[0]}" ${s[0]===sec[0]?'selected':''}>${s[1]}</option>`).join('')}</select></div>`;
+ return nxHero('NAVO / EXECUTIVE INTELLIGENCE','Protect people. Strengthen performance.','One view of safety, risk and action across your projects and facilities.',nxShield,`<div class="nx-hero-actions"><button class="nx-primary" data-go="casehome">View records ${svg('live',16)}</button><button class="nx-ghost" data-hfilt>Filter dashboard</button></div>`,'nx-executive-hero')+tabs+(hsIsSample()?'<div class="nx-data-note"><span>Illustrative dataset</span>Sample project records are included in this view.</div>':'')+clean;
 };
 
 const nxBaseAll=cxAll;
@@ -44,15 +44,16 @@ function nxLegacy(source,r,type,title,body={}){
  return {id:r.id,legacy:source,project:r.project,case_no:r.caseNo||r.case_no,case_type:type,title:title||type,created_by:r.by,created_at:new Date(timestamp).toISOString(),updated_at:new Date(timestamp).toISOString(),status:closed?'Closed':r.status||r.data?.status||'Recorded',closed_at:closed?new Date(r.closedAt||timestamp).toISOString():null,history:r.history||r.data?.history||[],body:{date:new Date(timestamp+10800000).toISOString().slice(0,16),description:title||type,location:projName(r.project),due:r.due?CXC.day(r.due):'',personInCharge:r.owner,...body}};
 }
 cxAll=function(){
+ const signature=[CX.rows,L.reports,L.inspAll,L.inspections,L.actions,L.activities,L.records,L.reviews,L.projects,L.members,st.country,L.me?.id,L.owner,myRole(),L.records?.length,L.reports.length,L.actions.length,L.activities.length,CX.rows.map(r=>r.revision).join(',')];if(NX.recordCache?.signature.every((value,i)=>value===signature[i]))return NX.recordCache.rows;const reportsById=new Map(L.reports.map(r=>[r.id,r])),inspectionsById=new Map((L.inspAll||L.inspections).map(r=>[r.id,r]));
  const rows=nxBaseAll(),seen=new Set(rows.map(r=>r.id)),ids=myIds();
- for(const row of rows){if(row.legacy==='inspection'){const source=(L.inspAll||L.inspections).find(i=>i.id===row.id),answers=RCC.inspectionAnswers(source||{});row.body.checklists=answers.length?[{name:source.tpl||'Inspection checklist',questions:answers.map(q=>({text:q.q,critical:q.c,evaluation:EV[q.v]||q.v,comment:q.n||q.note}))}]:[];}if(row.legacy==='report'){const source=L.reports.find(r=>r.id===row.id);row.history=source.history||[];row.body={...row.body,ai:source.ai,likelihood:source.riskAssessment?.likelihood,riskSeverity:source.riskAssessment?.severity,residualLikelihood:source.riskAssessment?.residualLikelihood,residualSeverity:source.riskAssessment?.residualSeverity};}}
+ for(const row of rows){if(row.legacy==='inspection'){const source=inspectionsById.get(row.id),answers=RCC.inspectionAnswers(source||{});row.body.checklists=answers.length?[{name:source.tpl||'Inspection checklist',questions:answers.map(q=>({text:q.q,critical:q.c,evaluation:EV[q.v]||q.v,comment:q.n||q.note}))}]:[];}if(row.legacy==='report'){const source=reportsById.get(row.id);row.history=source.history||[];row.body={...row.body,ai:source.ai,likelihood:source.riskAssessment?.likelihood,riskSeverity:source.riskAssessment?.severity,residualLikelihood:source.riskAssessment?.residualLikelihood,residualSeverity:source.riskAssessment?.residualSeverity};}}
 
  const extra=[...L.actions.map(r=>nxLegacy('action',r,'Action',r.title,{sourceId:r.sourceId||r.report,departmentInCharge:r.owner,description:r.title+(r.evidence?'\nCompletion evidence: '+r.evidence:'')})),
  ...L.activities.map(r=>nxLegacy('activity',r,'Leadership activity',leadershipActivityLabel(r.type),{description:leadershipActivityLabel(r.type)+' · '+(+r.count||1)+' engagements'})),
  ...Object.entries(L.reviews||{}).map(([id,r])=>{const match=id.match(/^(.*)_([0-9]{4}-[0-9]{2})$/);return nxLegacy('review',{...r,id:'review:'+id,reviewId:id,project:match?.[1]||''},'Management review','Monthly review · '+(match?.[2]||id),{recordKind:'review',reviewId:id});}),
  ...(L.records||[]).map(r=>{const names={walk:'Walkthrough',walkthrough:'Walkthrough',finding:'Audit finding',training:'Training',monthly:'Performance data',audit:'Audit',grievance:'Grievance',accommodation:'Accommodation visit',meeting:'Meeting',audit_finding:'Audit finding'};return nxLegacy('record',r,names[r.kind]||r.kind,r.data?.title||r.data?.course||r.data?.topic||r.data?.month||names[r.kind]||r.kind,{recordKind:r.kind,description:r.data?.description||r.data?.notes||r.data?.title||r.data?.course||r.data?.topic||r.kind});})];
  for(const r of extra)if(ids.has(r.project)&&!seen.has(r.id)){rows.push(r);seen.add(r.id);}
- return rows;
+ NX.recordCache={signature,rows};return rows;
 };
 function nxRecordTypes(){return [...new Set([...CXC.types,...cxAll().map(r=>r.case_type)])];}
 cxTop=function(){if(['casehome','casesearch'].includes(st.view))return '';return `<div class="cx-top"><div><span class="nx-eyebrow">CONNECTED RECORDS</span><strong>One record. One reference.</strong></div><div class="cx-actions"><button data-cx="catalog">${svg('entry',16)} New record</button><button data-cx="home">All records</button></div></div>`;};
@@ -96,7 +97,7 @@ document.addEventListener('click',async e=>{
  if(t.dataset.nxPage){NX.page=Math.max(1,+t.dataset.nxPage);render();return;}
  if(t.dataset.nxAction){if(CX.dirty)await cxSave();MX.a.sel=t.dataset.nxAction;go('lactions');}
 });
-document.addEventListener('change',e=>{if(e.target.matches('[data-cx-search]')){NX.page=1;NX.quick='';}},true);
+document.addEventListener('change',e=>{if(e.target.matches('[data-nx-dashboard]')&&e.target.value){hsInit().sec=e.target.value;hsInit().drill=null;render();}if(e.target.matches('[data-cx-search]')){NX.page=1;NX.quick='';}},true);
 document.addEventListener('click',e=>{if(e.target.closest('[data-cx="run-search"],[data-cx="clear-filters"],[data-cx-filter-type]')){NX.page=1;NX.quick='';}},true);
 // Keep old routes usable while presenting one records destination.
 const nxOriginalGo=go;
