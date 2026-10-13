@@ -481,7 +481,7 @@ function soon(){const [t,desc,feats]=SOON[st.view];
 function render(){nav();const v=document.getElementById("view");document.body.classList.toggle("hs-full",st.view==="exec"&&L.ready);
  document.getElementById("title").textContent=TITLES[st.view]||SOON[st.view][0];
  document.getElementById("crumb").textContent="NAVO · "+(st.country||"All countries")+(st.role==="wrk"?" · Site Worker":" · HSE Manager");
- v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,lactions:()=>typeof actionsPage==="function"?actionsPage():lactions(),inspm:()=>inspPage(),incm:()=>incPage(),walk:()=>walkPage(),train:()=>trainPage(),chk:()=>chkPage(),flows:()=>flowsPage(),activity,exec:()=>typeof hsse==="function"?hsse():"",hdata:()=>typeof hdata==="function"?hdata():"",leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
+ v.className="wrap view";v.innerHTML=(SOON[st.view]?soon:({dash,inc,obs,capa,mod,incd,home,report,ncr,ncrd,insp,inspd,moc,mocd,live,sc,entry,access,casehome:()=>caseHome(),casesearch:()=>caseSearch(),caseedit:()=>caseEditor(),lactions:()=>typeof actionsPage==="function"?actionsPage():lactions(),inspm:()=>inspPage(),incm:()=>incPage(),walk:()=>walkPage(),train:()=>trainPage(),chk:()=>chkPage(),flows:()=>flowsPage(),activity,exec:()=>typeof hsse==="function"?hsse():"",hdata:()=>typeof hdata==="function"?hdata():"",leaders,settings})[st.view])();fillNames();if(st.view==="access"&&L.acc.q)showHits(L.acc.q);void v.offsetWidth;}
 
 const demoTag=`<div class="demo"><span>SAMPLE</span>Illustrative data. Your live records replace it after setup.</div>`;
 
@@ -1280,5 +1280,9 @@ applyBrand();
 <script src="hsse.js"></script>
 <script src="checklists.js"></script>
 <script src="modules.js"></script>
+<link rel="stylesheet" href="cases.css">
+<script src="cases-core.js"></script>
+<script src="case-lookups.js"></script>
+<script src="cases.js"></script>
 
 </body></html>

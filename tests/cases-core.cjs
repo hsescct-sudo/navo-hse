@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');const c=require('../public/cases-core.js');
+const now=Date.parse('2026-10-13T22:00:00Z'); // Wed 14 Oct in Riyadh
+assert.equal(c.day(now),'2026-10-14');
+assert.equal(c.dueStatus('2026-10-13',null,now),'Overdue');
+assert.equal(c.dueStatus('2026-10-14',null,now),'Due today');
+assert.equal(c.dueStatus('2026-10-18',null,now),'Due this week');
+assert.equal(c.dueStatus('2026-10-19',null,now),'Due next week');
+assert.equal(c.dueStatus('2026-10-26',null,now),'Not due');
+assert.equal(c.dueStatus('',null,now),'No deadline');
+assert.equal(c.dueStatus('',now,now),'Closed (no deadline)');
+assert.equal(c.dueStatus('2026-10-14','2026-10-14T20:59:00Z',now),'Closed within due date');
+assert.equal(c.dueStatus('2026-10-14','2026-10-14T21:01:00Z',now),'Closed after due date');
+assert(c.validate({case_type:'Observation',title:'',body:{}}).includes('title'));
+const row={case_type:'Inspection',title:'PTW',status:'Registered',project:'p1',body:{description:'Inspection',date:'2026-10-14T12:00',endDate:'2026-10-15T12:00',location:'Unit 1',responsibleDepartment:'HSE',reportedDepartment:'HSE',departmentInCharge:'HSE',due:'2026-10-21',checklists:[{questions:[{evaluation:'Safe'},{evaluation:'At risk'}]}]}};
+assert.deepEqual(c.validate(row),[]);row.body.checklists[0].questions[1].evaluation='';assert(c.validate(row).includes('checklist evaluation'));
+assert.equal(c.filter([row,{...row,project:'p2'}],{project:'p1'}).length,1);
+assert.equal(c.filter([{...row,status:'Draft'}]).length,0);
+assert.equal(c.lossLabel('Spill',4),'Class A – Reportable spill / loss > $50,000');
+assert.equal(c.sections('Accident').length,12);
+console.log('PASS: Riyadh dates, due boundaries, closure timing, required fields, checklist answers, filters, draft exclusion and consequence labels');
