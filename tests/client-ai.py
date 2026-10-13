@@ -29,6 +29,15 @@ class AIReviewTests(unittest.TestCase):
         self.assertIn('preventive barriers', provider.call_args.args[0][0]['text'])
         self.assertIn('untrusted evidence', provider.call_args.args[0][0]['text'])
 
+    def test_photo_request_and_due_dates(self):
+        with patch.object(ai, 'claude', return_value={'likelihood': 4, 'severity': 5, 'corrective_actions': [{'title': 'Isolate the hazard', 'due_days': 999}]}) as provider:
+            result = ai.run('analyze', {'image': 'YWJj', 'mediaType': 'image/jpeg', 'text': ''})
+        self.assertEqual(provider.call_args.args[0][0]['type'], 'image')
+        self.assertEqual(result['corrective_actions'][0]['due_days'], 1)
+        self.assertEqual(result['suggested_close_out_days'], 1)
+        with self.assertRaises(ValueError):
+            ai.run('analyze', {'image': 'bad!', 'mediaType': 'image/jpeg'})
+
     def test_outlook_is_bounded_and_retains_data_gaps(self):
         with patch.object(ai, 'claude', return_value={'score': 999, 'rating': 'Critical', 'confidence': 'certain', 'data_gaps': ['Hours missing']}) as provider:
             result = ai.run('outlook', {'data': {'hours': 0}, 'level': 'Corporation'})

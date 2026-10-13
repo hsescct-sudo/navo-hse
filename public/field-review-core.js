@@ -1,0 +1,13 @@
+(function(root){'use strict';
+const levels=['Positive','High','Medium','Low','Unassessed'],colors={Positive:'#16865b',High:'#bf343e',Medium:'#ac7412',Low:'#276dae',Unassessed:'#687987'};
+function rating(b={}){if(/positive|safe behaviour|good practice/i.test(b.category||b.ai?.suggested_type||''))return 'Positive';const l=Number(b.likelihood),s=Number(b.riskSeverity);if(l>=1&&l<=5&&s>=1&&s<=5){const n=l*s;return n<=4?'Low':n<=9?'Medium':'High';}const level=b.riskLevel||b.risk_level||b.ai?.risk_level;return ['High','Critical'].includes(level)?'High':['Medium','Low'].includes(level)?level:'Unassessed';}
+function findings(rows){const out=[];for(const r of rows){if(r.status==='Draft'||r.status==='Scheduled')continue;const b=r.body||{},base={recordId:r.id,project:r.project,caseNo:r.case_no,type:r.case_type};
+if(r.case_type==='Inspection'&&b.checklists?.length){for(const c of b.checklists)for(const [i,q]of(c.questions||[]).entries()){if(!['Safe','At risk','Yes','No'].includes(q.evaluation))continue;out.push({...base,key:r.id+':'+c.name+':'+i,label:q.text,rating:['Safe','Yes'].includes(q.evaluation)?'Positive':rating({...b,...q}),basis:'Checklist evaluation; risk only where explicitly assessed'});}}
+else if(r.case_type==='Walkthrough'){const d=r.evidence||{};for(const [key,level]of [['positives','Positive'],['critical','High'],['negatives','Unassessed']])for(const [i,v]of(d[key]||[]).entries())out.push({...base,key:r.id+':'+key+':'+i,label:typeof v==='string'?v:v.text||v.title,rating:typeof v==='object'?rating(v):level,basis:key==='critical'?'Declared critical finding':'Recorded finding'});}
+else if(['Observation','Near miss','Accident','Audit finding'].includes(r.case_type))out.push({...base,key:r.id,label:r.title,rating:rating(b),basis:'Recorded assessment'});
+}return out;}
+function distribution(items){return levels.map(level=>{const count=items.filter(x=>x.rating===level).length;return {level,count,percent:items.length?count/items.length*100:0,color:colors[level]};});}
+function mapUrl(value,area=''){if(value){try{const u=new URL(value),h=u.hostname.toLowerCase();if(u.protocol==='https:'&&((['google.com','www.google.com','maps.google.com'].includes(h)&&u.pathname.startsWith('/maps'))||h==='maps.app.goo.gl'||(h==='goo.gl'&&u.pathname.startsWith('/maps'))))return u.href;}catch{}return null;}return area?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(area):null;}
+function deadline(level){return {High:3,Critical:1,Medium:7,Low:14,Positive:0}[level]??7;}
+root.NavoFieldReview={levels,colors,rating,findings,distribution,mapUrl,deadline};if(typeof module!=='undefined')module.exports=root.NavoFieldReview;
+})(typeof window==='undefined'?globalThis:window);

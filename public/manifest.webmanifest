@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "NAVO HSSE",
+  "short_name": "NAVO",
+  "description": "Connected HSSE reporting, assurance and executive intelligence",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3f6f9",
+  "theme_color": "#17394d",
+  "icons": [
+    {
+      "src": "/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

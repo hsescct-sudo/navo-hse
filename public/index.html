@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}.ptabs{display:flex;gap:2px;overflow-x:auto;border-bottom:3px solid #0f4c5c;margin:8px 0 12px}.ptabs button{flex:0 0 auto;border:0;background:#e6eef0;color:#0f4c5c;padding:9px 14px;font-weight:600;border-radius:6px 6px 0 0;cursor:pointer}.ptabs button[aria-selected=true]{background:#0f4c5c;color:#fff}
+<!doctype html><html lang="en"><head><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#17394d"><link rel="apple-touch-icon" href="/app-icon-192.png"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}.ptabs{display:flex;gap:2px;overflow-x:auto;border-bottom:3px solid #0f4c5c;margin:8px 0 12px}.ptabs button{flex:0 0 auto;border:0;background:#e6eef0;color:#0f4c5c;padding:9px 14px;font-weight:600;border-radius:6px 6px 0 0;cursor:pointer}.ptabs button[aria-selected=true]{background:#0f4c5c;color:#fff}
 .pbi-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:6px}.pbi-title{background:#0f4c5c;color:#fff;padding:10px 18px;border-radius:0 0 14px 0;font-weight:700;font-size:1.15rem}.pbi-band{flex:1;min-width:200px;background:linear-gradient(90deg,#0f4c5c22,transparent);padding:8px 12px;border-radius:6px;color:var(--muted)}
 .pbi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.pbi-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pbi-tall{grid-row:span 2}
 @media(max-width:900px){.pbi-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.pbi-grid,.pbi-grid2{grid-template-columns:1fr}.pbi-tall{grid-row:auto}}
@@ -523,7 +523,7 @@ function pyramid(items,lagN){const PYR=items||window.PYR_DEMO,LAG=lagN||7,n=PYR.
   const shade=lag?.45+.55*(i+1)/LAG:.45+.55*(n-i)/(n-LAG);const fill=lag?"var(--crit)":"var(--ok)";const inside=wm*2>58;
   const dk=PYR[i][2];return(dk?`<g class="hot" data-drill="${dk}"><title>${l}: ${v} · click for details</title>`:`<g><title>${l}: ${v}</title>`)+`<rect x="0" y="${y0}" width="${lx+300}" height="${rh}" fill="transparent"/><polygon points="${cx-a},${y0} ${cx+a},${y0} ${cx+b},${y1} ${cx-b},${y1}" fill="${fill}" fill-opacity="${shade.toFixed(2)}"/>`+
   `<line x1="${cx+Math.max(a,b)+(inside?6:18+v.toLocaleString().length*8.5)}" y1="${ym}" x2="${lx-8}" y2="${ym}" stroke="var(--line)" stroke-width="1"/>`+
-  `<text x="${inside?cx:cx+Math.max(a,b)+10}" y="${ym+4.5}" text-anchor="${inside?"middle":"start"}" font-size="13" font-weight="700" font-family="IBM Plex Mono,monospace" fill="${inside?"#ffffff":"var(--fg)"}">${v.toLocaleString()}</text>`+
+  `<text x="${inside?cx:cx+Math.max(a,b)+10}" y="${ym+4.5}" text-anchor="${inside?"middle":"start"}" font-size="13" font-weight="700" font-family="IBM Plex Mono,monospace" fill="${inside&&shade>=.72?"#ffffff":"#23485d"}">${v.toLocaleString()}</text>`+
   `<text x="${lx}" y="${ym+4.5}" font-size="${n>20?12:13}" fill="var(--fg)">${l}</text></g>`}).join("");
  const div=`<line x1="${cx-W/2-4}" y1="${yb}" x2="${cx+W/2+4}" y2="${yb}" stroke="var(--fg)" stroke-width="1.5" stroke-dasharray="4 4"/>`;
  return`<div class="tbl"><svg viewBox="0 0 ${lx+300} ${H+4}" width="100%" style="min-width:440px" role="img" aria-label="Safety diamond: lagging indicators above, leading indicators below">${rows}${div}
@@ -718,11 +718,11 @@ function report(){const w=st.w;const bars=`<div class="steps">${[0,1,2,3].map(i=
  if(w.step===1)body=`<label class="photo" for="ph">${w.img?`<img src="${w.img}" alt="Attached photo">`:svg("cam",34)+"<div>Tap to add a photo</div><small>Optional. With a photo, AI can spot hazards and rate the risk.</small>"}</label><input id="ph" type="file" accept="image/*" hidden>`;
  if(w.step===2&&L.ready&&myProjects().length)body=`<div class="fld"><label for="wp">Project</label><select id="wp">${myProjects().map(p=>`<option value="${esc(p.id)}" ${w.p===p.id?"selected":""}>${esc(p.name)} · ${esc(p.country)}</option>`).join("")}</select></div>
   <div class="fld"><label for="wd">Department</label><select id="wd">${DEPTS.map(x=>`<option ${x===(w.dept||"Mechanical")?"selected":""}>${x}</option>`).join("")}</select></div>
-  <div class="fld"><label for="wl">Exact location</label><input type="text" id="wl" value="${esc(w.loc||"")}" placeholder="e.g. Pipe rack 4, near Gate B"></div>`;
+  <div class="fld"><label for="wl">Exact location</label><input type="text" id="wl" value="${esc(w.loc||"")}" placeholder="e.g. Pipe rack 4, near Gate B"></div><div class="fld"><label for="w-google-map">Google Maps link</label><input id="w-google-map" class="wf" data-f="googleMapUrl" type="url" value="${esc(w.googleMapUrl||"")}" placeholder="Paste a Google Maps location link"></div>`;
  else if(w.step===2)body=`<div class="fld"><label for="wc">Country</label><select id="wc">${Object.keys(SITES).map(c=>`<option ${w.c===c?"selected":""}>${c}</option>`).join("")}</select></div>
   <div class="fld"><label for="ws">Site</label><select id="ws">${SITES[w.c||"KSA"].map(x=>`<option>${x}</option>`).join("")}</select></div>
   <div class="fld"><label for="wd">Department</label><select id="wd">${DEPTS.map(x=>`<option ${x==="Mechanical"?"selected":""}>${x}</option>`).join("")}</select></div>
-  <div class="fld"><label for="wl">Exact location</label><input type="text" id="wl" placeholder="e.g. Pipe rack 4, near Gate B"></div>`;
+  <div class="fld"><label for="wl">Exact location</label><input type="text" id="wl" placeholder="e.g. Pipe rack 4, near Gate B"></div><div class="fld"><label for="w-google-map">Google Maps link</label><input id="w-google-map" class="wf" data-f="googleMapUrl" type="url" value="${esc(w.googleMapUrl||"")}" placeholder="Paste a Google Maps location link"></div>`;
  if(w.step===3)body=`<div class="fld"><label for="wlang">Your language</label><select id="wlang">${LANGS.map(([c,n])=>`<option value="${c}" ${(w.lang||"en-US")===c?"selected":""}>${n}</option>`).join("")}</select></div>
   <div class="fld"><label for="wt">Describe what you saw</label><textarea id="wt" rows="4" placeholder="Type or press Speak. Any language is fine." dir="auto">${esc(w.desc||"")}</textarea>
   <div class="filters"><button class="btn" id="mic" type="button">${w.listening?"■ Stop":"🎤 Speak"}</button>${L.db&&L.db.ai?`<button class="btn pri" id="ai-run" type="button" ${w.aiBusy?"disabled":""}>${w.aiBusy?"AI is checking…":w.ai?"Check again with AI":"AI check: risk and actions"}</button>`:""}</div></div>
@@ -764,7 +764,7 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,tr");if(!
   if(st.w.step===3&&L.ready&&st.w.p){const w=st.w;const btn=t;btn.disabled=true;btn.textContent="Sending…";if(g("wlang"))w.lang=g("wlang").value;
   liveSave(async()=>{let photo=null;if(w.blob&&L.db.uploadPhoto)photo=await L.db.uploadPhoto(w.p,w.blob);
    const english=w.ai&&w.ai.english_text&&!(w.lang||"en").startsWith("en")?w.ai.english_text:null;
-   await L.db.collection("reports").add({rt:w.rt,kind:w.kind||"",severity:w.kind==="Injury"?(w.sev||""):"",personType:w.kind==="Injury"?(w.personType||"Contractor"):null,injuryType:w.kind==="Injury"?(w.injuryType||null):null,bodyPart:w.kind==="Injury"?(w.bodyPart||null):null,incClass:w.rt==="Incident"?(w.incClass||null):null,lostDays:w.kind==="Injury"&&w.lostDays?+w.lostDays:null,contractor:w.contractor||null,cat:w.cat||"",project:w.p,dept:w.dept||"",loc:w.loc||"",desc:(english||w.desc||"").slice(0,2000),originalText:english?(w.desc||"").slice(0,2000):null,lang:w.lang||"en-US",ai:w.ai||null,photo,safe:w.safe||"",by:w.anon?null:L.me.id,ts:Date.now(),eventTs:w.when?new Date(w.when).getTime():null,status:"Open"})},
+   await L.db.collection("reports").add({rt:w.rt,kind:w.kind||"",severity:w.kind==="Injury"?(w.sev||""):"",personType:w.kind==="Injury"?(w.personType||"Contractor"):null,injuryType:w.kind==="Injury"?(w.injuryType||null):null,bodyPart:w.kind==="Injury"?(w.bodyPart||null):null,incClass:w.rt==="Incident"?(w.incClass||null):null,lostDays:w.kind==="Injury"&&w.lostDays?+w.lostDays:null,contractor:w.contractor||null,cat:w.cat||"",project:w.p,dept:w.dept||"",loc:w.loc||"",riskAssessment:{googleMapUrl:w.googleMapUrl||""},desc:(english||w.desc||"").slice(0,2000),originalText:english?(w.desc||"").slice(0,2000):null,lang:w.lang||"en-US",ai:w.ai||null,photo,safe:w.safe||"",by:w.anon?null:L.me.id,ts:Date.now(),eventTs:w.when?new Date(w.when).getTime():null,status:"Open"})},
    "Report sent to the "+projName(w.p)+" HSE team").then(ok=>{if(ok)go("live");else{btn.disabled=false;btn.textContent="Submit report"}});return}
   if(st.w.step===0&&!st.w.kind){toast("Choose a type to continue");return}
   if(st.w.step<3){st.w.step++;render();return}
@@ -1289,5 +1289,9 @@ applyBrand();
 <script src="client-review.js"></script>
 <link rel="stylesheet" href="experience.css">
 <script src="experience.js"></script>
+<link rel="stylesheet" href="field-review.css">
+<script src="field-review-core.js"></script>
+<script src="field-review.js"></script>
+<script src="evidence-mobile.js"></script>
 
 </body></html>

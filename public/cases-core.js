@@ -42,7 +42,7 @@
     return [...new Set(errors)];
   }
   function filter(rows,f={}){
-    const q=(f.q||'').toLowerCase().trim();return rows.filter(r=>(f.includeDraft||r.status!=='Draft')&&(!q||[r.case_no,r.title,r.body?.description].join(' ').toLowerCase().includes(q))&&(!f.type||r.case_type===f.type)&&(!f.status||r.status===f.status)&&(!f.project||r.project===f.project)&&(!f.from||(r.body?.date||'')>=f.from)&&(!f.to||(r.body?.date||'').slice(0,10)<=f.to)&&(!f.person||r.body?.personInCharge===f.person)&&(!f.department||r.body?.departmentInCharge===f.department));
+    const q=(f.q||'').toLowerCase().trim(),recordIds=f.recordIds?new Set(f.recordIds):null;return rows.filter(r=>(f.includeDraft||r.status!=='Draft')&&(!recordIds||recordIds.has(r.id))&&(!q||[r.case_no,r.title,r.body?.description].join(' ').toLowerCase().includes(q))&&(!f.type||r.case_type===f.type)&&(!f.status||r.status===f.status)&&(!f.project||r.project===f.project)&&(!f.from||(r.body?.date||'')>=f.from)&&(!f.to||(r.body?.date||'').slice(0,10)<=f.to)&&(!f.person||r.body?.personInCharge===f.person)&&(!f.department||r.body?.departmentInCharge===f.department));
   }
   root.NavoCasesCore={types,actionTypes,lossTypes,severity,lossLabel,colors,day,dueStatus,sections,validate,filter};
   if(typeof module!=='undefined')module.exports=root.NavoCasesCore;
