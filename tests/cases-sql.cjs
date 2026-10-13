@@ -30,7 +30,7 @@ for(const type of ['Accident','Near miss','Inspection','Audit','Audit finding','
 const b=structuredClone(body);if(type==='Inspection')b.checklists=[{name:'PTW',questions:[{text:'Safe control',evaluation:'Safe'},{text:'Critical gap',critical:true,evaluation:'At risk'},{text:'Not applicable',evaluation:'Not evaluated'}]}];
 let c=(await db.query(`insert into navo_cases(project,case_type,body) values('p1',$1,$2) returning *`,[type,b])).rows[0];
 c=(await db.query(`update navo_cases set title=$1,status='Registered' where id=$2 returning *`,[type+' test',c.id])).rows[0];
-if(type==='Inspection'){const i=(await db.query('select * from inspections where id=$1',[c.id])).rows[0];assert.equal(+i.score,50);assert.equal(i.fails,1);assert.equal(i.answers['2'].v,'No');await db.query(`update navo_cases set status='Processing' where id=$1`,[c.id]);}
+if(type==='Inspection'){const i=(await db.query('select * from inspections where id=$1',[c.id])).rows[0];assert.equal(+i.score,50);assert.equal(i.fails,1);assert.equal(i.answers.a['2'].v,'No');await db.query(`update navo_cases set status='Processing' where id=$1`,[c.id]);}
 console.log('Submitted',type);
 }
 let actionId='20000000-0000-0000-0000-000000000001';let c=(await db.query(`select * from navo_cases where id=$1`,[r.id])).rows[0];c.body.actions=[{id:actionId,title:'Correct condition',owner:ids.hse,department:'HSE',due:'2026-10-16',type:'Corrective',priority:'High'}];

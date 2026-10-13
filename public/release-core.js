@@ -39,6 +39,7 @@
   ].map(([id,name,questions])=>({id,name,platforms:['Construction','Non-Construction'],scoring:'percent',rev:1,active:true,divisions:[],q:questions.map(([t,c])=>({t,c:!!c,e:!!c,on:true}))}));
   function matrix(likelihood,severity){const l=+likelihood,s=+severity;if(!Number.isInteger(l)||!Number.isInteger(s)||l<1||l>5||s<1||s>5)return null;const score=l*s;return {score,level:score<=4?'Low':score<=9?'Medium':score<=16?'High':'Critical'};}
   function fmea(severity,occurrence,detection){const values=[severity,occurrence,detection].map(Number);return values.every(v=>Number.isInteger(v)&&v>=1&&v<=10)?values.reduce((a,b)=>a*b,1):null;}
+  function inspectionAnswers(inspection){const values=inspection.answers?.a||inspection.answers||{};return Object.values(values).filter(q=>q&&typeof q==='object'&&typeof q.q==='string');}
   function reportBaseline(reports,now=Date.now()){const current=reports.filter(r=>r.ts>now-30*864e5&&r.ts<=now),previous=reports.filter(r=>r.ts>now-60*864e5&&r.ts<=now-30*864e5),last90=reports.filter(r=>r.ts>now-90*864e5&&r.ts<=now);return {current:current.length,previous:previous.length,change:current.length-previous.length,expected30:Math.round(last90.length/3*10)/10,sample:last90.length,confidence:last90.length>=30?'moderate':'low'};}
-  root.NavoReleaseCore={programs,facilities,matrix,fmea,reportBaseline};if(typeof module!=='undefined')module.exports=root.NavoReleaseCore;
+  root.NavoReleaseCore={programs,facilities,matrix,fmea,inspectionAnswers,reportBaseline};if(typeof module!=='undefined')module.exports=root.NavoReleaseCore;
 })(typeof window==='undefined'?globalThis:window);

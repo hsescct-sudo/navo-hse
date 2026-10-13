@@ -7,3 +7,5 @@ assert.equal(c.fmea(8,4,3),96);assert.equal(c.fmea(10,10,10),1000);assert.equal(
 const now=Date.parse('2026-10-13T12:00:00Z'),rows=[{ts:now-864e5},{ts:now-40*864e5},{ts:now-80*864e5},{ts:now+864e5}];
 assert.deepEqual(c.reportBaseline(rows,now),{current:1,previous:1,change:0,expected30:1,sample:3,confidence:'low'});
 console.log('PASS: 14 programmes, 9 tailored protocols with 108 questions, matrix/FMEA bounds, evidence-only trend baseline');
+
+const nested={answers:{checklist:'gen',rev:1,a:{0:{q:'Guard',c:true,v:'No'},1:{q:'Control',c:true,v:'N/A'}}}};const flat={answers:{0:{q:'Guard',c:true,v:'No'}}};assert.equal(c.inspectionAnswers(nested).length,2);assert.equal(c.inspectionAnswers(nested).filter(q=>q.c&&q.v==='No').length,1);assert.equal(c.inspectionAnswers(flat).length,1);assert.deepEqual(c.inspectionAnswers({}),[]);
