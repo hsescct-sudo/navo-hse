@@ -7,7 +7,7 @@
   const authed = new Promise(r => (resolveAuthed = r));
 
   // App field names <-> table column names
-  const TO_COL = { by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target", originalText: "original_text", personType: "person_type", injuryType: "injury_type", bodyPart: "body_part", incClass: "inc_class", lostDays: "lost_days", sourceId: "source_id" };
+  const TO_COL = { caseNo: "case_no", riskAssessment: "risk_assessment", by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target", originalText: "original_text", personType: "person_type", injuryType: "injury_type", bodyPart: "body_part", incClass: "inc_class", lostDays: "lost_days", sourceId: "source_id" };
   const TO_FIELD = Object.fromEntries(Object.entries(TO_COL).map(([a, b]) => [b, a]));
   const toRow = o => Object.fromEntries(Object.entries(o).filter(([k]) => k !== "id").map(([k, v]) => [TO_COL[k] || k, typeof v === "number" && Math.abs(v) > 1e11 ? Math.round(v) : v]));
   const fromRow = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [TO_FIELD[k] || k, v]));
@@ -108,6 +108,38 @@
     return q;
   }
   const db = { doc: docRef, collection: p => collection(p),
+    cases: {
+      list: async () => {
+        const rows = [];
+        for (let from = 0; ; from += 1000) {
+          const page = await run(sb.from('navo_cases').select('*').order('updated_at', { ascending: false }).order('id').range(from, from + 999));
+          rows.push(...page); if (page.length < 1000) return rows;
+        }
+      },
+      create: async (project, case_type, body) => run(sb.from('navo_cases').insert({ project, case_type, body }).select().single()),
+      save: async (row, submit) => {
+        const rows = await run(sb.from('navo_cases').update({ title: row.title, body: row.body, status: submit ? 'Registered' : row.status })
+          .eq('id', row.id).eq('revision', row.revision).select());
+        if (!rows.length) throw new Error('This case changed in another window. Reopen it before editing.');
+        return rows[0];
+      },
+      discard: async id => run(sb.from('navo_cases').delete().eq('id', id).eq('status', 'Draft')),
+      notes: async id => run(sb.from('navo_case_notes').select('*').eq('case_id', id).order('created_at')),
+      medical: async id => run(sb.from('navo_case_medical').select('data').eq('case_id', id).maybeSingle()),
+      saveMedical: async (case_id, data) => run(sb.from('navo_case_medical').upsert({ case_id, data })),
+      note: async (row, kind, content) => run(sb.from('navo_case_notes').insert({ case_id: row.id, revision: row.revision, kind, content }).select().single()),
+      links: async id => run(sb.from('navo_case_links').select('*').or('case_id.eq.' + id + ',target_id.eq.' + id)),
+      link: async (case_id, target_id, relation) => run(sb.from('navo_case_links').insert({ case_id, target_id, relation })),
+      upload: async (project, caseId, file) => {
+        if (file.size > 50 * 1024 * 1024) throw new Error('Maximum file size is 50MB.');
+        const path = project + '/cases/' + caseId + '/' + crypto.randomUUID() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        await run(sb.storage.from('photos').upload(path, file, { upsert: false }));
+        return { name: file.name, path, size: file.size, type: file.type };
+      },
+      url: async path => {
+        const data = await run(sb.storage.from('photos').createSignedUrl(path, 600)); return data.signedUrl;
+      }
+    },
     // Bulk helpers used by the admin demo-data tools.
     bulkInsert: async (table, rows) => {
       // Every row in a batch must carry the same columns, or Postgres stores NULL instead of the column default.

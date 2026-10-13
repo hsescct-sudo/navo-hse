@@ -679,7 +679,7 @@ def build_exec_pptx(d):
 
     # 2. KPIs actual vs target
     s = frame("Safety performance · actual vs target")
-    mult = d.get("mult", 200000)
+    mult = d.get("mult", 1000000)
     for i, (lbl, k) in enumerate([("LTIFR", "ltifr"), ("LTISR", "ltisr"), ("TRCF", "trcf")]):
         act, t = float(c.get(k) or 0), float(tg.get(k) or 0)
         ok = act <= t
@@ -791,7 +791,7 @@ def build_exec_pdf(d):
             fig.text(x + .015, .735, lbl, fontsize=14, weight="bold", color=col)
             fig.text(x + .015, .63, f"{act:.2f}", fontsize=34, weight="bold", color=col)
             fig.text(x + .015, .575, f'Target {t:.2f} · previous {float(p.get(k) or 0):.2f}', fontsize=10, color="#444444")
-        mult = int(d.get("mult", 200000))
+        mult = int(d.get("mult", 1000000))
         fig.text(.03, .5, f"Rates per {mult:,} man-hours. LTIFR = lost time injuries × {mult:,} ÷ man-hours · LTISR = lost workdays × {mult:,} ÷ man-hours · TRCF = recordable cases × {mult:,} ÷ man-hours.", fontsize=8.5, color="#555555")
         work, lag, lead, acts = _exec_rows(d)
         tbl(fig, [.03, .06, .3, .4], work + lag, ["Indicator", "Current", "Previous"], [.55, .22, .23])
