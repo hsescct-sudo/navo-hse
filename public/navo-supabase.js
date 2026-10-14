@@ -44,7 +44,7 @@
     return () => { alive = false; sb.removeChannel(ch); };
   }
 
-  function projectsFromRows(rows) { return { list: rows.map(r => ({ id: r.id, name: r.name, country: r.country, headcount: r.headcount, planInsp: r.plan_insp, planWalk: r.plan_walk, platform: r.platform || "Construction", division: r.division || "", cluster: r.cluster || "" })) }; }
+  function projectsFromRows(rows) { return { list: rows.map(r => ({ id: r.id, name: r.name, country: r.country, headcount: r.headcount, planInsp: r.plan_insp, planWalk: r.plan_walk, platform: r.platform || "Construction", division: r.division || "", cluster: r.cluster || "", location: r.latitude == null || r.longitude == null ? null : {lat:r.latitude,lng:r.longitude,label:r.location_label||'',mode:r.location_mode} })) }; }
   function membersFromRows(rows) { return { map: Object.fromEntries(rows.map(r => [r.user_id, { role: r.role, projects: r.projects || [], leader: !!r.leader, walkTarget: r.walk_target }])) }; }
 
   async function syncList(table, key, rows) {
@@ -108,6 +108,11 @@
     return q;
   }
   const db = { doc: docRef, collection: p => collection(p),
+    projectLocation: async (id, location) => {
+      if (location && (!Number.isFinite(location.lat) || !Number.isFinite(location.lng) || Math.abs(location.lat)>90 || Math.abs(location.lng)>180 || !['real','demo'].includes(location.mode))) throw new Error('Enter valid latitude and longitude.');
+      const updated=await run(sb.from('projects').update(location ? {latitude:location.lat,longitude:location.lng,location_label:location.label,location_mode:location.mode} : {latitude:null,longitude:null,location_label:null,location_mode:'none'}).eq('id',id).select('id'));
+      if(!updated.length) throw new Error('Only an administrator can save this project location.');
+    },
     cases: {
       list: async () => {
         const rows = [];

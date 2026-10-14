@@ -10,7 +10,7 @@ create table storage.buckets(id text primary key,name text,public boolean);creat
 const base='../supabase';
 const releaseMigrations=fs.readdirSync(path.join(__dirname,base,'migrations')).filter(f=>f.endsWith('.sql')).sort().map(f=>'migrations/'+f);
 if(process.env.CLIENT_MIGRATION_PATH)releaseMigrations.push(process.env.CLIENT_MIGRATION_PATH);
-for(const file of ['schema.sql',...fs.readdirSync(path.join(__dirname,base)).filter(f=>/^00[2-9]_/.test(f)).sort(),...releaseMigrations]){
+for(const file of ['schema.sql',...fs.readdirSync(path.join(__dirname,base)).filter(f=>/^00[2-9]_/.test(f)).sort(),...releaseMigrations,'017_project_locations.sql','018_project_location_visibility.sql']){
 let sql=fs.readFileSync((path.isAbsolute(file)?file:path.join(__dirname,base,file)),'utf8').replace(/alter publication supabase_realtime add table[\s\S]*?;/g,'');
 try{await db.exec(sql);console.log('Applied',file);}catch(e){console.error('Migration failed:',file,e.message);process.exit(1);}}
 for(const file of releaseMigrations)await db.exec(fs.readFileSync(path.isAbsolute(file)?file:path.join(__dirname,base,file),'utf8'));console.log('Migrations safe to run twice');
@@ -18,6 +18,13 @@ const ids={admin:'10000000-0000-0000-0000-000000000001',hse:'10000000-0000-0000-
 await db.exec(`grant select,insert,update,delete on all tables in schema public to authenticated;insert into auth.users values ${Object.values(ids).map(id=>`('${id}')`).join(',')};insert into public.projects(id,name) values ('p1','Test 1'),('p2','Test 2');insert into public.owner(user_id) values ('${ids.admin}');insert into public.members(user_id,role,projects) values ('${ids.hse}','hse','{p1}'),('${ids.worker}','worker','{p1}'),('${ids.other}','hse','{p2}');insert into public.settings(id,data) values ('structure','{"keepMe":true,"kpi":{"mult":200000}}') on conflict(id) do update set data=excluded.data;insert into public.people(user_id,name) select id,'Test user' from auth.users;set role authenticated;`);
 const user=async name=>db.query(`select set_config('request.jwt.claim.sub',$1,false)`,[ids[name]]);
 const body={description:'Validation case',date:'2026-10-13T14:00',location:'Test site',responsibleDepartment:'HSE',reportedDepartment:'HSE',departmentInCharge:'HSE',due:'2026-10-20',likelihood:'3',riskSeverity:'5',category:'Unsafe act',technology:'CCGT',endDate:'2026-10-14T14:00',actions:[],potential:[]};
+await user('worker');
+assert.deepEqual((await db.query('select id from projects order by id')).rows.map(p=>p.id),['p1'],'assigned members can only read project locations in scope');
+assert.equal((await db.query("update projects set latitude=24.71,longitude=46.68,location_mode='real' where id='p1' returning id")).rows.length,0,'worker cannot set coordinates');
+await user('admin');
+await db.query("update projects set latitude=24.71,longitude=46.68,location_mode='real' where id='p1'");
+let coordinateDenied=false;try{await db.query("update projects set latitude=100 where id='p1'");}catch{coordinateDenied=true;}assert(coordinateDenied,'invalid latitude rejected by database');
+assert.equal((await db.query('select id from projects')).rows.length,2,'administrator retains portfolio access');
 await user('worker');
 let r=(await db.query(`insert into navo_cases(project,case_type,body) values('p1','Observation',$1) returning *`,[body])).rows[0];
 assert.equal(+r.case_no,1000000);const permanentDraftNumber=r.case_no;let denied=false;try{await db.query(`insert into navo_cases(project,case_type) values('p2','Observation')`);}catch{denied=true;}assert(denied,'cross-project insertion denied');

@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),P=require('../public/portfolio-map-core.js');
+assert.equal(P.location({location:{lat:0,lng:0,mode:'real'}}).lat,0);
+for(const v of [{lat:91,lng:5,mode:'real'},{lat:10,lng:181,mode:'demo'},{lat:'20',lng:50,mode:'real'},{lat:NaN,lng:50,mode:'real'},{lat:10,lng:50,mode:'none'}])assert.equal(P.location({location:v}),null);
+assert.deepEqual(P.coordinates('24.7136, 46.6753'),{lat:24.7136,lng:46.6753,mode:'real'});
+assert.equal(P.coordinates('https://www.google.com/maps/@24.71,46.68,12z').lng,46.68);
+assert.equal(P.coordinates('https://www.google.com/maps?q=24.71,46.68').lat,24.71);
+assert.equal(P.coordinates('https://evil.test/maps?q=24.71,46.68'),null);
+assert.equal(P.coordinates('https://maps.app.goo.gl/abc'),null);
+const base={hours:1000000,rates:{ltifr:0,ltisr:0,trcf:0},targets:{ltifr:.14,ltisr:1.36,trcf:.06},inspections:2};
+assert.equal(P.health(base).color,'green');assert.equal(P.health({...base,hours:0}).color,'grey');assert.equal(P.health({...base,inspections:0}).color,'grey');
+for(const extra of [{overdue:1},{unassessed:1},{failed:1},{pending:1}])assert.equal(P.health({...base,...extra}).color,'yellow');
+for(const extra of [{highOverdue:1},{criticalOpen:1},{rates:{...base.rates,trcf:.07}}])assert.equal(P.health({...base,...extra}).color,'red');
+assert.equal(P.health({...base,hours:0,rates:{trcf:0.1}}).color,'grey','missing exposure must not invent a rate');
+console.log('PASS: geographic bounds, safe coordinate parsing, zero coordinates, evidence-based traffic lights, missing evidence never green');
