@@ -91,6 +91,18 @@ let plan=(await db.query("insert into navo_cases(project,case_type,body) values(
 let invalid=false;fb.workStage='Invented';try{await db.query('update navo_cases set body=$1 where id=$2',[fb,plan.id]);}catch{invalid=true;}assert(invalid,'invalid sector enum denied');
 invalid=false;try{await db.query("insert into navo_cases(project,case_type,body) values('p1','Meeting',$1)",[{...body,formId:'operations:monthly-operations'}]);}catch{invalid=true;}assert(invalid,'wrong platform profile denied even on draft');
 const missing=(await db.query("insert into navo_cases(project,case_type,body) values('p1','Observation',$1) returning id",[{...body,formId:'construction:base-observation'}])).rows[0];invalid=false;try{await db.query("update navo_cases set title='Missing context',status='Registered' where id=$1",[missing.id]);}catch{invalid=true;}assert(invalid,'mandatory sector context enforced at database');
+
+await user('admin');await db.query("update projects set platform='Non-Construction' where id='p2'");
+for(const form of S.forms){
+ const values={...body,...form.defaults,formId:form.id};
+ for(const field of form.fields)if(field.required)values[field.key]=field.kind==='select'?field.options[0]:field.kind==='number'?'1':field.kind==='month'?'2026-10':field.kind==='date'?(field.key==='periodStart'?'2026-10-01':'2026-10-31'):'Verified field context';
+ if(form.base==='Inspection')values.checklists=[{id:'validation',name:'Validated control',questions:[{text:'Control verified',critical:true,evaluation:'Safe'}]}];
+ const project=form.platform==='Construction'?'p1':'p2';const draftForm=(await db.query('insert into navo_cases(project,case_type,body) values($1,$2,$3) returning id',[project,form.base,values])).rows[0];
+ await db.query("update navo_cases set title=$1,status='Registered' where id=$2",['Profile validation '+form.name,draftForm.id]);
+ if(['Audit','Audit finding','Meeting'].includes(form.base))assert.equal((await db.query('select kind from hsse_records where id=$1',[draftForm.id])).rows[0].kind,form.kind);
+}
+console.log('PASS: all 97 sector form profiles submit with mandatory context and preserve their semantic projection kind');
+
 await db.exec('reset role');await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/019_connected_record_links.sql'),'utf8'));await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/020_sector_forms_and_rca_review.sql'),'utf8'));
 console.log('PASS: draft link privacy, retained links, authenticated review stamps, source/unlink invalidation, sector validation and plan projections');
 
