@@ -114,6 +114,7 @@
       if(!updated.length) throw new Error('Only an administrator can save this project location.');
     },
     cases: {
+      get: async id => run(sb.from('navo_cases').select('*').eq('id',id).single()),
       list: async () => {
         const rows = [];
         for (let from = 0; ; from += 1000) {
@@ -144,6 +145,14 @@
       url: async path => {
         const data = await run(sb.storage.from('photos').createSignedUrl(path, 600)); return data.signedUrl;
       }
+    },
+    recordLinks: {
+      list: async id => {
+        const query=sb.from('navo_record_links').select('*').order('created_at');
+        return run(/^[0-9a-f-]{36}$/i.test(id)?query.or('source_id.eq.'+id+',target_id.eq.'+id):query.eq('target_id',id));
+      },
+      link: async (source_id,target_id,relation) => run(sb.from('navo_record_links').insert({source_id,target_id,relation,target_project:''})),
+      remove: async id => run(sb.from('navo_record_links').delete().eq('id',id))
     },
     // Bulk helpers used by the admin demo-data tools.
     bulkInsert: async (table, rows) => {

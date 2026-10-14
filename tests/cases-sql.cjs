@@ -10,7 +10,7 @@ create table storage.buckets(id text primary key,name text,public boolean);creat
 const base='../supabase';
 const releaseMigrations=fs.readdirSync(path.join(__dirname,base,'migrations')).filter(f=>f.endsWith('.sql')).sort().map(f=>'migrations/'+f);
 if(process.env.CLIENT_MIGRATION_PATH)releaseMigrations.push(process.env.CLIENT_MIGRATION_PATH);
-for(const file of ['schema.sql',...fs.readdirSync(path.join(__dirname,base)).filter(f=>/^00[2-9]_/.test(f)).sort(),...releaseMigrations,'017_project_locations.sql','018_project_location_visibility.sql']){
+for(const file of ['schema.sql',...fs.readdirSync(path.join(__dirname,base)).filter(f=>/^00[2-9]_/.test(f)).sort(),...releaseMigrations,'017_project_locations.sql','018_project_location_visibility.sql','019_connected_record_links.sql','020_sector_forms_and_rca_review.sql']){
 let sql=fs.readFileSync((path.isAbsolute(file)?file:path.join(__dirname,base,file)),'utf8').replace(/alter publication supabase_realtime add table[\s\S]*?;/g,'');
 try{await db.exec(sql);console.log('Applied',file);}catch(e){console.error('Migration failed:',file,e.message);process.exit(1);}}
 for(const file of releaseMigrations)await db.exec(fs.readFileSync(path.isAbsolute(file)?file:path.join(__dirname,base,file),'utf8'));console.log('Migrations safe to run twice');
@@ -73,5 +73,26 @@ const draft=(await db.query("insert into navo_cases(project,case_type) values('p
 await db.exec('reset role');assert.equal((await db.query('select count(*)::int n from navo_private.record_identity where record_id=$1',[draft.id])).rows[0].n,1,'reservation survives deletion');
 const maxNo=(await db.query('select max(case_no) n from navo_private.record_identity')).rows[0].n;await db.query("select setval('public.navo_case_number',1000000,false)");await db.exec('set role authenticated');let collision=false;try{await db.query("insert into activities(project,type,date,ts) values('p1','Training',1,1)");}catch(e){collision=/unique|duplicate/i.test(e.message);}assert(collision,'global ledger rejects sequence-reset collision across tables');await db.exec('reset role');await db.query("select setval('public.navo_case_number',$1,true)",[maxNo]);
 console.log('PASS: global identity across six legacy streams, draft-to-submission stability, upserts, tombstones, spoofing and cross-table collision rejection');
+
+await db.exec('set role authenticated');await user('hse');
+const source=(await db.query("insert into navo_cases(project,case_type,body) values('p1','Observation',$1) returning *",[body])).rows[0];
+const target=(await db.query("select id from navo_cases where project='p1' and status<>'Draft' limit 1")).rows[0];
+await db.query("insert into navo_record_links(source_id,target_id,target_project,relation,created_by) values($1,$2,'spoofed','Related',$3)",[source.id,target.id,ids.other]);
+const link=(await db.query('select * from navo_record_links where source_id=$1',[source.id])).rows[0];assert.equal(link.target_project,'p1');assert.equal(link.created_by,ids.hse);
+await user('worker');assert.equal((await db.query('select * from navo_record_links where source_id=$1',[source.id])).rows.length,0,'private source draft link invisible');
+await user('hse');await db.query("update navo_cases set title='Linked HIPO',status='Registered' where id=$1",[source.id]);
+await user('worker');assert.equal((await db.query('select * from navo_record_links where source_id=$1',[source.id])).rows.length,1,'link remains after registration');
+await user('hse');let current=(await db.query('select * from navo_cases where id=$1',[source.id])).rows[0];current.body.rcaDocument={summary:'Verify causes'};current.body.rcaReviewed=true;current.body.rcaReviewedBy=ids.other;current.body.rcaReviewedAt='1990-01-01';
+current=(await db.query('update navo_cases set body=$1 where id=$2 returning *',[current.body,source.id])).rows[0];assert.equal(current.body.rcaReviewedBy,ids.hse,'review author stamped');assert(new Date(current.body.rcaReviewedAt).getFullYear()>2025);
+await db.query('delete from navo_record_links where id=$1',[link.id]);current=(await db.query('select * from navo_cases where id=$1',[source.id])).rows[0];assert.equal(current.body.rcaReviewed,false,'unlink invalidates review');
+current.body.rcaReviewed=true;await db.query('update navo_cases set body=$1 where id=$2',[current.body,source.id]);await db.query("update navo_cases set title='Changed evidence' where id=$1",[source.id]);assert.equal((await db.query('select body from navo_cases where id=$1',[source.id])).rows[0].body.rcaReviewed,false,'source changes invalidate review');
+const S=require('../public/client-assurance-core.js'),f=S.profile('construction:audit-plan'),fb={...body,formId:f.id};for(const v of f.fields)fb[v.key]=v.kind==='select'?v.options[0]:v.kind==='number'?'1':v.kind==='month'?'2026-10':'Verified context';
+let plan=(await db.query("insert into navo_cases(project,case_type,body) values('p1','Meeting',$1) returning *",[fb])).rows[0];await db.query("update navo_cases set title='Planned audit',status='Registered' where id=$1",[plan.id]);assert.equal((await db.query('select kind from hsse_records where id=$1',[plan.id])).rows[0].kind,'audit_plan','plans are not actual audits');
+let invalid=false;fb.workStage='Invented';try{await db.query('update navo_cases set body=$1 where id=$2',[fb,plan.id]);}catch{invalid=true;}assert(invalid,'invalid sector enum denied');
+invalid=false;try{await db.query("insert into navo_cases(project,case_type,body) values('p1','Meeting',$1)",[{...body,formId:'operations:monthly-operations'}]);}catch{invalid=true;}assert(invalid,'wrong platform profile denied even on draft');
+const missing=(await db.query("insert into navo_cases(project,case_type,body) values('p1','Observation',$1) returning id",[{...body,formId:'construction:base-observation'}])).rows[0];invalid=false;try{await db.query("update navo_cases set title='Missing context',status='Registered' where id=$1",[missing.id]);}catch{invalid=true;}assert(invalid,'mandatory sector context enforced at database');
+await db.exec('reset role');await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/019_connected_record_links.sql'),'utf8'));await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/020_sector_forms_and_rca_review.sql'),'utf8'));
+console.log('PASS: draft link privacy, retained links, authenticated review stamps, source/unlink invalidation, sector validation and plan projections');
+
 console.log('PASS: numbering, seven forms, idempotence, projection, deadlines, revision conflicts, project isolation, private drafts, authentic signatures, medical privacy');await db.close();
 })().catch(e=>{console.error(e.message,e.stack);process.exit(1)});

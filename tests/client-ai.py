@@ -9,6 +9,18 @@ spec.loader.exec_module(ai)
 
 
 class AIReviewTests(unittest.TestCase):
+    def test_rca_does_not_forge_review_or_evidence(self):
+        raw = {'status': 'Approved', 'method': 'invented', 'confidence': 'certain', 'analysis': [{'label':'Why', 'hypothesis':'Check barrier', 'status':'Verified', 'evidence_ids':['allowed','forged']}], 'data_gaps':['Need inspection'], 'recommended_actions':[{'action':'Verify', 'verification':'Site check'}]}
+        with patch.object(ai, 'claude', return_value=raw):
+            result=ai.run('rca', {'method':'Barrier Analysis','evidence':{'title':'Test'},'source_ids':['allowed']})
+        self.assertEqual(result['method'],'Barrier Analysis')
+        self.assertEqual(result['status'],'Draft for investigator review')
+        self.assertEqual(result['analysis'][0]['status'],'Hypothesis')
+        self.assertEqual(result['analysis'][0]['evidence_ids'],['allowed'])
+        self.assertEqual(result['confidence'],'low')
+        with self.assertRaises(ValueError): ai.run('rca', {'method':'invented'})
+        with self.assertRaises(ValueError): ai.run('rca', {'evidence':'invalid'})
+
     def test_analysis_normalises_risk_and_supported_controls(self):
         raw = {'likelihood': 9, 'severity': 5, 'confidence': 'certain', 'category': 'invented',
                'control_plan': [{'hierarchy': 'Engineering', 'protects': 'Both', 'action': 'Fit a guard'},
