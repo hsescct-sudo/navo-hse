@@ -832,7 +832,61 @@ def build_exec_pdf(d):
     return out.getvalue()
 
 
+def build_case_pdf(d):
+    import textwrap
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_pdf import PdfPages
+    lines=[]
+    def add(label, value):
+        if value is not None and str(value).strip():
+            lines.extend(textwrap.wrap(label+": "+str(value), width=98, replace_whitespace=False)[:50])
+            lines.append("")
+    for label,key in [("Title","title"),("Case reference","reference"),("Report type","type"),("Status","status"),("Project","project"),("Date","date"),("Location","location"),("Category","category"),("Risk rating","risk"),("Description","description"),("Immediate action","immediateAction"),("Investigator conclusion","cause")]: add(label,d.get(key))
+    add("Investigation review", "Recorded" if d.get("reviewed") else "Pending / not applicable")
+    add("Source record (sign-in required)",d.get("sourceUrl"))
+    for field in d.get("fields",[])[:80]: add(str(field.get("label","Field")),field.get("value"))
+    for i,a in enumerate(d.get("actions",[])[:100]): add("Action "+str(i+1), str(a.get("title", ""))+" / Priority: "+str(a.get("priority", ""))+" / Due: "+str(a.get("due", ""))+" / Owner: "+str(a.get("owner", "")))
+    out=io.BytesIO()
+    with PdfPages(out) as pdf:
+        for start in range(0,len(lines),42):
+            fig=plt.figure(figsize=(8.27,11.69))
+            fig.text(.07,.95,str(d.get("brand","NAVO"))+" HSSE case report",fontsize=17,weight="bold",color="#163b53")
+            fig.text(.07,.905,str(d.get("title", ""))[:85],fontsize=12,weight="bold")
+            if d.get("illustrative"): fig.text(.07,.875,"ILLUSTRATIVE DATA / DEMONSTRATION",fontsize=9,color="#996200")
+            fig.text(.07,.84,"\n".join(lines[start:start+42]),fontsize=9.5,linespacing=1.5,va="top")
+            fig.text(.07,.04,"Generated "+str(d.get("generated", ""))+" / Case "+str(d.get("reference", ""))+" / Page "+str(start//42+1),fontsize=8,color="#52697a")
+            pdf.savefig(fig);plt.close(fig)
+    return out.getvalue()
+
+
+def build_history_pdf(d):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    rows=d.get('rows',[])[:5]
+    fig=plt.figure(figsize=(11.69,8.27))
+    fig.text(.06,.94,str(d.get('brand','NAVO'))+' / Five-year HSSE evidence',fontsize=20,weight='bold',color='#17394d')
+    fig.text(.06,.89,str(d.get('scope','Corporation'))+' / '+str(d.get('period',''))+' / Current year: YTD',fontsize=12)
+    if d.get('illustrative'):fig.text(.06,.85,'ILLUSTRATIVE DATA / NOT VERIFIED COMPANY PERFORMANCE',fontsize=10,color='#986600')
+    ax=fig.add_axes([.09,.44,.84,.35])
+    for k,color in [('ltifr','#235bc0'),('ltisr','#d27d35'),('trcf','#176b5b')]:ax.plot([r['year'] for r in rows],[r.get(k) for r in rows],marker='o',label=k.upper(),color=color)
+    ax.set_xticks([r['year'] for r in rows]);ax.set_ylabel('Rate per 1,000,000 hours');ax.grid(axis='y',alpha=.2);ax.legend()
+    table_ax=fig.add_axes([.06,.10,.88,.27]);table_ax.axis('off')
+    values=[[r['year'],f"{r.get('hours',0):,}" if r.get('hours') else 'Not recorded',r.get('lti',0),r.get('lost',0),r.get('recordable',0)]+['Unavailable' if r.get(k) is None else f"{r[k]:.2f}" for k in ['ltifr','ltisr','trcf']] for r in rows]
+    table=table_ax.table(cellText=values,colLabels=['Year','Exposure hours','LTI','Lost days','Recordables','LTIFR','LTISR','TRCF'],loc='upper center',cellLoc='center');table.auto_set_font_size(False);table.set_fontsize(10);table.scale(1,1.8)
+    fig.text(.06,.05,'Missing exposure produces unavailable rates. Validate source figures and reporting boundaries before tender use.',fontsize=9,color='#52697a')
+    out=io.BytesIO();fig.savefig(out,format='pdf');plt.close(fig);return out.getvalue()
+
+
 def make(fmt, data):
+    if data.get("kind") == "history":
+        if fmt != "pdf": raise ValueError("Historical evidence exports as PDF")
+        return build_history_pdf(data), "application/pdf"
+    if data.get("kind") == "case":
+        if fmt != "pdf": raise ValueError("Case reports export as PDF")
+        return build_case_pdf(data), "application/pdf"
     if data.get("kind") == "exec":
         data.setdefault("generated", datetime.utcnow().strftime("%d %b %Y"))
         if fmt == "pdf":
