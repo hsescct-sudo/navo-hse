@@ -535,6 +535,7 @@ async function coDownload(scope, fmt, button) {
       "A report is already being prepared. Please wait for its download.",
     );
   CO.exporting = true;
+  window.navoExporting = true;
   const label = button.textContent,
     includeRegisters =
       document.getElementById("co-export-registers")?.checked !== false,
@@ -560,6 +561,23 @@ async function coDownload(scope, fmt, button) {
       await new Promise((r) =>
         requestAnimationFrame(() => requestAnimationFrame(r)),
       );
+      await new Promise((resolve) => {
+        const loading = [];
+        GM.map?.eachLayer((layer) => {
+          if (typeof layer.isLoading === "function" && layer.isLoading())
+            loading.push(layer);
+        });
+        if (!loading.length) return resolve();
+        const deadline = setTimeout(resolve, 3500);
+        Promise.all(
+          loading.map(
+            (layer) => new Promise((done) => layer.once("load", done)),
+          ),
+        ).then(() => {
+          clearTimeout(deadline);
+          resolve();
+        });
+      });
       const node = document.querySelector(".co-dashboard"),
         canvas = await html2canvas(node, {
           scale: 1,
@@ -595,6 +613,7 @@ async function coDownload(scope, fmt, button) {
     st.view = saved.view;
     CD.detail = saved.detail;
     CL.dashboard = saved.dashboard;
+    window.navoExporting = false;
     render();
     button.disabled = false;
     button.textContent = label;

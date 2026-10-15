@@ -32,7 +32,7 @@ def sections(d):
  return out
 
 def value(v):
- if v is None:return 'Unavailable'
+ if v is None:return '—'
  if isinstance(v,float):return f'{v:,.2f}'
  if isinstance(v,int):return f'{v:,}'
  return str(v)
@@ -47,7 +47,7 @@ def complete_docx(d):
  for name in ['Title','Subtitle','Heading 1','Heading 2','Heading 3']:
   doc.styles[name].font.name='Arial';doc.styles[name].font.color.rgb=RGBColor.from_string('163747')
  style=doc.styles['Normal'];style.font.name='Arial';style.font.size=Pt(10);style.font.color.rgb=RGBColor.from_string('163747')
- for sec in doc.sections:sec.top_margin=sec.bottom_margin=Inches(.65)
+ for sec in doc.sections:sec.top_margin=sec.bottom_margin=Inches(.65);sec.page_width=Inches(8.27);sec.page_height=Inches(11.69)
  doc.add_paragraph(str(d.get('brand','NAVO'))+' / HSSE REPORT','Subtitle');doc.add_heading('Complete leadership report',0);doc.add_paragraph(d.get('scope','Corporation')+' | '+d.get('period',''));doc.add_paragraph('Generated '+str(d.get('generated','')))
  doc.add_heading('Report contents',1)
  for title,_,_ in sections(d):doc.add_paragraph(title,style='List Bullet')
@@ -55,11 +55,17 @@ def complete_docx(d):
  doc.add_paragraph(d.get('sourceUrl',''))
  sec=doc.add_section(WD_SECTION_START.NEW_PAGE);sec.orientation=WD_ORIENT.LANDSCAPE;sec.page_width=Inches(11.69);sec.page_height=Inches(8.27);sec.left_margin=sec.right_margin=Inches(.5)
  doc.add_heading('Complete dashboard',1);b=image_bytes(d)
- if b:doc.add_picture(io.BytesIO(b),width=Inches(10.5))
+ if b:
+  from PIL import Image
+  image=Image.open(io.BytesIO(b));ratio=min(10.5/image.width,5.7/image.height);doc.add_picture(io.BytesIO(b),width=Inches(image.width*ratio),height=Inches(image.height*ratio))
  else:doc.add_paragraph('Dashboard snapshot unavailable in this request. Detailed source tables follow. Export from the leadership overview to include the live dashboard.')
+ previous_wide=None
  for title,headers,rows in sections(d):
-  sec=doc.add_section(WD_SECTION_START.NEW_PAGE);sec.orientation=WD_ORIENT.LANDSCAPE if len(headers)>5 else WD_ORIENT.PORTRAIT;sec.page_width=Inches(11.69 if len(headers)>5 else 8.27);sec.page_height=Inches(8.27 if len(headers)>5 else 11.69);sec.left_margin=sec.right_margin=Inches(.55)
-  doc.add_heading(title,1);doc.add_paragraph(f'{len(rows)} records | '+str(d.get('period','')),style='Caption')
+  wide=True
+  if wide!=previous_wide:
+   sec=doc.add_section(WD_SECTION_START.NEW_PAGE);sec.orientation=WD_ORIENT.LANDSCAPE if wide else WD_ORIENT.PORTRAIT;sec.page_width=Inches(11.69 if wide else 8.27);sec.page_height=Inches(8.27 if wide else 11.69);sec.left_margin=sec.right_margin=Inches(.55);previous_wide=wide
+  else:doc.add_paragraph('')
+  doc.add_heading(title,1);caption=doc.add_paragraph(f'{len(rows)} records | '+str(d.get('period','')),style='Caption');caption.paragraph_format.keep_with_next=True
   t=doc.add_table(rows=1,cols=len(headers));t.style='Light Shading Accent 1';t.autofit=False
   weights=[3 if h in ['Title','Action','Value','Programme','Project'] else 2 if h in ['Division','Type','Owner','Coverage','Health'] else 1 for h in headers];available=sec.page_width-sec.left_margin-sec.right_margin
   for col,weight in zip(t.columns,weights):col.width=int(available*weight/sum(weights))
@@ -68,10 +74,18 @@ def complete_docx(d):
    for r in c.paragraphs[0].runs:r.font.color.rgb=RGBColor.from_string('FFFFFF');r.bold=True
   repeat=OxmlElement('w:tblHeader');t.rows[0]._tr.get_or_add_trPr().append(repeat)
   for row in rows:
-   for cell,v in zip(t.add_row().cells,row):cell.text=value(v)
+   for index,(cell,v) in enumerate(zip(t.add_row().cells,row)):
+    cell.text=(v.split('T',1)[0]+'\n'+v.split('T',1)[1][:5]) if headers[index]=='Reported' and isinstance(v,str) and 'T' in v else value(v)
+  for index,row in enumerate(t.rows):
+   for cell in row.cells:
+    for paragraph in cell.paragraphs:paragraph.paragraph_format.keep_with_next=(index < len(t.rows)-1) if len(rows)<=20 else index==0
   if not rows:doc.add_paragraph('No records in the selected scope.')
  for sec in doc.sections:
   p=sec.footer.paragraphs[0];p.text=str(d.get('brand','NAVO'))+' / '+d.get('scope','')+' / Page ';f=OxmlElement('w:fldSimple');f.set(qn('w:instr'),'PAGE');p._p.append(f)
+ for style in doc.styles:
+  for border in style.element.findall('.//'+qn('w:pBdr')):border.getparent().remove(border)
+ for paragraph in doc.paragraphs:
+  for border in paragraph._p.findall('.//'+qn('w:pBdr')):border.getparent().remove(border)
  out=io.BytesIO();doc.save(out);return out.getvalue()
 
 def complete_xlsx(d):
