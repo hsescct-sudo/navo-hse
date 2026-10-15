@@ -13,7 +13,14 @@ def image_bytes(d):
  if im.format!='JPEG' or im.width>5000 or im.height>8000:raise ValueError('Invalid dashboard dimensions')
  return b
 
-def sections(d):
+def brief_pdf(d):
+ from PIL import Image
+ b=image_bytes(d)
+ if not b:return executive_pdf(d)
+ image=Image.open(io.BytesIO(b)).convert('RGB')
+ out=io.BytesIO();image.save(out,format='PDF',resolution=110);return out.getvalue()
+
+def full_sections(d):
  c=d.get('cur',{});out=[]
  out.append(('Reporting scope',['Item','Value'],[['Platform',d.get('scope')],['Period',d.get('period')],['Country',d.get('country')],['Data status','Illustrative demonstration' if d.get('illustrative') else 'Stored source records'],['Historical coverage',d.get('history',{}).get('historyNote') or 'Stored figures; missing exposure gives unavailable rates.']]))
  out.append(('Workforce and exposure',['Platform','Employees','Contractors','Employee hours','Contractor hours','Safe hours','Safe days'],[[r.get(k) for k in ['name','employees','contractors','employeeHours','contractorHours','safeHours','safeDays']] for r in d.get('workforce',[])]))
@@ -26,10 +33,28 @@ def sections(d):
  out.append(('Project performance',['Project','Division','Platform','Country','Hours','TRCF','Overdue','Closure %','Health'],[[r.get(k) for k in ['name','division','platform','country','hours','trcf','over','closure','health']] for r in d.get('projects',[])]))
  out.append(('Finding risk distribution',['Risk rating','Findings'],[[r.get('label'),r.get('count')] for r in d.get('riskDistribution',[])]))
  out.append(('Five-year performance',['Year','Exposure hours','LTI','Lost days','Recordables','LTIFR','LTISR','TRCF','Coverage'],[[r.get(k) for k in ['year','hours','lti','lost','recordable','ltifr','ltisr','trcf','coverage']] for r in d.get('history',{}).get('rows',[])]))
- if d.get('includeRegisters',True):
+ if d.get('includeRegisters',False):
   out.append(('Source record register',['Reference','Title','Type','Project','Status','Reported'],[[r.get(k) for k in ['reference','title','type','project','status','date']] for r in d.get('register',[])]))
   out.append(('Action register',['Reference','Action','Project','Owner','Due','Status','Priority'],[[r.get(k) for k in ['reference','title','project','owner','due','status','priority']] for r in d.get('actionRegister',[])]))
  return out
+
+def sections(d):
+ if not d.get('brief'):return full_sections(d)
+ keys={'summary':['Safety outcomes and actions'],'portfolio':['Project performance'],'evidence':['Finding risk distribution'],'exec':['Safety outcomes and actions'],'health':['Project performance'],'site':['Project performance'],'inj':['Safety outcomes and actions'],'aud':['Safety outcomes and actions'],'acc':['Safety outcomes and actions'],'kpi':['Frequency rates'],'es':['Safety outcomes and actions']}
+ selected=keys.get(d.get('dashboardId'),['Safety outcomes and actions'])
+ result=[]
+ for title,headers,rows in full_sections(d):
+  if title not in selected:continue
+  if title=='Safety outcomes and actions':
+   names={'Projects','People','Exposure hours','Recordable cases','Open actions','Overdue actions'}
+   if d.get('dashboardId') in ['inj','acc']:names={'Fatalities','Lost time injuries','Lost workdays','Recordable cases','First aid','Near misses'}
+   elif d.get('dashboardId')=='aud':names={'Audits and findings','Inspections','Open actions','Overdue actions','Closure %'}
+   elif d.get('dashboardId')=='es':names={'Projects','People'}
+   rows=[r for r in rows if r[0] in names]
+  if title=='Project performance':
+   headers=['Project','Country','Overdue','Closure %','Health'];rows=[[r[i] for i in [0,3,6,7,8]] for r in rows[:6]]
+  result.append((d.get('dashboardTitle',title)+' / summary',headers,rows[:6]))
+ return result
 
 def value(v):
  if v is None:return '—'
@@ -48,13 +73,13 @@ def complete_docx(d):
   doc.styles[name].font.name='Arial';doc.styles[name].font.color.rgb=RGBColor.from_string('163747')
  style=doc.styles['Normal'];style.font.name='Arial';style.font.size=Pt(10);style.font.color.rgb=RGBColor.from_string('163747')
  for sec in doc.sections:sec.top_margin=sec.bottom_margin=Inches(.65);sec.page_width=Inches(8.27);sec.page_height=Inches(11.69)
- doc.add_paragraph(str(d.get('brand','NAVO'))+' / HSSE REPORT','Subtitle');doc.add_heading('Complete leadership report',0);doc.add_paragraph(d.get('scope','Corporation')+' | '+d.get('period',''));doc.add_paragraph('Generated '+str(d.get('generated','')))
- doc.add_heading('Report contents',1)
+ doc.add_paragraph(str(d.get('brand','NAVO'))+' / HSSE REPORT','Subtitle');doc.add_heading(d.get('dashboardTitle','Leadership')+' / executive brief',0);doc.add_paragraph(d.get('scope','Corporation')+' | '+d.get('period',''));doc.add_paragraph('Generated '+str(d.get('generated','')))
+ doc.add_heading('Brief contents',1)
  for title,_,_ in sections(d):doc.add_paragraph(title,style='List Bullet')
  doc.add_paragraph('ILLUSTRATIVE DEMONSTRATION / NOT VERIFIED COMPANY PERFORMANCE' if d.get('illustrative') else 'Review reporting boundaries and evidence before external issue.')
  doc.add_paragraph(d.get('sourceUrl',''))
  sec=doc.add_section(WD_SECTION_START.NEW_PAGE);sec.orientation=WD_ORIENT.LANDSCAPE;sec.page_width=Inches(11.69);sec.page_height=Inches(8.27);sec.left_margin=sec.right_margin=Inches(.5)
- doc.add_heading('Complete dashboard',1);b=image_bytes(d)
+ doc.add_heading(d.get('dashboardTitle','Dashboard'),1);b=image_bytes(d)
  if b:
   from PIL import Image
   image=Image.open(io.BytesIO(b));ratio=min(10.5/image.width,5.7/image.height);doc.add_picture(io.BytesIO(b),width=Inches(image.width*ratio),height=Inches(image.height*ratio))
@@ -99,7 +124,7 @@ def complete_xlsx(d):
   image=Image(io.BytesIO(b));ratio=min(1450/image.width,850/image.height);image.width*=ratio;image.height*=ratio;dash.add_image(image,'A1')
  else:dash.append(['Open the leadership overview to include the dashboard snapshot.'])
  for title,headers,rows in sections(d):
-  ws=wb.create_sheet(title[:31]);ws.append(headers)
+  ws=wb.create_sheet(title.replace('/','-')[:31]);ws.append(headers)
   for row in rows:ws.append(["'"+v if isinstance(v,str) and v[:1] in '=+-@' else v for v in row])
   ws.freeze_panes='A2';ws.auto_filter.ref=ws.dimensions
   for j,h in enumerate(headers,1):
@@ -127,7 +152,7 @@ def complete_pptx(d):
   t=s.shapes.add_textbox(Inches(x),Inches(y),Inches(w),Inches(h));t.text_frame.word_wrap=True;p=t.text_frame.paragraphs[0];p.text=str(v);p.font.name='Arial';p.font.size=Pt(size);p.font.bold=bold;p.font.color.rgb=RGBColor.from_string(color);return t
  def base(title):
   s=prs.slides.add_slide(layout);s.background.fill.solid();s.background.fill.fore_color.rgb=RGBColor.from_string('F5F8FA');text(s,.5,.22,15,.35,str(d.get('brand','NAVO'))+' / '+str(d.get('scope','')),12,True,'167563');text(s,.5,.8,15,.75,title,30,True);text(s,.5,8.35,14,.3,('DEMO / ' if d.get('illustrative') else '')+str(d.get('period','')),10,False,'607986');return s
- cover=base('Complete leadership report');text(cover,.5,2.4,14,1.5,'One company overview.\nSupporting evidence in the pages that follow.',32,True);text(cover,.5,4.7,14,.7,d.get('period','')+' / '+d.get('country',''),20);text(cover,.5,6.2,14,.8,'Illustrative demonstration data' if d.get('illustrative') else 'Accessible reporting records',18,False,'976B13');link=text(cover,.5,7.3,14,.4,'Open live dashboard',18,True,'167563')
+ cover=base(d.get('dashboardTitle','Leadership')+' / executive brief');text(cover,.5,2.4,14,1.5,'One clear view.\nA concise summary of the selected dashboard.',32,True);text(cover,.5,4.7,14,.7,d.get('period','')+' / '+d.get('country',''),20);text(cover,.5,6.2,14,.8,'Illustrative demonstration data' if d.get('illustrative') else 'Accessible reporting records',18,False,'976B13');link=text(cover,.5,7.3,14,.4,'Open live dashboard',18,True,'167563')
  for run in link.text_frame.paragraphs[0].runs:run.hyperlink.address=d.get('sourceUrl','https://navo-hse.vercel.app/')
  slide_id=prs.slides._sldIdLst[-1];prs.slides._sldIdLst.remove(slide_id);prs.slides._sldIdLst.insert(0,slide_id)
  # Slide 2 is the actual full overview captured by the signed-in browser.
@@ -135,7 +160,7 @@ def complete_pptx(d):
  if b:
   s=prs.slides[1]
   for sh in list(s.shapes):sh._element.getparent().remove(sh._element)
-  text(s,.35,.12,15,.5,'Complete dashboard / '+str(d.get('period','')),20,True)
+  text(s,.35,.12,15,.5,d.get('dashboardTitle','Dashboard')+' / '+str(d.get('period','')),20,True)
   from PIL import Image
   im=Image.open(io.BytesIO(b));w,h=15.3,7.85;r=min(w/im.width,h/im.height);iw,ih=im.width*r,im.height*r;s.shapes.add_picture(io.BytesIO(b),Inches((16-iw)/2),Inches(.8+(h-ih)/2),width=Inches(iw),height=Inches(ih))
  for title,headers,rows in sections(d):

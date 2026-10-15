@@ -881,7 +881,7 @@ def build_history_pdf(d):
 
 
 def make(fmt, data):
-    from api.report_complete import complete_docx, complete_xlsx, complete_pptx
+    from api.report_complete import complete_docx, complete_xlsx, complete_pptx, brief_pdf
     from api.report_layout import executive_pdf, history_pdf, case_pdf, executive_pptx
     if data.get("kind") == "history":
         if fmt != "pdf": raise ValueError("Historical evidence exports as PDF")
@@ -892,7 +892,7 @@ def make(fmt, data):
     if data.get("kind") == "exec":
         data.setdefault("generated", datetime.utcnow().strftime("%d %b %Y"))
         if fmt == "pdf":
-            return executive_pdf(data), "application/pdf"
+            return (brief_pdf(data) if data.get("brief") else executive_pdf(data)), "application/pdf"
         if fmt == "pptx":
             return complete_pptx(data), "application/vnd.openxmlformats-officedocument.presentationml.presentation"
         if fmt == "docx": return complete_docx(data), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

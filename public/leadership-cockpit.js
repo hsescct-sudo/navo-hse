@@ -195,7 +195,7 @@ render = function () {
     coRenderBase();
     document.body.classList.toggle(
       "co-active",
-      !!document.querySelector(".co-dashboard"),
+      !!document.querySelector(".co-dashboard, .hs-main-wrap, .cd-dashboard"),
     );
     coNavigation();
   } finally {
@@ -393,10 +393,11 @@ function coExposure(P) {
     .join("")}</section>`;
 }
 function coDashboards() {
-  cxModal(
-    "All dashboards",
-    `<p>Every dashboard remains available. Select a view, then use Back or Leadership overview to return.</p><div class="co-dashboard-menu"><button data-co-view="overview">Leadership overview</button><button data-co-view="portfolio">Portfolio & safety cycle</button><button data-co-view="evidence">Risk & ESG evidence</button>${HSEC.map(([id, name]) => `<button data-co-view="${id}">${esc(name)}</button>`).join("")}<button data-co-view="scorecard">Project performance scorecards</button></div>`,
-  );
+  document.querySelector('.co-side-rail')?.scrollIntoView({block:'nearest'});
+}
+function coDashboardTitle() {
+  if (!CD.detail && hsInit().sec==='exe') return CL.dashboard==='summary'?'Leadership overview':CL.dashboard==='portfolio'?'Portfolio & safety cycle':'Risk & ESG evidence';
+  return HSEC.find(x=>x[0]===hsInit().sec)?.[1] || 'Executive dashboard';
 }
 function coRemember() {
   if (CO.restoring) return;
@@ -455,6 +456,14 @@ function coNavigation() {
   document.querySelectorAll(".co-return-nav").forEach((n) => n.remove());
   const main = document.querySelector("main");
   if (!main) return;
+  document.querySelectorAll('.co-side-rail').forEach(n=>n.remove());
+  document.body.classList.toggle('co-has-rail', st.view==='exec');
+  if(st.view==='exec') {
+    const rail=document.createElement('nav');rail.className='co-side-rail';rail.setAttribute('aria-label','Dashboard views');
+    const selected=!CD.detail&&hsInit().sec==='exe'?(CL.dashboard==='summary'?'overview':CL.dashboard):hsInit().sec;
+    const views=[['overview','Leadership overview'],...HSEC.filter(x=>x[0]!=='exe').map(x=>[x[0],x[1]]),['portfolio','Portfolio & safety cycle'],['evidence','Risk & ESG evidence'],['scorecard','Project scorecards']];
+    rail.innerHTML='<strong>Dashboards</strong>'+views.map(([id,name])=>`<button data-co-view="${id}" aria-current="${id===selected?'page':'false'}">${esc(name)}</button>`).join('');main.prepend(rail);
+  }
   const summary = !!document.querySelector(".co-dashboard");
   if (!summary) {
     const bar = document.createElement("nav");
@@ -501,8 +510,8 @@ document.addEventListener("click", (e) => {
 ceoDownloads = function () {
   if (nxLoading()) return;
   cxModal(
-    "Download complete report",
-    `<p>Current filters: <b>${esc(hsTitle())}</b>. Each format contains the overview and the complete accessible supporting tables for this scope.</p><label>Platform<select id="co-export-scope">${["Corporation", "Construction", "Non-Construction"].map((s) => `<option ${s === (hsInit().plat || "Corporation") ? "selected" : ""}>${s}</option>`).join("")}</select></label><div class="cx-actions"><button data-co-export="docx">Word · full report</button><button data-co-export="xlsx">Excel · data & charts</button><button data-co-export="pptx">PowerPoint · full report</button><button data-co-export="pdf">PDF · one-page summary</button></div><label><input type="checkbox" id="co-export-registers" checked> Include complete source and action registers (may add many pages)</label><p>PowerPoint: cover → complete dashboard on slide 2 → detailed sections and registers. Historical demo data stays labelled.</p><div class="cx-actions"><button data-ceo-history>Five-year performance</button><button data-ceo-register>Record register CSV</button></div>`,
+    "Download dashboard brief",
+    `<p>Current filters: <b>${esc(hsTitle())}</b>. A short summary of the selected dashboard. Source registers are downloaded separately.</p><label>Platform<select id="co-export-scope">${["Corporation", "Construction", "Non-Construction"].map((s) => `<option ${s === (hsInit().plat || "Corporation") ? "selected" : ""}>${s}</option>`).join("")}</select></label><div class="cx-actions"><button data-co-export="docx">Word · short brief</button><button data-co-export="xlsx">Excel · data & charts</button><button data-co-export="pptx">PowerPoint · 3 slides</button><button data-co-export="pdf">PDF · one-page summary</button></div><p>PowerPoint: cover → selected dashboard on slide 2 → concise summary. No long appendices. Historical demo data stays labelled.</p><div class="cx-actions"><button data-ceo-history>Five-year performance</button><button data-ceo-register>Record register CSV</button></div>`,
   );
 };
 document.addEventListener("click", (e) => {
@@ -538,7 +547,7 @@ async function coDownload(scope, fmt, button) {
   window.navoExporting = true;
   const label = button.textContent,
     includeRegisters =
-      document.getElementById("co-export-registers")?.checked !== false,
+      false,
     saved = {
       hs: JSON.parse(JSON.stringify(hsInit())),
       view: st.view,
@@ -546,17 +555,18 @@ async function coDownload(scope, fmt, button) {
       dashboard: CL.dashboard,
     };
   button.disabled = true;
-  button.textContent = "Preparing full report…";
+  button.textContent = "Preparing dashboard brief…";
   try {
     document.getElementById("cx-modal")?.remove();
     hsInit().plat = scope === "Corporation" ? "" : scope;
-    CD.detail = false;
-    CL.dashboard = "summary";
     st.view = "exec";
     render();
     const payload = hsExecPayload(scope);
     payload.includeRegisters = includeRegisters;
-    if (fmt !== "pdf") {
+    payload.dashboardTitle = coDashboardTitle();
+    payload.dashboardId = !CD.detail && hsInit().sec==='exe' ? CL.dashboard : hsInit().sec;
+    payload.brief = true;
+    if (["pdf", "docx", "xlsx", "pptx"].includes(fmt)) {
       await coLoadCapture();
       await new Promise((r) =>
         requestAnimationFrame(() => requestAnimationFrame(r)),
@@ -578,7 +588,7 @@ async function coDownload(scope, fmt, button) {
           resolve();
         });
       });
-      const node = document.querySelector(".co-dashboard"),
+      const node = document.querySelector(".co-dashboard, .hs-main-wrap, .cd-dashboard"),
         canvas = await html2canvas(node, {
           scale: 1,
           useCORS: true,
@@ -600,12 +610,12 @@ async function coDownload(scope, fmt, button) {
     const url = URL.createObjectURL(await r.blob()),
       a = document.createElement("a");
     a.href = url;
-    a.download = scope + "-Complete-HSSE-Report." + fmt;
+    a.download = scope + "-" + payload.dashboardTitle.replace(/[^a-z0-9]+/gi,"-") + "-Brief." + fmt;
     document.body.append(a);
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
-    toast("Complete report downloaded");
+    toast("Dashboard brief downloaded");
   } catch (e) {
     toast("Report failed: " + e.message);
   } finally {
