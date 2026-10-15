@@ -881,18 +881,19 @@ def build_history_pdf(d):
 
 
 def make(fmt, data):
+    from api.report_layout import executive_pdf, history_pdf, case_pdf, executive_pptx
     if data.get("kind") == "history":
         if fmt != "pdf": raise ValueError("Historical evidence exports as PDF")
-        return build_history_pdf(data), "application/pdf"
+        return history_pdf(data), "application/pdf"
     if data.get("kind") == "case":
         if fmt != "pdf": raise ValueError("Case reports export as PDF")
-        return build_case_pdf(data), "application/pdf"
+        return case_pdf(data), "application/pdf"
     if data.get("kind") == "exec":
         data.setdefault("generated", datetime.utcnow().strftime("%d %b %Y"))
         if fmt == "pdf":
-            return build_exec_pdf(data), "application/pdf"
+            return executive_pdf(data), "application/pdf"
         if fmt == "pptx":
-            return build_exec_pptx(data), "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            return executive_pptx(data), "application/vnd.openxmlformats-officedocument.presentationml.presentation"
         raise ValueError("Executive summaries export as pptx or pdf")
     if fmt not in BUILDERS:
         raise ValueError("Unknown format")
