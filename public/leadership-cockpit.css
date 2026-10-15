@@ -894,3 +894,12 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+.co-exposure td,
+.co-exposure th {
+  line-height: 1 !important;
+  padding: 1px 3px !important;
+}
+.co-scope-tabs button:last-child {
+  margin-left: 0;
+}

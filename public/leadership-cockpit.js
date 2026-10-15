@@ -530,6 +530,11 @@ function coLoadCapture() {
   return CO.captureLoader;
 }
 async function coDownload(scope, fmt, button) {
+  if (CO.exporting)
+    return toast(
+      "A report is already being prepared. Please wait for its download.",
+    );
+  CO.exporting = true;
   const label = button.textContent,
     includeRegisters =
       document.getElementById("co-export-registers")?.checked !== false,
@@ -593,6 +598,7 @@ async function coDownload(scope, fmt, button) {
     render();
     button.disabled = false;
     button.textContent = label;
+    CO.exporting = false;
   }
 }
 const coCaseOpenBase = cxOpen;
