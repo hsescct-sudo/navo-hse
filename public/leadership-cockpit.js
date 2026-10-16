@@ -198,10 +198,10 @@ render = function () {
     coRenderBase();
     document.body.classList.toggle(
       "co-active",
-      !!document.querySelector(".co-dashboard, .hs-main-wrap, .cd-dashboard"),
+      !!document.querySelector(".co-detail-screen, .co-dashboard, .hs-main-wrap, .cd-dashboard"),
     );
     coNavigation();
-    if(st.view==='exec') coLabelDashboard();
+    if(st.view==='exec') { coLabelDashboard(); coOrganizeDetail(); }
   } finally {
     CO.cache = null;
   }
@@ -224,7 +224,7 @@ document.addEventListener("click", (e) => {
     cxModal(
       s + " · performance",
       ceoFrequencyBox(ceoScope(hsP(), s)) +
-        `<button class="cx-btn" data-go="casehome">Open reporting register ↗</button>`,
+        `<button class="cx-btn" data-co-register-scope="${s}">Open reporting register ↗</button>`,
     );
   }
   if (b.hasAttribute("data-co-filters"))
@@ -342,7 +342,7 @@ function coWorkforce(P) {
     ),
   }));
 }
-function coPlatformLabel(s) { return s==='Construction'?'Construction platform':s==='Non-Construction'||s==='Operations'?'Nonconstruction platform':s; }
+function coPlatformLabel(s) { if(s==='Corporate')return 'Corporation';if(s==='Construction Sites')return 'Construction platform';if(s==='Non-Construction Sites')return 'Nonconstruction platform';return s==='Construction'?'Construction platform':s==='Non-Construction'||s==='Operations'?'Nonconstruction platform':s; }
 function coScopeTabs() {
   const h = hsInit(),
     offices = myProjects().some((p) => /office/i.test(p.platform || ""));
@@ -573,6 +573,9 @@ async function coDownload(scope, fmt, button) {
     payload.dashboardTitle = coDashboardTitle();
     payload.dashboardId = !CD.detail && hsInit().sec==='exe' ? CL.dashboard : hsInit().sec;
     payload.brief = true;
+    payload.dashboardTab=coCurrentTab()[0];
+    payload.dashboardTitle=coViewTitle();
+    payload.reportSections=coBriefSections(hsP());
     payload.scope=coPlatformLabel(payload.scope);
     [payload.workforce,payload.platformRates].forEach(rows=>rows?.forEach(r=>r.name=coPlatformLabel(r.name)));
     payload.projects?.forEach(r=>r.platform=coPlatformLabel(r.platform));
@@ -598,9 +601,10 @@ async function coDownload(scope, fmt, button) {
           resolve();
         });
       });
-      const node = document.querySelector(".co-dashboard, .hs-main-wrap, .cd-dashboard"),
+      const node = document.querySelector(".co-detail-screen") || document.querySelector(".co-dashboard") || document.querySelector(".hs-main-wrap, .cd-dashboard"),
         canvas = await html2canvas(node, {
           scale: 1,
+          ignoreElements: element=>element.matches?.(".co-detail-screen > header button, .co-detail-screen > header .cd-tools"),
           useCORS: true,
           logging: false,
           backgroundColor:
@@ -666,10 +670,9 @@ hsExport = function (scope, format, button) {
 render();
 
 function coLabelDashboard(){
- const root=document.querySelector('main');if(!root)return;
- root.querySelectorAll('option').forEach(o=>{const v=o.value;const next=coPlatformLabel(o.textContent);if(next!==o.textContent){o.value=v;o.textContent=next;}});
- const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
- nodes.forEach(n=>{if(n.parentElement?.closest('script,style,option,input,textarea'))return;const text=n.textContent.trim();const mapped=coPlatformLabel(text);if(mapped!==text)n.textContent=n.textContent.replace(text,mapped);});
+ document.querySelectorAll('.hs-tabs [data-htab], button[data-hx=plat]').forEach(n=>n.textContent=coPlatformLabel(n.textContent.trim()));
+ document.querySelectorAll('tr[data-hx=plat]').forEach(tr=>{const cell=tr.cells[0];if(cell)cell.textContent=coPlatformLabel(cell.textContent.trim());});
+ document.querySelectorAll('select[data-hf=plat] option').forEach(o=>{const v=o.value;o.textContent=coPlatformLabel(o.textContent);o.value=v;});
 }
 document.addEventListener('input',e=>{if(e.target.matches('[data-co-agenda-search]')){const q=e.target.value.trim().toLowerCase();document.querySelectorAll('.co-side-rail [data-co-view]').forEach(b=>b.hidden=!b.textContent.toLowerCase().includes(q));}});
 document.addEventListener('click',e=>{
@@ -683,3 +686,58 @@ function coChecklistLibrary(){
 }
 document.addEventListener('input',e=>{if(e.target.matches('[data-co-checklist-search]')){const q=e.target.value.toLowerCase().trim();document.querySelectorAll('[data-co-checklist-item]').forEach(n=>n.hidden=!n.textContent.toLowerCase().includes(q));}});
 document.addEventListener('click',e=>{if(e.target.closest('[data-co-checklists]'))coChecklistLibrary();for(const [sel,route] of [['[data-co-inspections]','inspm'],['[data-co-manage-checklists]','chk']])if(e.target.closest(sel)){document.getElementById('cx-modal')?.remove();CO.railOpen=false;go(route);}});
+
+function coCurrentTab(){const h=hsInit(),sec=HSEC.find(x=>x[0]===h.sec);return sec?.[2].find(x=>x[0]===(h.tab[h.sec]||sec[2][0][0]))||['',''];}
+function coViewTitle(){const title=coDashboardTitle(),tab=coCurrentTab();return CD.detail&&tab[1]&&tab[1]!==title?title+' / '+coPlatformLabel(tab[1]):title;}
+function coBriefSections(P){
+ const h=hsInit(),tab=coCurrentTab()[0],m=hsExecMetrics(P,hsCutoff());let headers=['Indicator','Value'],rows=[];
+ if(h.sec==='es'&&tab==='griev'){
+  const G=hsRec(P,'grievance');rows=[['Total grievances',G.length],['New',G.filter(r=>r.data.status==='New').length],['In progress',G.filter(r=>r.data.status==='In progress').length],['Closed',G.filter(r=>r.data.status==='Closed').length],['Open over 28 days',G.filter(r=>r.data.status!=='Closed'&&Date.now()-r.ts>28*864e5).length]];
+ }else if(h.sec==='es'){
+  const A=hsRec(P,'accommodation'),latest=new Map();A.forEach(r=>{if(!latest.has(r.project)||r.ts>latest.get(r.project).ts)latest.set(r.project,r);});const X=[...latest.values()],sum=k=>X.reduce((t,r)=>t+(+r.data[k]||0),0);rows=[['Assessments in period',A.length],['Projects with assessments',X.length],['Workers assessed',sum('workers')],['Compliant items',sum('compliant')],['Non-compliant items',sum('nonCompliant')],['Partially compliant items',sum('partial')]];
+ }else if(h.sec==='health'){
+  const C=hsDivCards(P);headers=['Division','Quantitative','Qualitative','Overall','Health'];rows=C.slice(0,6).map(r=>[r.p.name,r.score==null?null:r.c.quant,r.score==null||!r.c.hasQual?null:r.c.qual,r.score,r.status||'No data']);
+  if(tab==='actual'||tab==='ind'){const table=document.querySelector('.hs-body table');if(table){headers=[...table.querySelectorAll('thead th')].slice(0,7).map(n=>n.textContent.trim());rows=[...table.querySelectorAll('tbody tr')].slice(0,6).map(tr=>[...tr.cells].slice(0,7).map(n=>n.textContent.trim()));}}
+ }else if(h.sec==='aud'){
+  const kind={corp:'Corporate',psm:'Process Safety',oshe:'OSHE'}[tab]||'Corporate',F=hsRec(P,'finding').filter(r=>r.data.audit===kind),A=hsRec(P,'audit').filter(r=>r.data.audit===kind),scored=A.filter(r=>r.data.score!==null&&r.data.score!==undefined&&r.data.score!==''&&Number.isFinite(Number(r.data.score)));rows=[['Audit type',kind],['Recorded audits',A.length],['Findings',F.length],['Closed findings',F.filter(r=>r.data.status==='Closed').length],['Overdue open findings',F.filter(r=>r.data.status!=='Closed'&&r.data.due&&r.data.due<Date.now()).length],['Average recorded score',scored.length?scored.reduce((t,r)=>t+Number(r.data.score),0)/scored.length:null]];
+ }else if(h.sec==='exec'&&tab==='waste'){
+  const M=hsMon(P),sum=k=>M.length?hsSum(M,k):null;rows=[['Non-hazardous disposed',sum('nhDisposed')],['Non-hazardous recycled',sum('nhRecycled')],['Hazardous disposed',sum('hzDisposed')],['Hazardous recycled',sum('hzRecycled')],['Construction waste disposed',sum('faDisposed')],['Construction waste recycled',sum('faRecycled')]];headers=['Reported waste measure','Recorded quantity (source units)'];
+ }else if(h.sec==='exec'&&tab==='close'){
+  rows=[['Actions',m.acts],['Open',m.open],['Closed',m.closed],['Overdue',m.over],['Closure %',m.closePct]];
+ }else if((h.sec==='inj'&&tab==='inc')||(h.sec==='acc'&&tab==='aud')){
+  const R=h.sec==='acc'?hsRec(P,'finding'):hsR(P),groups=new Map();R.forEach(r=>{const k=h.sec==='acc'?(r.data.audit||'Unclassified audit'):(incCat(r)||'Unclassified incident');groups.set(k,(groups.get(k)||0)+1);});const items=[...groups].sort((a,b)=>b[1]-a[1]);rows=items.slice(0,5);if(items.length>5)rows.push(['Other categories',items.slice(5).reduce((t,r)=>t+r[1],0)]);if(!rows.length)rows=[['Recorded cases',0]];
+ }else if(h.sec==='inj'||h.sec==='acc'){
+  rows=[['Fatalities',m.fat],['Lost time injuries',m.lti],['Lost workdays',m.lost],['Recordables',m.trc],['First aid',m.fac],['Near misses',m.nm]];
+ }else if(h.sec==='kpi'){
+  const scopes=tab==='all'?['Corporation','Construction','Non-Construction']:[tab];headers=['Platform','LTIFR','LTISR','TRCF'];rows=scopes.map(scope=>{const v=hsExecMetrics(ceoScope(P,scope),hsCutoff());return[coPlatformLabel(scope),v.hrs?v.ltifr:null,v.hrs?v.ltisr:null,v.hrs?v.trcf:null];});
+ }else if(!CD.detail&&CL.dashboard==='evidence'){rows=FR.distribution(frFindings(P)).map(r=>[r.label||r.level,r.count]);
+ }else if(!CD.detail&&CL.dashboard==='portfolio'){headers=['Project','Platform','Country','Health'];rows=P.slice(0,6).map(p=>[p.name,coPlatformLabel(p.platform||'Construction'),p.country,gmState(p,frFindings([p]),frRows([p])).label]);
+ }else{rows=[['Projects',P.length],['Exposure hours',m.hrs],['Recordable cases',m.trc],['Open actions',m.open],['Overdue actions',m.over],['Closure %',m.closePct]];}
+ return [{title:coViewTitle(),headers,rows}];
+}
+function coOrganizeDetail(){
+ if(!CD.detail){coOrganizePortfolio();return;}const body=document.querySelector('.hs-body'),wrap=document.querySelector('.hs-main-wrap');if(!body||!wrap)return;
+ document.querySelectorAll('.nx-executive-hero,.nx-dashboard-tabs,.cd-return,.nx-data-note').forEach(n=>n.remove());
+ const tabs=wrap.querySelector('.hs-tabs'),band=wrap.querySelector('.hs-band');if(tabs&&band)band.after(tabs);
+ const sec=coBriefSections(hsP())[0],screen=document.createElement('section');screen.className='co-detail-screen';screen.setAttribute('aria-label',coViewTitle());
+ screen.innerHTML=`<header><div><span class=co-eyebrow>${esc(brand().name)} / ANALYTICS</span><h1>${esc(coViewTitle())}</h1><p>${esc(hsTitle())}${hsIsSample()?' · ILLUSTRATIVE DEMONSTRATION':''}</p></div><button data-co-filters>Filters</button></header><div class=co-detail-metrics>${sec.headers.length===2?sec.rows.slice(0,6).map(([k,v])=>`<div><span>${esc(k)}</span><b>${v==null?'Not recorded':typeof v==='number'?coN(v):esc(String(v))}</b></div>`).join(''):`<div class=co-detail-table><table class=co-table><thead><tr>${sec.headers.map(n=>`<th>${esc(n)}</th>`).join('')}</tr></thead><tbody>${sec.rows.map(r=>`<tr>${r.map(v=>`<td>${v==null?'—':esc(typeof v==='number'?v.toFixed(2):String(v))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}</div><div class=co-detail-charts></div><footer>Selected view and current filters · open supporting detail for the remaining breakdowns and source evidence.</footer>`;
+ const grid=screen.querySelector('.co-detail-charts');const cards=[...body.querySelectorAll('.hc')].filter(n=>!n.parentElement.closest('.hc'));
+ cards.slice(0,2).forEach(n=>grid.append(n));
+ if(!grid.children.length)grid.innerHTML='<p class=co-detail-empty>No chart data is available for this selection. Review the recorded indicators above or open supporting detail.</p>';
+ const detail=document.createElement('details');detail.className='co-supporting';detail.open=!!CO.supportingOpen;detail.innerHTML='<summary>Supporting detail & source evidence</summary>';const content=document.createElement('div');while(body.firstChild)content.append(body.firstChild);detail.append(content);body.append(screen,detail);
+ if(hsInit().sec==='health'&&!hsDivCards(hsP()).some(r=>r.score!=null))grid.innerHTML='<div class=co-detail-empty><h3>Site health is not calculated yet</h3><p>Add the required performance data and qualitative review for the selected period. Missing data is not a zero score.</p><button data-go=hdata>Open performance data</button></div>';
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-co-register-scope]');if(!b)return;coRemember();const P=ceoScope(hsP(),b.dataset.coRegisterScope);const ids=new Set(P.map(p=>p.id));const records=cxAll().filter(r=>ids.has(r.project)&&r.status!=='Draft'&&hsIn(new Date(r.created_at).getTime()));document.getElementById('cx-modal')?.remove();NX.quick='';NX.page=1;CX.filter={recordIds:records.map(r=>r.id)};CX.drillLabel=coPlatformLabel(b.dataset.coRegisterScope)+' · '+hsTitle();go('casehome');});
+
+function coOrganizePortfolio(){
+ if(CL.dashboard==='summary')return;const root=document.querySelector('.cd-dashboard');if(!root)return;
+ const evidence=CL.dashboard==='evidence',cards=evidence?[root.querySelector('.fr-risk'),[...root.querySelectorAll('.xsec')].find(n=>n.querySelector('h3')?.textContent.startsWith('Recordable incidents'))]:[root.querySelector('.gm-card'),root.querySelector('.cd-portfolio')];
+ const selected=cards.filter(Boolean);selected.forEach(n=>n.remove());root.querySelector('.cl-dashboard-tabs')?.remove();
+ const screen=document.createElement('section');screen.className='co-detail-screen co-portfolio-screen';screen.innerHTML=`<header><div><span class=co-eyebrow>${esc(brand().name)} / ANALYTICS</span><h1>${esc(coViewTitle())}</h1><p>${esc(hsTitle())}${hsIsSample()?' · ILLUSTRATIVE DEMONSTRATION':''}</p></div><div><button data-ceo-downloads>Download brief</button><button data-co-filters>Filters</button></div></header><div class=co-detail-charts></div><footer>${evidence?'Percentages use eligible findings in the current filters.':'Project locations and first six projects in the export summary.'} Open supporting detail for all breakdowns and source evidence.</footer>`;
+ const grid=screen.querySelector('.co-detail-charts');selected.forEach(card=>{card.classList.add('co-standalone-card');grid.append(card);});
+ const detail=document.createElement('details');detail.className='co-supporting';detail.open=!!CO.supportingOpen;detail.innerHTML='<summary>Supporting detail & source evidence</summary>';const content=document.createElement('div');while(root.firstChild)content.append(root.firstChild);detail.append(content);root.append(screen,detail);
+ if(evidence){const matrix=selected[0]?.querySelector('.tbl');if(matrix)content.prepend(matrix);}
+ const map=GM.map;if(map)requestAnimationFrame(()=>{if(GM.map===map&&map.getContainer()?.isConnected){map.invalidateSize();gmMountFit();}});
+}
+
+document.addEventListener('toggle',e=>{if(e.target.matches?.('.co-supporting')&&e.target.isConnected)CO.supportingOpen=e.target.open;},true);

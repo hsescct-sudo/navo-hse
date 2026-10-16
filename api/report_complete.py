@@ -40,6 +40,8 @@ def full_sections(d):
 
 def sections(d):
  if not d.get('brief'):return full_sections(d)
+ if d.get('reportSections'):
+  return [(str(s.get('title','Selected dashboard'))[:160],s.get('headers',[])[:8],[r[:8] for r in s.get('rows',[])[:6]]) for s in d['reportSections'][:1]]
  keys={'summary':['Safety outcomes and actions'],'portfolio':['Project performance'],'evidence':['Finding risk distribution'],'exec':['Safety outcomes and actions'],'health':['Project performance'],'site':['Project performance'],'inj':['Safety outcomes and actions'],'aud':['Safety outcomes and actions'],'acc':['Safety outcomes and actions'],'kpi':['Frequency rates'],'es':['Safety outcomes and actions']}
  selected=keys.get(d.get('dashboardId'),['Safety outcomes and actions'])
  result=[]
