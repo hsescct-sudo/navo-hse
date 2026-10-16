@@ -946,3 +946,5 @@
 @media(max-width:700px){.co-dashboard,.co-panel,.co-exposure>section{min-width:0;max-width:100%;box-sizing:border-box}.co-exposure table{font-size:10px}.co-exposure th:first-child{width:44%}}
 
 .co-checklist-library details{margin:8px 0;padding:12px;border:1px solid #d4e0eb;border-radius:7px}.co-checklist-library summary{cursor:pointer;color:#112c50;font-weight:600}.co-checklist-library li{font-size:13px;line-height:1.6;margin:6px 0}.co-checklist-library small{font-weight:400;color:#51677d}
+
+.co-exposure th:first-child{width:58%}.co-exposure tbody th{white-space:nowrap!important;font-size:9px}.co-exposure thead th{font-size:8px}.co-rates th:first-child{width:40%}.co-workforce th:first-child{width:52%}.co-workforce tbody th{font-size:9px;white-space:nowrap!important}
