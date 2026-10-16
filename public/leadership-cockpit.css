@@ -921,3 +921,28 @@
 @media(max-width:700px){.co-side-rail{position:static;width:auto;flex-direction:row;overflow:auto;padding:7px;margin-bottom:10px}.co-side-rail strong{display:none}.co-side-rail button{flex-shrink:0;padding:9px}.co-has-rail main{margin-left:0!important}.co-has-rail .hs-tabs{overflow:auto}.co-has-rail .hs-tabs button{flex-shrink:0}}
 
 .co-has-rail main{width:calc(100% - 184px)!important;min-width:0!important}.co-has-rail .co-dashboard,.co-has-rail .hs-main-wrap{min-width:0}@media(max-width:1100px){.co-has-rail main{width:calc(100% - 150px)!important}}@media(max-width:700px){.co-has-rail main{width:100%!important}}
+
+/* Client review: readable navy agenda and accessible dashboard entry points. */
+.co-side-rail{background:#112c50}
+.co-side-rail button:hover,.co-side-rail button[aria-current=page]{background:#254e7d}
+.co-agenda-search{font-size:11px;padding:0 5px;color:#d6e7fa}.co-agenda-search input{width:100%;box-sizing:border-box;margin:5px 0 8px;padding:7px;border:1px solid #47698e;border-radius:5px;background:#fff;color:#112c50;font-size:12px}
+.co-quick-links{display:grid;border-bottom:1px solid #ffffff30;padding-bottom:6px;margin-bottom:5px}.co-quick-links button{padding:8px 10px;font-weight:600}
+.co-side-rail [hidden]{display:none!important}.co-mobile-menu,.co-mobile-close{display:none!important}
+#cx-modal:has(.fr-matrix)>.cx{width:min(1380px,96vw);max-width:none}
+.fr-matrix .tbl{max-width:100%;overflow-x:auto}.fr-matrix table{min-width:1080px;width:100%;table-layout:fixed;border-collapse:collapse}
+.fr-matrix td,.fr-matrix th{min-width:0!important;width:auto!important;white-space:normal!important;overflow-wrap:anywhere;vertical-align:top;padding:12px!important;font-size:12px;line-height:1.5}
+.fr-matrix th:first-child{width:15%}.fr-matrix th:nth-child(5){width:19%}.fr-matrix .fr-cell{text-align:left;color:#155c99}
+.fr-matrix details{font-size:11px}.fr-matrix details summary{cursor:pointer;font-weight:600;color:#155c99}
+@media(max-width:700px){
+.co-has-rail .co-mobile-menu{display:block!important;position:sticky;top:0;z-index:30;background:#112c50;color:white;border:0;padding:11px 14px;border-radius:7px;width:100%;text-align:left;margin-bottom:10px}
+.co-has-rail .co-side-rail{display:none;position:fixed;inset:0 auto 0 0;width:260px;max-width:85vw;flex-direction:column;overflow:auto;z-index:150;margin:0;padding:12px;box-sizing:border-box;box-shadow:5px 0 30px #0005}
+.co-rail-open.co-has-rail .co-side-rail{display:flex}.co-side-rail strong{display:block}.co-side-rail .co-mobile-close{display:block!important;background:#254e7d}
+.co-side-rail button{flex-shrink:0}.co-scope-tabs button{font-size:11px}
+}
+
+.co-exposure table,.co-workforce table,.co-rates table{table-layout:fixed}
+.co-exposure td,.co-exposure th,.co-workforce td,.co-workforce th,.co-rates td,.co-rates th{white-space:normal!important;overflow-wrap:normal;word-break:normal;letter-spacing:0!important}
+.co-exposure th:first-child{width:43%}.co-exposure td,.co-exposure th:not(:first-child){font-variant-numeric:tabular-nums}
+@media(max-width:700px){.co-dashboard,.co-panel,.co-exposure>section{min-width:0;max-width:100%;box-sizing:border-box}.co-exposure table{font-size:10px}.co-exposure th:first-child{width:44%}}
+
+.co-checklist-library details{margin:8px 0;padding:12px;border:1px solid #d4e0eb;border-radius:7px}.co-checklist-library summary{cursor:pointer;color:#112c50;font-weight:600}.co-checklist-library li{font-size:13px;line-height:1.6;margin:6px 0}.co-checklist-library small{font-weight:400;color:#51677d}

@@ -90,7 +90,7 @@ function coRates(P) {
   ]
     .map((s) => {
       const m = hsExecMetrics(ceoScope(P, s), hsCutoff());
-      return `<tr><th><button data-co-scope="${s}">${s === "Non-Construction" ? "Operations" : s} ↗</button></th>${["ltifr", "ltisr", "trcf"].map((k) => `<td class="${m.hrs && m[k] > cfg[s][k] ? "co-red" : "co-green"}"><b>${m.hrs ? m[k].toFixed(2) : "—"}</b><small>target ${cfg[s][k].toFixed(2)}</small></td>`).join("")}</tr>`;
+      return `<tr><th><button data-co-scope="${s}">${coPlatformLabel(s)} ↗</button></th>${["ltifr", "ltisr", "trcf"].map((k) => `<td class="${m.hrs && m[k] > cfg[s][k] ? "co-red" : "co-green"}"><b>${m.hrs ? m[k].toFixed(2) : "—"}</b><small>target ${cfg[s][k].toFixed(2)}</small></td>`).join("")}</tr>`;
     })
     .join(
       "",
@@ -137,11 +137,11 @@ clArrangeDashboard = function () {
     .map((s) => {
       const ps = ceoScope(P, s),
         v = hsExecMetrics(ps, hsCutoff());
-      return `<tr><th>${s === "Non-Construction" ? "Operations" : s}</th><td>${coN(v.manpower)}</td><td>${(Number(v.hrs || 0) / 1e6).toFixed(1)}M</td><td>${ps.length}</td></tr>`;
+      return `<tr><th>${coPlatformLabel(s)}</th><td>${coN(v.manpower)}</td><td>${(Number(v.hrs || 0) / 1e6).toFixed(1)}M</td><td>${ps.length}</td></tr>`;
     })
     .join("")}</tbody></table>`;
   el.className = "cd-dashboard cl-analytics co-dashboard";
-  el.innerHTML = `<header class="co-heading cd-heading"><div><span class="co-eyebrow">${esc(brand().name)} / LEADERSHIP OVERVIEW</span><h1>Your company. One clear view.</h1><p>${esc(hsTitle())}${hsIsSample() ? " · ILLUSTRATIVE DEMONSTRATION" : ""}</p></div><div class="cd-tools"><button data-ceo-downloads>Download reports ↓</button><button data-co-present>Present ↗</button>${cdAppearance()}<button data-co-filters>Filters</button><button data-co-dashboards>All dashboards ▾</button></div></header>
+  el.innerHTML = `<header class="co-heading cd-heading"><div><span class="co-eyebrow">${esc(brand().name)} / LEADERSHIP OVERVIEW</span><h1>Your company. One clear view.</h1><p>${esc(hsTitle())}${hsIsSample() ? " · ILLUSTRATIVE DEMONSTRATION" : ""}</p></div><div class="cd-tools"><button data-ceo-downloads>Download reports ↓</button><button data-co-present>Present ↗</button>${cdAppearance()}<button data-co-filters>Filters</button><button data-co-dashboards>Dashboards ☰</button></div></header>
 ${coScopeTabs()}${coExposure(P)}<div class="co-kpis">${[
     ["Projects", P.length, "sc"],
     ["People", corp.cur.manpower, "sc"],
@@ -161,6 +161,7 @@ ${coScopeTabs()}${coExposure(P)}<div class="co-kpis">${[
       hist.rows.map((r) => String(r.year)),
       [
         ["ltifr", "LTIFR", HC.blue],
+        ["ltisr", "LTISR", "#bb701d"],
         ["trcf", "TRCF", HC.green],
       ].map(([key, n, c]) => ({ n, c, v: hist.rows.map((r) => r[key]) })),
       { h: 110, vals: 1 },
@@ -183,8 +184,10 @@ ${coScopeTabs()}${coExposure(P)}<div class="co-kpis">${[
     "co-workforce",
   )}${coCard("Action & leadership assurance", `<div class="co-assurance"><button data-go="lactions"><b>${actions.length ? Math.round((closed / actions.length) * 100) : 0}%</b><span>actions closed</span></button><button data-go="leaders"><b>${coN(programs.reduce((s, p) => s + p.count, 0))}</b><span>leadership engagements</span></button><button data-go="inspm"><b>${coN(e.critical)}</b><span>open critical controls</span></button></div><footer><button data-co-outlook>Predictive · preventive · protective ↗</button><button data-co-esg>ESG / ISO evidence ↗</button></footer>`, "co-control")}</div><div class="co-foot">${hsIsSample() ? "DEMO records / locations included. " : ""}Health colours reflect recorded indicators, not certification. <button data-cl-dashboard="portfolio">Safety cycle & portfolio ↗</button><button data-go="casehome">All source records ↗</button></div>`;
   gmMount();
+  const mountedMap=GM.map;
   requestAnimationFrame(() => {
-    GM.map?.invalidateSize();
+    if(!mountedMap || GM.map!==mountedMap || !mountedMap.getContainer()?.isConnected)return;
+    mountedMap.invalidateSize();
     gmMountFit();
   });
 };
@@ -198,6 +201,7 @@ render = function () {
       !!document.querySelector(".co-dashboard, .hs-main-wrap, .cd-dashboard"),
     );
     coNavigation();
+    if(st.view==='exec') coLabelDashboard();
   } finally {
     CO.cache = null;
   }
@@ -338,13 +342,14 @@ function coWorkforce(P) {
     ),
   }));
 }
+function coPlatformLabel(s) { return s==='Construction'?'Construction platform':s==='Non-Construction'||s==='Operations'?'Nonconstruction platform':s; }
 function coScopeTabs() {
   const h = hsInit(),
     offices = myProjects().some((p) => /office/i.test(p.platform || ""));
   return `<nav class="co-scope-tabs" aria-label="Platform and dashboard selection"><span>Reporting platform</span>${[
     ["", "Corporation"],
-    ["Construction", "Construction"],
-    ["Non-Construction", "Operations"],
+    ["Construction", "Construction platform"],
+    ["Non-Construction", "Nonconstruction platform"],
     ["Offices", "Offices"],
   ]
     .map(
@@ -356,7 +361,7 @@ function coScopeTabs() {
 function coExposure(P) {
   const rows = coWorkforce(P),
     table = (headers, fields, values = rows) =>
-      `<table><thead><tr>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${values.map((r) => `<tr><th>${esc(r.name === "Non-Construction" ? "Operations" : r.name)}</th>${fields.map((k) => `<td>${k.includes("Hours") ? (r[k] / 1e6).toFixed(2) + "M" : coN(r[k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`,
+      `<table><thead><tr>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${values.map((r) => `<tr><th>${esc(coPlatformLabel(r.name))}</th>${fields.map((k) => `<td>${k.includes("Hours") ? (r[k] / 1e6).toFixed(2) + "M" : coN(r[k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`,
     geo = Object.entries(hsGroup(P, "country")).map(([name, ps]) => ({
       name,
       ...coWorkRow(ps),
@@ -393,7 +398,7 @@ function coExposure(P) {
     .join("")}</section>`;
 }
 function coDashboards() {
-  document.querySelector('.co-side-rail')?.scrollIntoView({block:'nearest'});
+  CO.railOpen = !CO.railOpen; document.body.classList.toggle('co-rail-open',CO.railOpen);
 }
 function coDashboardTitle() {
   if (!CD.detail && hsInit().sec==='exe') return CL.dashboard==='summary'?'Leadership overview':CL.dashboard==='portfolio'?'Portfolio & safety cycle':'Risk & ESG evidence';
@@ -453,6 +458,7 @@ async function coBack() {
   }
 }
 function coNavigation() {
+  document.querySelectorAll(".co-mobile-menu").forEach(n=>n.remove());
   document.querySelectorAll(".co-return-nav").forEach((n) => n.remove());
   const main = document.querySelector("main");
   if (!main) return;
@@ -462,7 +468,7 @@ function coNavigation() {
     const rail=document.createElement('nav');rail.className='co-side-rail';rail.setAttribute('aria-label','Dashboard views');
     const selected=!CD.detail&&hsInit().sec==='exe'?(CL.dashboard==='summary'?'overview':CL.dashboard):hsInit().sec;
     const views=[['overview','Leadership overview'],...HSEC.filter(x=>x[0]!=='exe').map(x=>[x[0],x[1]]),['portfolio','Portfolio & safety cycle'],['evidence','Risk & ESG evidence'],['scorecard','Project scorecards']];
-    rail.innerHTML='<strong>Dashboards</strong>'+views.map(([id,name])=>`<button data-co-view="${id}" aria-current="${id===selected?'page':'false'}">${esc(name)}</button>`).join('');main.prepend(rail);
+    rail.innerHTML='<strong>Dashboards</strong><button class=co-mobile-close data-co-dashboards>Close menu ×</button><label class=co-agenda-search>Find a dashboard<input data-co-agenda-search placeholder=Search… aria-label="Search dashboards"></label><div class=co-quick-links><button data-co-search>⌕ Search records</button><button data-co-checklists>☑ Checklists</button></div>'+views.map(([id,name])=>`<button data-co-view="${id}" aria-current="${id===selected?'page':'false'}">${esc(name)}</button>`).join('');main.prepend(rail);const menu=document.createElement('button');menu.className='co-mobile-menu';menu.dataset.coDashboards='';menu.textContent='☰ Dashboards & checklists';rail.after(menu);document.body.classList.toggle('co-rail-open',!!CO.railOpen);
   }
   const summary = !!document.querySelector(".co-dashboard");
   if (!summary) {
@@ -470,7 +476,7 @@ function coNavigation() {
     bar.className = "co-return-nav";
     bar.setAttribute("aria-label", "Return navigation");
     bar.innerHTML =
-      "<button data-co-back>← Back</button><button data-co-home>Leadership overview</button><button data-co-dashboards>All dashboards ▾</button>";
+      "<button data-co-back>← Back</button><button data-co-home>Leadership overview</button><button data-co-dashboards>Dashboards ☰</button>";
     main.prepend(bar);
   }
 }
@@ -492,6 +498,7 @@ document.addEventListener("click", (e) => {
     coRemember();
     document.getElementById("cx-modal")?.remove();
     const v = b.dataset.coView;
+    CO.railOpen=false;document.body.classList.remove("co-rail-open");
     if (v === "scorecard") go("sc");
     else {
       if (["overview", "portfolio", "evidence"].includes(v)) {
@@ -511,7 +518,7 @@ ceoDownloads = function () {
   if (nxLoading()) return;
   cxModal(
     "Download dashboard brief",
-    `<p>Current filters: <b>${esc(hsTitle())}</b>. A short summary of the selected dashboard. Source registers are downloaded separately.</p><label>Platform<select id="co-export-scope">${["Corporation", "Construction", "Non-Construction"].map((s) => `<option ${s === (hsInit().plat || "Corporation") ? "selected" : ""}>${s}</option>`).join("")}</select></label><div class="cx-actions"><button data-co-export="docx">Word · short brief</button><button data-co-export="xlsx">Excel · data & charts</button><button data-co-export="pptx">PowerPoint · 3 slides</button><button data-co-export="pdf">PDF · one-page summary</button></div><p>PowerPoint: cover → selected dashboard on slide 2 → concise summary. No long appendices. Historical demo data stays labelled.</p><div class="cx-actions"><button data-ceo-history>Five-year performance</button><button data-ceo-register>Record register CSV</button></div>`,
+    `<p>Current filters: <b>${esc(hsTitle())}</b>. A short summary of the selected dashboard. Source registers are downloaded separately.</p><label>Platform<select id="co-export-scope">${["Corporation", "Construction", "Non-Construction"].map((s) => `<option value="${s}" ${s === (hsInit().plat || "Corporation") ? "selected" : ""}>${coPlatformLabel(s)}</option>`).join("")}</select></label><div class="cx-actions"><button data-co-export="docx">Word · short brief</button><button data-co-export="xlsx">Excel · data & charts</button><button data-co-export="pptx">PowerPoint · 3 slides</button><button data-co-export="pdf">PDF · one-page summary</button></div><p>PowerPoint: cover → selected dashboard on slide 2 → concise summary. No long appendices. Historical demo data stays labelled.</p><div class="cx-actions"><button data-ceo-history>Five-year performance</button><button data-ceo-register>Record register CSV</button></div>`,
   );
 };
 document.addEventListener("click", (e) => {
@@ -566,6 +573,9 @@ async function coDownload(scope, fmt, button) {
     payload.dashboardTitle = coDashboardTitle();
     payload.dashboardId = !CD.detail && hsInit().sec==='exe' ? CL.dashboard : hsInit().sec;
     payload.brief = true;
+    payload.scope=coPlatformLabel(payload.scope);
+    [payload.workforce,payload.platformRates].forEach(rows=>rows?.forEach(r=>r.name=coPlatformLabel(r.name)));
+    payload.projects?.forEach(r=>r.platform=coPlatformLabel(r.platform));
     if (["pdf", "docx", "xlsx", "pptx"].includes(fmt)) {
       await coLoadCapture();
       await new Promise((r) =>
@@ -654,3 +664,22 @@ hsExport = function (scope, format, button) {
     : coDownload(scope, format, button);
 };
 render();
+
+function coLabelDashboard(){
+ const root=document.querySelector('main');if(!root)return;
+ root.querySelectorAll('option').forEach(o=>{const v=o.value;const next=coPlatformLabel(o.textContent);if(next!==o.textContent){o.value=v;o.textContent=next;}});
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+ nodes.forEach(n=>{if(n.parentElement?.closest('script,style,option,input,textarea'))return;const text=n.textContent.trim();const mapped=coPlatformLabel(text);if(mapped!==text)n.textContent=n.textContent.replace(text,mapped);});
+}
+document.addEventListener('input',e=>{if(e.target.matches('[data-co-agenda-search]')){const q=e.target.value.trim().toLowerCase();document.querySelectorAll('.co-side-rail [data-co-view]').forEach(b=>b.hidden=!b.textContent.toLowerCase().includes(q));}});
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-co-search]'))cxModal('Search records','<p>Search across accessible case references, titles and descriptions.</p><label>Search<input id=co-record-query placeholder="Case number, title or description"></label><button data-co-run-search>Search all records</button>');
+ if(e.target.closest('[data-co-run-search]')){CX.filter={...CX.filter,q:document.getElementById('co-record-query').value};document.getElementById('cx-modal')?.remove();CO.railOpen=false;go('casehome');}
+});
+
+function coChecklistLibrary(){
+ const lib=clLib().filter(c=>c.active!==false);
+ cxModal('Checklist library',`<p>Find a checklist, review its questions, then open Inspections to choose the project and start reporting.</p><label>Search checklists<input data-co-checklist-search placeholder="Name or platform"></label><div class=co-checklist-library>${lib.map(c=>`<details data-co-checklist-item><summary>${esc(c.name)} <small>· ${(c.q||[]).filter(q=>q.on!==false).length} questions · ${esc((c.platforms||[]).map(coPlatformLabel).join(', ')||'All platforms')}</small></summary><ol>${(c.q||[]).filter(q=>q.on!==false).map(q=>`<li>${esc(q.t)}${q.c?' · Critical control':''}</li>`).join('')}</ol></details>`).join('')||'<p>No active checklists are configured.</p>'}</div><div class=cx-actions><button data-co-inspections>Open inspections</button>${myRole()==='admin'?'<button data-co-manage-checklists>Manage checklist templates</button>':''}</div>`);
+}
+document.addEventListener('input',e=>{if(e.target.matches('[data-co-checklist-search]')){const q=e.target.value.toLowerCase().trim();document.querySelectorAll('[data-co-checklist-item]').forEach(n=>n.hidden=!n.textContent.toLowerCase().includes(q));}});
+document.addEventListener('click',e=>{if(e.target.closest('[data-co-checklists]'))coChecklistLibrary();for(const [sel,route] of [['[data-co-inspections]','inspm'],['[data-co-manage-checklists]','chk']])if(e.target.closest(sel)){document.getElementById('cx-modal')?.remove();CO.railOpen=false;go(route);}});
