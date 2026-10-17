@@ -40,6 +40,8 @@ def full_sections(d):
 
 def sections(d):
  if not d.get('brief'):return full_sections(d)
+ if d.get('reportSections'):
+  return [(str(s.get('title','Selected dashboard'))[:160],s.get('headers',[])[:8],[r[:8] for r in s.get('rows',[])[:16]]) for s in d['reportSections'][:1]]
  keys={'summary':['Safety outcomes and actions'],'portfolio':['Project performance'],'evidence':['Finding risk distribution'],'exec':['Safety outcomes and actions'],'health':['Project performance'],'site':['Project performance'],'inj':['Safety outcomes and actions'],'aud':['Safety outcomes and actions'],'acc':['Safety outcomes and actions'],'kpi':['Frequency rates'],'es':['Safety outcomes and actions']}
  selected=keys.get(d.get('dashboardId'),['Safety outcomes and actions'])
  result=[]
@@ -164,7 +166,8 @@ def complete_pptx(d):
   from PIL import Image
   im=Image.open(io.BytesIO(b));w,h=15.3,7.85;r=min(w/im.width,h/im.height);iw,ih=im.width*r,im.height*r;s.shapes.add_picture(io.BytesIO(b),Inches((16-iw)/2),Inches(.8+(h-ih)/2),width=Inches(iw),height=Inches(ih))
  for title,headers,rows in sections(d):
-  chunks=[rows[i:i+10] for i in range(0,len(rows),10)] or [[]]
+  chunk_size=16 if d.get('brief') else 10
+  chunks=[rows[i:i+chunk_size] for i in range(0,len(rows),chunk_size)] or [[]]
   for idx,part in enumerate(chunks):
    s=base(title+(f' / {idx+1} of {len(chunks)}' if len(chunks)>1 else ''));text(s,.5,1.65,14,.35,f'{len(rows)} total rows / selected scope',12,False,'607986')
    table=s.shapes.add_table(len(part)+1,len(headers),Inches(.5),Inches(2.15),Inches(15),Inches(min(5.8,.44*(len(part)+1)))).table

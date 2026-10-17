@@ -3,11 +3,10 @@
 const NX={page:1,size:30,quick:''};
 const NX_GROUPS=[
  ['overview','Overview','exec','dash',[['exec','Executive dashboard'],['sc','Project performance']]],
- ['records','Records','casehome','insp',[['casehome','All records']]],
+ ['records','Reporting','reporting','insp',[['reporting','Reporting home'],['reportnew','New report'],['casehome','All reports'],['reportforms','Forms & checklists'],['reportexports','Downloads'],['inspm','Inspections'],['incm','Investigations'],['walk','Walkthroughs'],['train','Training'],['hdata','Performance data'],['esgreport','ESG data']]],
  ['actions','Actions','lactions','capa',[['lactions','Action management']]],
- ['assurance','Assurance','inspm','obs',[['inspm','Inspections'],['incm','Investigations'],['walk','Walkthroughs'],['train','Training']]],
  ['leadership','Leadership','leaders','leaders',[['leaders','Engagement'],['activity','Activities']]],
- ['admin','Administration','hdata','settings',[['hdata','Performance data'],['entry','Monthly review'],['chk','Checklists'],['flows','Workflows'],['access','Projects & people'],['settings','Settings']]]
+ ['admin','Administration','entry','settings',[['entry','Monthly review'],['chk','Checklists'],['flows','Workflows'],['access','Projects & people'],['settings','Settings']]]
 ];
 Object.assign(TITLES,{exec:'Executive overview',casehome:'Records',casesearch:'Records',caseedit:'Record details'});
 const nxGroup=()=>NX_GROUPS.find(g=>g[4].some(t=>t[0]===st.view))||NX_GROUPS.find(g=>g[0]===(['casesearch','caseedit','live','report','home'].includes(st.view)?'records':'overview'));
@@ -16,7 +15,7 @@ function nxNav(){
  document.getElementById('sidenav').innerHTML=groups.map(([id,label,route,icon])=>`<button data-go="${route}" aria-current="${current[0]===id}">${svg(icon)}<span>${label}</span></button>`).join('');
  document.getElementById('tabbar').innerHTML='';
  let sub=document.getElementById('nx-subnav');if(!sub){sub=document.createElement('nav');sub.id='nx-subnav';sub.setAttribute('aria-label','Section navigation');document.querySelector('.top').after(sub);}
- sub.innerHTML=current[4].length>1?current[4].map(([route,label])=>`<button data-go="${route}" aria-current="${st.view===route}">${label}</button>`).join(''):'';
+ sub.innerHTML=current[4].length>1?(current[0]==='records'?current[4].slice(0,5):current[4]).map(([route,label])=>`<button data-go="${route}" aria-current="${st.view===route}">${label}</button>`).join(''):'';
 }
 nav=nxNav;
 const nxOriginalRender=render;
@@ -51,7 +50,7 @@ cxAll=function(){
  const extra=[...L.actions.map(r=>nxLegacy('action',r,'Action',r.title,{sourceId:r.sourceId||r.report,departmentInCharge:r.owner,description:r.title+(r.evidence?'\nCompletion evidence: '+r.evidence:'')})),
  ...L.activities.map(r=>nxLegacy('activity',r,'Leadership activity',leadershipActivityLabel(r.type),{description:leadershipActivityLabel(r.type)+' · '+(+r.count||1)+' engagements'})),
  ...Object.entries(L.reviews||{}).map(([id,r])=>{const match=id.match(/^(.*)_([0-9]{4}-[0-9]{2})$/);return nxLegacy('review',{...r,id:'review:'+id,reviewId:id,project:match?.[1]||''},'Management review','Monthly review · '+(match?.[2]||id),{recordKind:'review',reviewId:id});}),
- ...(L.records||[]).map(r=>{const names={walk:'Walkthrough',walkthrough:'Walkthrough',finding:'Audit finding',training:'Training',monthly:'Performance data',audit:'Audit',grievance:'Grievance',accommodation:'Accommodation visit',meeting:'Meeting',audit_finding:'Audit finding'};return nxLegacy('record',r,names[r.kind]||r.kind,r.data?.title||r.data?.course||r.data?.topic||r.data?.month||names[r.kind]||r.kind,{recordKind:r.kind,description:r.data?.description||r.data?.notes||r.data?.title||r.data?.course||r.data?.topic||r.kind});})];
+ ...(L.records||[]).map(r=>{const names={walk:'Walkthrough',walkthrough:'Walkthrough',finding:'Audit finding',training:'Training',monthly:'Performance data',esg:'ESG / environmental data',audit:'Audit',grievance:'Grievance',accommodation:'Accommodation visit',meeting:'Meeting',audit_finding:'Audit finding'};return nxLegacy('record',r,names[r.kind]||r.kind,r.data?.title||r.data?.course||r.data?.topic||r.data?.month||names[r.kind]||r.kind,{recordKind:r.kind,description:r.data?.description||r.data?.notes||r.data?.title||r.data?.course||r.data?.topic||r.kind});})];
  for(const r of extra)if(ids.has(r.project)&&!seen.has(r.id)){rows.push(r);seen.add(r.id);}
  NX.recordCache={signature,rows};return rows;
 };

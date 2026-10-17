@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');
+const W=require('../public/investigation-wheel-core.js');
+assert.equal(W.questions.length,10);assert.equal(W.factors.length,43);
+assert.equal(new Set(W.factors.map(f=>f.id)).size,43);
+assert.deepEqual(W.drafts({}),[]);
+for(const status of ['Not assessed','Adequate','Not applicable'])assert.deepEqual(W.drafts({assessments:{'0-3':{status,evidence:'Test record',control:'Isolation'}}}),[]);
+assert.deepEqual(W.drafts({assessments:{'0-3':{status:'Gap identified',evidence:'',control:'Isolation'}}}),[]);
+const state={assessments:{'0-3':{status:'Gap identified',evidence:'Photo E1, damaged isolation switch',control:'Lockout and verified absence of voltage'}},questions:{5:'Isolate damaged circuit and replace switch',6:'Add the isolation point to pre-use inspections',8:'Supervisor witnesses the isolation test',9:'Check equivalent circuits at all operational sites'}};
+const drafts=W.drafts(state);assert.equal(drafts.length,3);assert.equal(drafts.filter(d=>d.type==='Corrective').length,1);assert.equal(drafts.filter(d=>d.type==='Preventative').length,2);
+assert(drafts[0].title.includes(state.questions[5]));assert(drafts[1].title.includes(state.questions[6]));assert(drafts[2].title.includes(state.questions[9]));assert(drafts.every(d=>d.title.includes('Photo E1')&&d.verification===state.questions[8]));
+assert.equal(new Set(drafts.map(d=>d.sourceKey)).size,3);assert.deepEqual(drafts.map(d=>d.sourceKey),W.drafts(structuredClone(state)).map(d=>d.sourceKey));
+console.log('PASS no unsupported actions, exact question count, evidence provenance, response-specific corrective + two preventive drafts, stable source links');

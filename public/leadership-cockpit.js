@@ -168,7 +168,7 @@ ${coScopeTabs()}${coExposure(P)}<div class="co-kpis">${[
     ) +
       `<footer>${hist.demoHistory ? `DEMO history ${hist.rows[0].year}–${hist.rows[3].year} · ${hist.rows[4].year} stored` : "Stored rates · gaps = missing exposure"} · per 1M hours</footer>`,
     "co-trend",
-  )}${coCard("High potential · country", coHipo(P), "co-hipo")}${coCard(
+  )}${coCard("Cases & high potential", coHipo(P), "co-hipo")}${coCard(
     "Projects & workforce",
     table +
       `<div class="co-health">${[

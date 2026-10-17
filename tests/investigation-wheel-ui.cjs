@@ -1,0 +1,38 @@
+const fs=require('fs'),path=require('path'),http=require('http'),assert=require('node:assert/strict');
+const {chromium}=require(process.env.PLAYWRIGHT_PATH||'playwright');
+const root=path.resolve(__dirname,'../public');const screens=path.resolve(__dirname,'screens');fs.mkdirSync(screens,{recursive:true});
+const server=http.createServer((req,res)=>{const file=path.join(root,req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!file.startsWith(root)||!fs.existsSync(file)){res.writeHead(404);return res.end();}res.setHeader('Content-Type',file.endsWith('.js')?'application/javascript':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.webmanifest')?'application/manifest+json':'text/html');res.end(fs.readFileSync(file));});
+(async()=>{await new Promise(r=>server.listen(4173,'127.0.0.1',r));const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});const page=await browser.newPage({viewport:{width:1440,height:1000}});page.setDefaultTimeout(15000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.route('**/*',route=>{const url=route.request().url();if(url.includes('/api/report?fmt=pdf'))return route.fulfill({contentType:'application/pdf',body:fs.readFileSync(path.resolve(__dirname,'../../ceo-deck/case-sample.pdf'))});if(url.endsWith('/navo-supabase.js'))return route.fulfill({contentType:'application/javascript',body:"window.claude={use:()=>new Promise(()=>{})};document.getElementById('login').hidden=true;"});if(!url.startsWith('http://127.0.0.1:4173'))return route.abort();return route.continue();});
+await page.goto('http://127.0.0.1:4173');
+await page.evaluate(()=>{
+L.ready=true;L.state='ok';L.owner=true;L.me={id:'10000000-0000-0000-0000-000000000001',name:'Test Owner'};L.projects=[{id:'test-p1',name:'HAJAR 2',country:'KSA'}];L.members={};L.user={search:async()=>[{id:L.me.id,name:'Test Owner',email:'owner@example.test'}],profiles:async()=>({})};
+L.db={};L.outlook={};window.testAiCalls=[];const ai=async(action,payload)=>{window.testAiCalls.push({action,payload});return action==='rca'?{method:payload.method,status:'Draft for investigator review',summary:'Barrier failure needs verification',facts:['Reported guard missing'],analysis:[{label:'Why was contact possible?',hypothesis:'Guard may have been absent',evidence_ids:payload.source_ids,verification:'Review inspection evidence'}],proposed_root_causes:['Verify guarding control'],alternative_explanations:['Maintenance removal'],data_gaps:['Maintenance log needed'],recommended_actions:[{action:'Verify guard restoration',verification:'Physical check'}],confidence:'low'}:action==='analyze'?{likelihood:3,severity:5,risk_score:15,risk_level:'High',summary:'Guarding requires review',english_text:'Observation: missing guarding on rotating equipment.',category:'Moving Equipment',corrective_actions:[{title:'Fit a machine guard',owner_role:'Supervisor',due_days:3,priority:'High'}],immediate_actions:['Isolate equipment'],confidence:'low',control_plan:[{hierarchy:'Engineering',protects:'Both',action:'Fit a guard'}],bowtie:{hazard:'Moving parts',top_event:'Contact with equipment'}}:{rating:'High',score:70,headline:'Verify critical barriers',confidence:'low',drivers:['Overdue actions'],preventive_controls:['Fit guarding'],protective_controls:['Verify isolation'],data_gaps:['Limited evidence']};};const rows=[];let seq=1000000;const notes=[],links=[],medical={};L.db={ai,recordLinks:{list:async id=>links.filter(l=>l.source_id===id||l.target_id===id),link:async(source_id,target_id,relation)=>{links.push({id:crypto.randomUUID(),source_id,target_id,relation,target_case_no:rows.find(r=>r.id===target_id)?.case_no});},remove:async id=>links.splice(links.findIndex(l=>l.id===id),1)},cases:{get:async id=>structuredClone(rows.find(r=>r.id===id)),list:async()=>structuredClone(rows),create:async(project,case_type,body)=>{const r={id:crypto.randomUUID(),project,case_type,body,title:'',created_by:L.me.id,status:'Draft',case_no:seq++,revision:1,created_at:new Date().toISOString(),updated_at:new Date().toISOString(),history:[]};rows.push(r);return structuredClone(r);},save:async(r,submit)=>{const i=rows.findIndex(x=>x.id===r.id);if(rows[i].revision!==r.revision)throw Error('Revision conflict');const next={...structuredClone(r),revision:r.revision+1,updated_at:new Date().toISOString()};if(submit){next.status='Registered';}rows[i]=next;return structuredClone(next);},notes:async id=>notes.filter(n=>n.case_id===id),note:async(r,kind,content)=>notes.push({case_id:r.id,kind,content,revision:r.revision,created_by:L.me.id,created_at:new Date().toISOString()}),links:async id=>links.filter(l=>l.case_id===id||l.target_id===id),link:async(case_id,target_id,relation)=>links.push({case_id,target_id,relation}),discard:async id=>rows.splice(rows.findIndex(r=>r.id===id),1),medical:async id=>medical[id]?{data:medical[id]}:null,saveMedical:async(id,data)=>{medical[id]=data;},upload:async(project,id,file)=>({name:file.name,path:project+'/cases/'+id+'/'+file.name,size:file.size,type:file.type}),url:async()=>'/file.pdf'}};
+CX.loaded=true;st.view='casehome';render();
+});
+
+await page.evaluate(()=>{CX.row={id:'wheel-test',project:'test-p1',case_type:'Accident',status:'Draft',body:{actions:[]}};CX.editing=true;render=()=>{document.getElementById('view').innerHTML=iwPanel();};cxMark=()=>{CX.dirty=true;};render();});
+assert.equal(await page.locator('[data-iw-sector]').count(),43);
+await page.locator('[data-iw-sector="0-3"]').click();
+assert(await page.locator('#iw-assessment').textContent().then(t=>t.includes('Electrical')));
+await page.locator('[data-iw-field="status"]').selectOption('Gap identified');
+await page.locator('[data-iw-field="evidence"]').fill('Photo E1: damaged isolation switch');
+await page.locator('[data-iw-field="control"]').fill('Verified lockout isolation');
+await page.locator('.iw-question').nth(8).locator('summary').click();
+await page.locator('[data-iw-question="8"]').fill('Supervisor verifies isolation and records test results');
+assert.equal(await page.locator('.iw-draft').count(),3);
+assert.equal(await page.evaluate(()=>IW.drafts(iwState()).filter(d=>d.type==='Preventative').length),2);
+assert((await page.evaluate(()=>IW.drafts(iwState())[0].verification)).includes('Supervisor'));
+await page.locator('[data-iw-adopt="0"]').click();
+assert(await page.locator('#cx-action-form').isVisible());
+assert((await page.locator('[name="title"]').inputValue()).includes('Photo E1'));
+assert.equal(await page.locator('[name="owner"]').inputValue(),'');
+await page.locator('[data-cx="close-modal"]').first().click();
+assert(await page.evaluate(()=>ceoCasePayload().fields.some(f=>f.label.includes('Electrical'))));
+await page.evaluate(()=>{document.getElementById('view').innerHTML=iwPanel();});
+await page.locator('.iw-svg image').evaluate(image=>new Promise((resolve,reject)=>{const img=new Image();img.onload=resolve;img.onerror=reject;img.src=image.getAttribute('href');}));await page.locator('.iw-svg').screenshot({path:path.join(screens,'systems-wheel-exact.png'),animations:'disabled'});await page.screenshot({path:path.join(screens,'systems-wheel-desktop.png'),fullPage:true});
+await page.setViewportSize({width:390,height:844});
+await page.screenshot({path:path.join(screens,'systems-wheel-mobile.png'),fullPage:true});
+assert.deepEqual(errors,[]);
+console.log('PASS wheel sectors, exact questions, evidence-based 1+2 drafts, review workflow and export fields');
+await browser.close();server.close();})().catch(e=>{console.error(e);server.close();process.exit(1)});
