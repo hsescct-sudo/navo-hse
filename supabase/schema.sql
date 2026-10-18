@@ -83,32 +83,90 @@ create index if not exists inspections_project_idx on public.inspections(project
 create index if not exists activities_project_idx on public.activities(project);
 
 -- ============ Who is who ============
+create schema if not exists navo_private;
+revoke all on schema navo_private from public, anon;
+grant usage on schema navo_private to authenticated;
+
+create or replace function navo_private.is_owner() returns boolean
+language sql stable security definer set search_path = '' as
+$$ select exists(select 1 from public.owner where user_id = auth.uid()) $$;
+
+create or replace function navo_private.my_role() returns text
+language sql stable security definer set search_path = '' as
+$$ select role from public.members where user_id = auth.uid() $$;
+
+create or replace function navo_private.is_admin() returns boolean
+language sql stable security definer set search_path = '' as
+$$ select navo_private.is_owner() or coalesce(navo_private.my_role() = 'admin', false) $$;
+
+create or replace function navo_private.is_staff() returns boolean
+language sql stable security definer set search_path = '' as
+$$ select navo_private.is_admin() or coalesce(navo_private.my_role() in ('hse','supervisor'), false) $$;
+
+create or replace function navo_private.in_project(p text) returns boolean
+language sql stable security definer set search_path = '' as
+$$ select navo_private.is_admin() or exists(select 1 from public.members where user_id = auth.uid() and p = any(projects)) $$;
+
+create or replace function navo_private.can_read_person(target_user uuid) returns boolean
+language sql stable security definer set search_path = '' as
+$$
+  select target_user = auth.uid()
+    or navo_private.is_admin()
+    or exists (
+      select 1
+      from public.members target
+      join public.members viewer on viewer.user_id = auth.uid()
+      where target.user_id = target_user
+        and coalesce(target.projects, '{}'::text[]) && coalesce(viewer.projects, '{}'::text[])
+    )
+$$;
+
+revoke all on function navo_private.is_owner() from public, anon;
+revoke all on function navo_private.my_role() from public, anon;
+revoke all on function navo_private.is_admin() from public, anon;
+revoke all on function navo_private.is_staff() from public, anon;
+revoke all on function navo_private.in_project(text) from public, anon;
+revoke all on function navo_private.can_read_person(uuid) from public, anon;
+grant execute on function navo_private.is_owner() to authenticated;
+grant execute on function navo_private.my_role() to authenticated;
+grant execute on function navo_private.is_admin() to authenticated;
+grant execute on function navo_private.is_staff() to authenticated;
+grant execute on function navo_private.in_project(text) to authenticated;
+grant execute on function navo_private.can_read_person(uuid) to authenticated;
+
+-- Compatibility wrappers are SECURITY INVOKER; the privileged lookups stay private.
 create or replace function public.is_owner() returns boolean
-language sql stable security definer set search_path = public as
-$$ select exists(select 1 from owner where user_id = auth.uid()) $$;
-
+language sql stable security invoker set search_path = '' as
+$$ select navo_private.is_owner() $$;
 create or replace function public.my_role() returns text
-language sql stable security definer set search_path = public as
-$$ select role from members where user_id = auth.uid() $$;
-
+language sql stable security invoker set search_path = '' as
+$$ select navo_private.my_role() $$;
 create or replace function public.is_admin() returns boolean
-language sql stable security definer set search_path = public as
-$$ select is_owner() or coalesce(my_role() = 'admin', false) $$;
-
+language sql stable security invoker set search_path = '' as
+$$ select navo_private.is_admin() $$;
 create or replace function public.is_staff() returns boolean
-language sql stable security definer set search_path = public as
-$$ select is_admin() or coalesce(my_role() in ('hse','supervisor'), false) $$;
-
+language sql stable security invoker set search_path = '' as
+$$ select navo_private.is_staff() $$;
 create or replace function public.in_project(p text) returns boolean
-language sql stable security definer set search_path = public as
-$$ select is_admin() or exists(select 1 from members where user_id = auth.uid() and p = any(projects)) $$;
+language sql stable security invoker set search_path = '' as
+$$ select navo_private.in_project(p) $$;
 
--- The first person to sign in becomes the system owner. Later calls do nothing.
-create or replace function public.claim_owner() returns void
-language sql security definer set search_path = public as
-$$ insert into owner(id, user_id) select 1, auth.uid() where auth.uid() is not null on conflict (id) do nothing $$;
+revoke all on function public.is_owner() from public, anon;
+revoke all on function public.my_role() from public, anon;
+revoke all on function public.is_admin() from public, anon;
+revoke all on function public.is_staff() from public, anon;
+revoke all on function public.in_project(text) from public, anon;
+grant execute on function public.is_owner() to authenticated;
+grant execute on function public.my_role() to authenticated;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.is_staff() to authenticated;
+grant execute on function public.in_project(text) to authenticated;
 
-grant execute on function public.claim_owner() to authenticated;
+-- A signed-in user can see their own profile and teammates on shared projects.
+-- The private SECURITY DEFINER lookup avoids recursive evaluation of members_read.
+
+-- Provision the system owner through the trusted Supabase SQL editor. Never
+-- assign ownership to the first public registrant.
 
 -- ============ Row Level Security ============
 alter table public.owner enable row level security;
@@ -121,26 +179,33 @@ alter table public.inspections enable row level security;
 alter table public.activities enable row level security;
 alter table public.reviews enable row level security;
 
--- owner: readable, changed only through claim_owner()
-create policy owner_read on public.owner for select to authenticated using (true);
+-- The owner identity is only visible to its own account.
+create policy owner_read on public.owner for select to authenticated using (user_id = auth.uid());
 
--- people directory: everyone signed in reads, each person writes their own row
-create policy people_read on public.people for select to authenticated using (true);
+-- Profiles and member assignments are visible only to self, admins, and teammates
+-- who share at least one assigned project.
+create policy people_read on public.people for select to authenticated using (navo_private.can_read_person(user_id));
 create policy people_insert on public.people for insert to authenticated with check (user_id = auth.uid());
 create policy people_update on public.people for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 
--- projects, members, reviews: everyone signed in reads, admins write
-create policy projects_read on public.projects for select to authenticated using (true);
+-- Project metadata and reviews follow project membership; admins can see all.
+create policy projects_read on public.projects for select to authenticated using (public.in_project(id));
 create policy projects_write on public.projects for insert to authenticated with check (is_admin());
 create policy projects_update on public.projects for update to authenticated using (is_admin()) with check (is_admin());
 create policy projects_delete on public.projects for delete to authenticated using (is_admin());
 
-create policy members_read on public.members for select to authenticated using (true);
+create policy members_read on public.members for select to authenticated using (navo_private.can_read_person(user_id));
 create policy members_write on public.members for insert to authenticated with check (is_admin());
 create policy members_update on public.members for update to authenticated using (is_admin()) with check (is_admin());
 create policy members_delete on public.members for delete to authenticated using (is_admin());
 
-create policy reviews_read on public.reviews for select to authenticated using (true);
+create policy reviews_read on public.reviews for select to authenticated using (
+  public.is_admin() or exists (
+    select 1 from public.projects p
+    where left(public.reviews.id, length(p.id) + 1) = p.id || '_'
+      and public.in_project(p.id)
+  )
+);
 create policy reviews_write on public.reviews for insert to authenticated with check (is_admin());
 create policy reviews_update on public.reviews for update to authenticated using (is_admin()) with check (is_admin());
 create policy reviews_delete on public.reviews for delete to authenticated using (is_admin());

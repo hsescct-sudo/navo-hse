@@ -8,21 +8,43 @@
 
 ---
 
-## 1. Supabase (مرة واحدة، 10 دقايق)
+## 1. إعداد Supabase
 
 1. ادخل https://supabase.com ← **New project**
    - الاسم: `navo-hse`
    - **Database password**: احفظه عندك
    - **Region**: اختار أقرب منطقة متاحة للسعودية
-2. **SQL Editor ← New query**: الصق محتوى `supabase/schema.sql` كله ← **Run**
+2. شغّل ملفات قاعدة البيانات بالترتيب التالي، كل ملف في Query منفصل في **SQL Editor**. تشغيل `schema.sql` وحده لا ينشئ كل الجداول التي يستخدمها الموقع:
+   1. `supabase/schema.sql`
+   2. `supabase/002_dashboards.sql`
+   3. `supabase/003_clusters.sql`
+   4. `supabase/004_settings.sql`
+   5. `supabase/005_ai_reporting.sql`
+   6. `supabase/006_hsse_dashboard.sql`
+   7. `supabase/007_exec_kpis.sql`
+   8. `supabase/008_workflows.sql`
+   9. `supabase/017_project_locations.sql`
+   10. `supabase/018_project_location_visibility.sql`
+   11. `supabase/019_connected_record_links.sql`
+   12. `supabase/020_sector_forms_and_rca_review.sql`
+   13. ملفات `supabase/migrations/` بالترتيب الزمني من الأقدم للأحدث.
 3. **Authentication ← Providers ← Email**: سيبه مفعّل
-   - للتجربة بس: تقدر تقفل **Confirm email** عشان الناس تدخل على طول من غير إيميل تأكيد
+   - عطّل التسجيل العام في إعدادات Auth، وادعُ المستخدمين من لوحة Supabase.
+   - ادعُ حساب مسؤول النظام المقصود، ثم بعد إنشاء الحساب شغّل الاستعلام التالي في SQL Editor مع استبدال البريد:
+     ```sql
+     insert into public.owner (user_id)
+     select id from auth.users where lower(email) = lower('admin@example.com')
+     on conflict (id) do nothing;
+     ```
+   - لا تمنح ملكية النظام لأول شخص يسجّل؛ المالك يجب أن يُضاف من قناة إدارية موثوقة.
 4. **Project Settings ← API**: انسخ
    - **Project URL**
    - **anon public key** (المفتاح ده معمول عشان يبقى ظاهر في الموقع، والحماية من الـ RLS)
 5. حطهم في `public/supabase-config.js`، أو ابعتهم لـ Claude يحطهم ويعمل Push
 
 > ⚠️ ما تحطش ولا تبعت الـ **service_role key** لأي حد. ده مفتاح بيعدّي كل الصلاحيات.
+
+للمشروعات الموجودة، طبّق فقط الملفات التي لم تُطبّق من القوائم أعلاه، بترتيبها. يشمل آخر تحديث إزالة تعيين المالك العام وتقييد قراءة بيانات الأشخاص والمشاريع والمراجعات حسب صلاحيات المشروع؛ لا يحذف البيانات أو المالك الحالي. بعد كل ملف، تأكد أن SQL Editor يعرض نجاح التنفيذ.
 
 ## 2. رفع الموقع (مجاني، 5 دقايق)
 
@@ -40,7 +62,7 @@
 
 ## 3. أول تشغيل
 
-1. **إنت أول واحد يعمل حساب ويدخل.** أول حساب بيبقى صاحب النظام (Owner) ومش بيتغير.
+1. **المسؤول ينشئ حساب المالك ويدخله في جدول `owner` من SQL Editor** كما في الخطوة السابقة. لا يتحول أول حساب مسجل تلقائيًا إلى مالك.
 2. **Projects & access**: ضيف المشاريع، وحط لكل مشروع عدد العمال وخطة التفتيشات والزيارات الشهرية.
 3. ابعت اللينك للناس، كل واحد يعمل حساب.
 4. ارجع **Projects & access**، دوّر على اسمه، واديله دور ومشاريع.

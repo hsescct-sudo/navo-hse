@@ -375,7 +375,7 @@ function hsExecPayload(tab){const h=hsInit();const P0=hsP();const P=tab==="Corpo
   months:mons,trendTrc:cy.map(x=>x.trc),trendTrcPrev:ly.map(x=>x.trc),trendLtifr:cy.map(x=>x.hrs?x.ltifr:null),trendHours:cy.map(x=>x.hrs),divisions:divs,risk:riskD,
   projects:P.map(p=>{const x=hsExecMetrics([p],cut);return{name:p.name,division:p.division||"",trcf:x.trcf,over:x.over,closure:x.closePct}}).sort((a,b)=>a.trcf-b.trcf||a.over-b.over).slice(0,15)}}
 async function hsExport(tab,fmt,btn){const lbl=btn.textContent;btn.disabled=true;btn.textContent="Preparing…";
- try{const r=await fetch("/api/report?fmt="+fmt,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(hsExecPayload(tab))});if(!r.ok)throw new Error((await r.text()).slice(0,200));
+ try{const r=await fetch("/api/report?fmt="+fmt,{method:"POST",headers:{"Content-Type":"application/json",...L.db.authHeaders()},body:JSON.stringify(hsExecPayload(tab))});if(!r.ok)throw new Error((await r.text()).slice(0,200));
   const b=await r.blob();const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`${tab.replace(/\W+/g,"-")}-Executive-Summary.${fmt}`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
  catch(e){alert("The export could not be created: "+e.message)}finally{btn.disabled=false;btn.textContent=lbl}}
 document.addEventListener("click",e=>{const t=e.target.closest("[data-xexp]");if(t)hsExport(t.dataset.xexp,t.dataset.f,t)});

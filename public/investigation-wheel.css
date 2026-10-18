@@ -20,3 +20,6 @@
 .iw-panel button{padding:10px 14px;border:1px solid #adc2d6;border-radius:8px;background:#edf4fb;color:#17324d}
 .iw-panel button:disabled{opacity:.55}
 @media(max-width:900px){.iw-layout{grid-template-columns:minmax(0,1fr)}.iw-panel{padding:12px}}
+
+.iw-sector.selected path{fill:#ffffff14;stroke:#fff;stroke-width:2}
+.iw-selection-group{margin:12px 0}.iw-selection-group b{font-size:12px}.iw-selection-group>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}.iw-selection-group button{font-size:11px;padding:5px 8px}.iw-selection-group small{color:#506780}

@@ -3,43 +3,67 @@
 (function () {
   const cfg = window.NAVO_SUPABASE_CONFIG || {};
   const sb = window.supabase.createClient(cfg.url, cfg.anonKey);
-  let session = null, resolveAuthed;
+  let session = null, resolveAuthed, authReady = false, authStartupTimer;
   const authed = new Promise(r => (resolveAuthed = r));
+  const settleAuthed = () => { if (!authReady) { authReady = true; clearTimeout(authStartupTimer); resolveAuthed(); } };
+  const withTimeout = (promise, ms, message) => {
+    let timer;
+    return Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(Object.assign(new Error(message), { code: "timeout" })), ms); })])
+      .finally(() => clearTimeout(timer));
+  };
 
   // App field names <-> table column names
   const TO_COL = { caseNo: "case_no", riskAssessment: "risk_assessment", by: "created_by", desc: "description", eventTs: "event_ts", closedAt: "closed_at", planInsp: "plan_insp", planWalk: "plan_walk", walkTarget: "walk_target", originalText: "original_text", personType: "person_type", injuryType: "injury_type", bodyPart: "body_part", incClass: "inc_class", lostDays: "lost_days", sourceId: "source_id" };
   const TO_FIELD = Object.fromEntries(Object.entries(TO_COL).map(([a, b]) => [b, a]));
   const toRow = o => Object.fromEntries(Object.entries(o).filter(([k]) => k !== "id").map(([k, v]) => [TO_COL[k] || k, typeof v === "number" && Math.abs(v) > 1e11 ? Math.round(v) : v]));
   const fromRow = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [TO_FIELD[k] || k, v]));
-  const TABLE = { reports: "reports", actions: "actions", inspections: "inspections", activities: "activities", records: "hsse_records", "admin/rv/months": "reviews" };
+  const TABLE = { projects: "projects", reports: "reports", actions: "actions", inspections: "inspections", activities: "activities", records: "hsse_records", "admin/rv/months": "reviews" };
 
   const fail = error => { throw { code: error.code === "42501" || /row-level security|permission/i.test(error.message || "") ? "invalid_argument" : error.code === "53100" ? "quota_exceeded" : "unavailable", message: error.message || "" }; };
   const run = async q => { const { data, error } = await q; if (error) fail(error); return data; };
   const snapDoc = (id, data) => ({ id, exists: !!data, data: () => data, metadata: { fromCache: false, hasPendingWrites: false } });
   const snapQuery = rows => { const docs = rows.map(r => snapDoc(String(r.id), fromRow(r))); return { docs, size: docs.length, empty: !docs.length, docChanges: () => [], metadata: {} }; };
 
-  // Fetch now, then refetch whenever the table changes (Row Level Security still applies to what is returned).
+  // Fetch once, then refresh on changes. RLS limits every result to the current user's access.
   let chan = 0;
   function watch(table, filter, onRows, onErr) {
-    let alive = true, t;
+    let alive = true, t, fetching = false, pending = false;
     const fetch = async () => {
+      if (!alive) return;
+      if (fetching) { pending = true; return; }
+      fetching = true;
       // Page through results: the API returns at most 1,000 rows per request.
       const all = [];
-      for (let from = 0; ; from += 1000) {
-        let q = sb.from(table).select("*").order(table === "members" ? "user_id" : "id").range(from, from + 999);
-        if (filter) q = q.eq(filter[0], filter[1]);
-        const { data, error } = await q;
-        if (!alive) return;
-        if (error) { onErr && onErr({ code: "unavailable", message: error.message }); return; }
-        all.push(...data);
-        if (data.length < 1000) break;
+      try {
+        for (let from = 0; ; from += 1000) {
+          let q = sb.from(table).select("*").order(table === "members" ? "user_id" : "id").range(from, from + 999);
+          if (filter) q = q.eq(filter[0], filter[1]);
+          const { data, error } = await q;
+          if (!alive) return;
+          if (error) {
+            const permission = error.code === "42501" || /row-level security|permission/i.test(error.message || "");
+            onErr && onErr({ code: permission ? "invalid_argument" : error.code === "53100" ? "quota_exceeded" : "unavailable", message: error.message || "The project data request failed." });
+            return;
+          }
+          all.push(...data);
+          if (data.length < 1000) break;
+        }
+        if (alive) onRows(all);
+      } catch (error) {
+        if (alive) onErr && onErr({ code: "unavailable", message: error?.message || "The project data request failed." });
+      } finally {
+        fetching = false;
+        if (alive && pending) {
+          pending = false;
+          clearTimeout(t);
+          t = setTimeout(fetch, 300);
+        }
       }
-      onRows(all);
     };
     fetch();
     const ch = sb.channel("navo-" + table + "-" + (++chan))
       .on("postgres_changes", { event: "*", schema: "public", table, ...(filter ? { filter: filter[0] + "=eq." + filter[1] } : {}) },
-        () => { clearTimeout(t); t = setTimeout(fetch, 150); })
+        () => { clearTimeout(t); t = setTimeout(fetch, 300); })
       .subscribe();
     return () => { alive = false; sb.removeChannel(ch); };
   }
@@ -47,27 +71,17 @@
   function projectsFromRows(rows) { return { list: rows.map(r => ({ id: r.id, name: r.name, country: r.country, headcount: r.headcount, planInsp: r.plan_insp, planWalk: r.plan_walk, platform: r.platform || "Construction", division: r.division || "", cluster: r.cluster || "", location: r.latitude == null || r.longitude == null ? null : {lat:r.latitude,lng:r.longitude,label:r.location_label||'',mode:r.location_mode} })) }; }
   function membersFromRows(rows) { return { map: Object.fromEntries(rows.map(r => [r.user_id, { role: r.role, projects: r.projects || [], leader: !!r.leader, walkTarget: r.walk_target }])) }; }
 
-  async function syncList(table, key, rows) {
-    if (rows.length) await run(sb.from(table).upsert(rows, { onConflict: key }));
-    const keep = rows.map(r => r[key]);
-    let del = sb.from(table).delete();
-    del = keep.length ? del.not(key, "in", "(" + keep.map(k => '"' + String(k).replace(/"/g, "") + '"').join(",") + ")") : del.neq(key, "__none__");
-    await run(del);
-  }
-
   function docRef(path) {
     const parts = path.split("/"), id = parts.pop(), coll = parts.join("/");
     if (path === "admin/projects") return {
       id, path,
       onSnapshot: (n, e) => watch("projects", null, rows => n(snapDoc(id, projectsFromRows(rows))), e),
-      get: async () => snapDoc(id, projectsFromRows(await run(sb.from("projects").select("*")))),
-      set: async d => syncList("projects", "id", (d.list || []).map(p => ({ id: p.id, name: p.name, country: p.country, headcount: p.headcount ?? null, plan_insp: p.planInsp ?? null, plan_walk: p.planWalk ?? null, platform: p.platform || "Construction", division: p.division || null, cluster: p.cluster || null })))
+      get: async () => snapDoc(id, projectsFromRows(await run(sb.from("projects").select("*"))))
     };
     if (path === "admin/members") return {
       id, path,
       onSnapshot: (n, e) => watch("members", null, rows => n(snapDoc(id, membersFromRows(rows))), e),
-      get: async () => snapDoc(id, membersFromRows(await run(sb.from("members").select("*")))),
-      set: async d => syncList("members", "user_id", Object.entries(d.map || {}).map(([uid, m]) => ({ user_id: uid, role: m.role, projects: m.projects || [], leader: !!m.leader, walk_target: m.walkTarget ?? null })))
+      get: async () => snapDoc(id, membersFromRows(await run(sb.from("members").select("*"))))
     };
     if (path === "admin/checklists" || path === "admin/workflows") { const sid = path.split("/")[1]; return {
       id, path,
@@ -75,6 +89,14 @@
       get: async () => { const r = await run(sb.from("settings").select("*").eq("id", sid).maybeSingle()); return snapDoc(id, r ? r.data : undefined); },
       set: async d => run(sb.from("settings").upsert({ id: sid, data: d }))
     }; }
+    if (coll === "members") return {
+      id, path,
+      get: async () => { const r = await run(sb.from("members").select("*").eq("user_id", id).maybeSingle()); return snapDoc(id, r ? { role: r.role, projects: r.projects || [], leader: !!r.leader, walkTarget: r.walk_target } : undefined); },
+      set: async d => run(sb.from("members").upsert({ user_id: id, role: d.role, projects: d.projects || [], leader: !!d.leader, walk_target: d.walkTarget ?? null }, { onConflict: "user_id" })),
+      update: async d => run(sb.from("members").update({ role: d.role, projects: d.projects, leader: d.leader, walk_target: d.walkTarget }).eq("user_id", id)),
+      delete: async () => run(sb.from("members").delete().eq("user_id", id)),
+      onSnapshot: (n, e) => watch("members", ["user_id", id], rows => n(snapDoc(id, rows[0] ? { role: rows[0].role, projects: rows[0].projects || [], leader: !!rows[0].leader, walkTarget: rows[0].walk_target } : undefined)), e)
+    };
     if (path === "admin/structure") return {
       id, path,
       onSnapshot: (n, e) => watch("settings", ["id", "structure"], rows => n(snapDoc(id, rows[0] ? rows[0].data : undefined)), e),
@@ -108,6 +130,7 @@
     return q;
   }
   const db = { doc: docRef, collection: p => collection(p),
+    authHeaders: () => session && session.access_token ? { Authorization: "Bearer " + session.access_token } : {},
     projectLocation: async (id, location) => {
       if (location && (!Number.isFinite(location.lat) || !Number.isFinite(location.lng) || Math.abs(location.lat)>90 || Math.abs(location.lng)>180 || !['real','demo'].includes(location.mode))) throw new Error('Enter valid latitude and longitude.');
       const updated=await run(sb.from('projects').update(location ? {latitude:location.lat,longitude:location.lng,location_label:location.label,location_mode:location.mode} : {latitude:null,longitude:null,location_label:null,location_mode:'none'}).eq('id',id).select('id'));
@@ -183,7 +206,9 @@
   const user = {
     id: async () => me() ? me().id : null,
     isOwner: async () => { if (!me()) return false; const r = await sb.from("owner").select("user_id").maybeSingle(); return !!(r.data && r.data.user_id === me().id); },
-    me: async () => ({ id: me() ? me().id : null, name: me() ? (me().user_metadata?.name || me().email) : "", email: me() ? me().email : null, isOwner: await user.isOwner(), canEdit: false, avatarUrl: "", color: "#0f4c45" }),
+    // Keep identity boot local; the owner lookup runs separately so a slow request
+    // cannot hold the whole app behind the sign-in/database loading screen.
+    me: async () => ({ id: me() ? me().id : null, name: me() ? (me().user_metadata?.name || me().email) : "", email: me() ? me().email : null, isOwner: false, canEdit: false, avatarUrl: "", color: "#0f4c45" }),
     canEdit: async () => false, can: async () => null,
     profiles: async ids => {
       ids = [].concat(ids).filter(Boolean);
@@ -213,42 +238,98 @@
     document.getElementById("lg-toggle").textContent = mode === "in" ? "New to NAVO? Create an account" : "Already have an account? Sign in";
     msg("");
   };
-  async function start(s) {
-    session = s;
-    if (!s) { box.hidden = false; return; }
-    box.hidden = true;
-    const u = s.user;
-    await sb.from("people").upsert({ user_id: u.id, name: u.user_metadata?.name || u.email, email: u.email });
-    await sb.rpc("claim_owner");
-    const ctr = document.querySelector(".ctrls");
-    if (ctr && !document.getElementById("signout")) {
-      const b = document.createElement("button"); b.id = "signout"; b.className = "btn"; b.textContent = "Sign out";
-      b.onclick = () => sb.auth.signOut().then(() => location.reload()); ctr.appendChild(b);
-    }
-    resolveAuthed();
+  let openedUser = '', opening = null, authEvents = 0;
+  function accountError(error) {
+    box.hidden = false;
+    msg(error?.message || 'Could not open your workspace. Please try signing in again.');
   }
-  sb.auth.getSession().then(({ data }) => start(data.session));
-  sb.auth.onAuthStateChange(async (ev, s) => {
-    if (s) session = s;
-    if (ev === "PASSWORD_RECOVERY") {
-      const pw = window.prompt("Choose a new password (at least 8 characters)");
-      if (pw && pw.length >= 8) { const { error } = await sb.auth.updateUser({ password: pw }); window.alert(error ? error.message : "Password updated."); }
+  function start(s) {
+    session = s;
+    // Let the application finish booting even when the browser has no saved session.
+    // Otherwise claude.use() waits forever and every page remains on its database spinner.
+    if (!s) { box.hidden = false; settleAuthed(); return Promise.resolve(); }
+    // Auth state is enough to start the app. Profile sync must not block project reads.
+    box.hidden = true;
+    msg('');
+    settleAuthed();
+    if (openedUser === s.user.id) return Promise.resolve();
+    if (opening) return Promise.resolve();
+    opening = (async () => {
+      const u = s.user;
+      const profile = await sb.from("people").upsert({ user_id: u.id, name: u.user_metadata?.name || u.email, email: u.email });
+      if (profile.error) throw profile.error;
+      if (!session || session.user.id !== u.id) return;
+      const ctr = document.querySelector(".ctrls");
+      if (ctr && !document.getElementById("signout")) {
+        const b = document.createElement("button"); b.id = "signout"; b.className = "btn"; b.textContent = "Sign out";
+        b.onclick = () => sb.auth.signOut().then(() => location.reload()); ctr.appendChild(b);
+      }
+      openedUser = u.id;
+    })().catch(error => { console.warn("NAVO account setup did not finish", error?.message || error); }).finally(() => { opening = null; });
+    return Promise.resolve();
+  }
+  // Keep a separate watchdog around the whole auth bootstrap. A stalled or
+  // throwing SDK listener must never leave every screen on the loading panel.
+  authStartupTimer = setTimeout(() => {
+    if (!authReady) {
+      const error = new Error('Sign-in did not finish. Check the connection and try again.');
+      accountError(error);
+      start(null);
     }
-    if (ev === "SIGNED_IN" && !session) start(s);
-  });
+  }, 12000);
+  // SDK callbacks stay synchronous; profile calls run after the auth lock is released.
+  try { sb.auth.onAuthStateChange((ev, s) => {
+    authEvents++;
+    session = s;
+    if (ev === "SIGNED_OUT") {
+      box.hidden = false;
+      if (openedUser) location.reload();
+      return;
+    }
+    if (ev === "PASSWORD_RECOVERY") {
+      setTimeout(async () => {
+        const pw = window.prompt("Choose a new password (at least 8 characters)");
+        if (pw && pw.length >= 8) {
+          const { error } = await sb.auth.updateUser({ password: pw });
+          window.alert(error ? error.message : "Password updated.");
+        }
+      }, 0);
+    }
+    if (s && ['INITIAL_SESSION', 'SIGNED_IN', 'TOKEN_REFRESHED'].includes(ev)) {
+      setTimeout(() => { void start(s).catch(accountError); }, 0);
+    }
+  }); } catch (error) { accountError(error); start(null); }
+  const initialEvents = authEvents;
+  // Start the SDK call in a promise turn so even a synchronous SDK/storage error
+  // reaches the recovery path and releases claude.use() for the app shell.
+  Promise.resolve().then(() => withTimeout(sb.auth.getSession(), 10000, 'Sign-in is taking too long. Check the connection and try again.')).then(({ data, error }) => {
+    if (error) throw error;
+    if (authEvents === initialEvents) return start(data.session);
+  }).catch(error => { if (!authReady) { accountError(error); start(null); } });
   document.getElementById("lg-form").onsubmit = async e => {
     e.preventDefault();
+    const button = document.getElementById("lg-submit");
+    if (button.disabled) return;
     const email = document.getElementById("lg-email").value.trim(), password = document.getElementById("lg-pass").value;
-    if (mode === "up") {
-      const name = document.getElementById("lg-name").value.trim();
-      if (!name) { msg("Add your full name."); return; }
-      const { data, error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
-      if (error) { msg(error.message); return; }
-      if (!data.session) msg("Check your email and press the confirmation link, then sign in.", true);
-    } else {
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) msg(error.message === "Invalid login credentials" ? "Wrong email or password." : error.message);
-    }
+    button.disabled = true;
+    button.textContent = mode === "up" ? "Creating account…" : "Opening workspace…";
+    msg('');
+    try {
+      if (mode === "up") {
+        const name = document.getElementById("lg-name").value.trim();
+        if (!name) throw Error("Add your full name.");
+        const { data, error } = await withTimeout(sb.auth.signUp({ email, password, options: { data: { name } } }), 15000, 'Sign-up did not respond. Check your connection and try again.');
+        if (error) throw error;
+        if (data.session) await start(data.session);
+        else msg("Check your email and press the confirmation link, then sign in.", true);
+      } else {
+        const { data, error } = await withTimeout(sb.auth.signInWithPassword({ email, password }), 15000, 'Sign-in did not respond. Check your connection and try again.');
+        if (error) throw Error(error.message === "Invalid login credentials" ? "Wrong email or password." : error.message);
+        if (!data.session) throw Error('Sign-in did not return a session. Please try again.');
+        await start(data.session);
+      }
+    } catch (error) { accountError(error); }
+    finally { button.disabled = false; button.textContent = mode === 'up' ? 'Create account' : 'Sign in'; }
   };
   document.getElementById("lg-reset").onclick = async () => {
     const email = document.getElementById("lg-email").value.trim();

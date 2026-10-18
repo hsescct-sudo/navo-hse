@@ -24,13 +24,19 @@
     const afterNext=new Date(date.getTime()+(14-offset)*864e5).toISOString().slice(0,10);
     return due<nextMonday?'Due this week':due<afterNext?'Due next week':'Not due';
   }
-  function sections(type){return ['Where and What','Risk assessment & prevention',...(type==='Accident'?['General classifications','Consequences','Involved persons','Loss potential','Causes']:type==='Observation'||type==='Near miss'?['Loss potential']:type==='Inspection'?['Involved persons','Check list']:['Involved persons']), 'Actions','Attachments','Comments','Signatures','Connected cases','Processing'];}
+  function incidentLevel(body={}){
+    const severe=(body.highPotential==='Yes'||Number(body.riskSeverity)>=4||[...(body.actual||[]),...(body.potential||[])].some(item=>Number(item.severity)>=3));
+    return severe?'serious':body.incidentLevel==='serious'?'serious':'routine';
+  }
+  function sections(type,body={}){
+    if(type==='Accident'&&incidentLevel(body)==='routine')return ['Where and What','Risk assessment & prevention','Consequences','Actions','Attachments','Processing'];
+    return ['Where and What','Risk assessment & prevention',...(type==='Accident'?['General classifications','Consequences','Involved persons','Loss potential','Causes']:type==='Observation'||type==='Near miss'?['Loss potential']:type==='Inspection'?['Involved persons','Check list']:['Involved persons']), 'Actions','Attachments','Comments','Signatures','Connected cases','Processing'];
+  }
   function validate(row){
     const b=row.body||{},errors=[];
     const required={title:row.title,description:b.description,date:b.date,location:b.location,responsibleDepartment:b.responsibleDepartment,reportedDepartment:b.reportedDepartment,departmentInCharge:b.departmentInCharge,due:b.due};
     for(const [key,value]of Object.entries(required))if(!String(value||'').trim())errors.push(key);
     if(['Observation','Accident','Near miss'].includes(row.case_type)&&!b.category)errors.push('category');
-    if(row.case_type==='Accident'&&!b.technology)errors.push('technology');
     if(['Inspection','Audit','Meeting'].includes(row.case_type)&&!b.endDate)errors.push('endDate');
     if(b.endDate&&b.date&&b.endDate<b.date)errors.push('endDate must follow start date');
     if(row.case_type==='Inspection'){
@@ -44,6 +50,6 @@
   function filter(rows,f={}){
     const q=(f.q||'').toLowerCase().trim(),recordIds=f.recordIds?new Set(f.recordIds):null;return rows.filter(r=>(f.includeDraft||r.status!=='Draft')&&(!recordIds||recordIds.has(r.id))&&(!q||[r.case_no,r.title,r.body?.description].join(' ').toLowerCase().includes(q))&&(!f.type||r.case_type===f.type)&&(!f.status||r.status===f.status)&&(!f.project||r.project===f.project)&&(!f.from||(r.body?.date||'')>=f.from)&&(!f.to||(r.body?.date||'').slice(0,10)<=f.to)&&(!f.person||r.body?.personInCharge===f.person)&&(!f.department||r.body?.departmentInCharge===f.department));
   }
-  root.NavoCasesCore={types,actionTypes,lossTypes,severity,lossLabel,colors,day,dueStatus,sections,validate,filter};
+  root.NavoCasesCore={types,actionTypes,lossTypes,severity,lossLabel,colors,day,dueStatus,incidentLevel,sections,validate,filter};
   if(typeof module!=='undefined')module.exports=root.NavoCasesCore;
 })(typeof window==='undefined'?globalThis:window);

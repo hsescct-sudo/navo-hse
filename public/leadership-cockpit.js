@@ -613,7 +613,7 @@ async function coDownload(scope, fmt, button) {
     }
     const r = await fetch("/api/report?fmt=" + fmt, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...L.db.authHeaders() },
       body: JSON.stringify(payload),
     });
     if (!r.ok) throw Error((await r.text()).slice(0, 200));

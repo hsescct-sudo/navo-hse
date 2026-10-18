@@ -20,7 +20,10 @@ const user=async name=>db.query(`select set_config('request.jwt.claim.sub',$1,fa
 const body={description:'Validation case',date:'2026-10-13T14:00',location:'Test site',responsibleDepartment:'HSE',reportedDepartment:'HSE',departmentInCharge:'HSE',due:'2026-10-20',likelihood:'3',riskSeverity:'5',category:'Unsafe act',technology:'CCGT',endDate:'2026-10-14T14:00',actions:[],potential:[]};
 await user('worker');
 assert.deepEqual((await db.query('select id from projects order by id')).rows.map(p=>p.id),['p1'],'assigned members can only read project locations in scope');
+assert.deepEqual((await db.query('select user_id from members order by user_id')).rows.map(m=>m.user_id).sort(),[ids.hse,ids.worker].sort(),'member directory only shows teammates on shared projects');
+assert.equal((await db.query('select user_id from people')).rows.length,2,'people directory only shows self and shared-project teammates');
 assert.equal((await db.query("update projects set latitude=24.71,longitude=46.68,location_mode='real' where id='p1' returning id")).rows.length,0,'worker cannot set coordinates');
+await db.exec('set role anon');let publicHelperDenied=false;try{await db.query("select public.in_project('p1')");}catch{publicHelperDenied=true;}assert(publicHelperDenied,'anonymous users cannot call authorization helpers');await db.exec('set role authenticated');await user('worker');
 await user('admin');
 await db.query("update projects set latitude=24.71,longitude=46.68,location_mode='real' where id='p1'");
 let coordinateDenied=false;try{await db.query("update projects set latitude=100 where id='p1'");}catch{coordinateDenied=true;}assert(coordinateDenied,'invalid latitude rejected by database');

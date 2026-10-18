@@ -16,5 +16,9 @@ assert.deepEqual(c.validate(row),[]);row.body.checklists[0].questions[1].evaluat
 assert.equal(c.filter([row,{...row,project:'p2'}],{project:'p1'}).length,1);
 assert.equal(c.filter([{...row,status:'Draft'}]).length,0);
 assert.equal(c.lossLabel('Spill',4),'Class A – Reportable spill / loss > $50,000');
-assert.equal(c.sections('Accident').length,13);
+assert.equal(c.sections('Accident',{}).length,6);
+assert.equal(c.sections('Accident',{incidentLevel:'serious'}).length,13);
+assert.equal(c.incidentLevel({actual:[{severity:3}]}),'serious');
+assert.equal(c.incidentLevel({riskSeverity:4}),'serious');
+assert.equal(c.incidentLevel({highPotential:'Yes'}),'serious');
 console.log('PASS: Riyadh dates, due boundaries, closure timing, required fields, checklist answers, filters, draft exclusion and consequence labels');

@@ -348,7 +348,7 @@ table.mx tr.sec td:first-child{background:var(--surface2)}
 </div>
 <nav class="tabbar" id="tabbar"></nav>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script>
+<script src="/vendor/supabase-2.57.4.js"></script>
 <script src="supabase-config.js"></script>
 <script src="navo-supabase.js"></script>
 <script>
@@ -777,7 +777,7 @@ document.addEventListener("change",e=>{if(e.target.id==="country"){st.country=e.
  if(e.target.id==="ph"&&e.target.files[0]){shrinkPhoto(e.target.files[0]).then(({url,blob})=>{st.w.img=url;st.w.blob=blob;st.w.ai=null;render()}).catch(()=>toast("That photo could not be read. Try another one."))}
  if(e.target.id==="wlang")st.w.lang=e.target.value;});
 /* ================= LIVE SYSTEM (shared database) ================= */
-const L={db:null,user:null,me:null,owner:false,projects:[],members:{},reports:[],scores:{},ready:false,state:"Connecting…",scProj:null,scMonth:null,structure:null,sdraft:null,np:{plat:"Construction"},actions:[],inspections:[],activities:[],reviews:{},draft:{},af:{},acc:{q:"",hits:[],pick:null},outlook:{}};
+const L={db:null,user:null,me:null,owner:false,projects:[],members:{},reports:[],scores:{},ready:false,state:"Connecting…",connectionStage:"Starting sign-in",scProj:null,scMonth:null,structure:null,sdraft:null,np:{plat:"Construction"},actions:[],inspections:[],activities:[],reviews:{},draft:{},af:{},acc:{q:"",hits:[],pick:null},outlook:{}};
 const ROLES={admin:"HSE Admin",hse:"HSE Engineer",supervisor:"Supervisor",worker:"Site Worker"};
 const thisMonth=()=>{const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")};
 const prevMonth=m=>{let[y,mm]=m.split("-").map(Number);mm--;if(!mm){mm=12;y--}return y+"-"+String(mm).padStart(2,"0")};
@@ -793,26 +793,31 @@ function scoreEntry(e){if(!e)return null;let qs=0;const rows=SHQ.map(([sec,inds]
  const avail=rows.reduce((s,r)=>s+r.ir.filter(i=>!i.missing).reduce((t,i)=>t+i.mx,0),0);const quant=avail?+(qs/avail*100).toFixed(1):0,qual=+(ql.reduce((s,q)=>s+q.sc,0)/40*100).toFixed(1);return{rows,ql,quant,qual,total:+(quant*.6+qual*.4).toFixed(1)}}
 function statusFor(cur,prev){if(cur==null)return null;if(cur<70)return"Intervention";if(cur<80)return"Review";if(prev!=null&&cur-prev>=2)return"Improving";return"Monitor"}
 
-async function liveInit(){try{
- L.user=await claude.use("user");L.db=await claude.use("db");
- if(!L.db||!L.user){L.state="offline";render();return}
- L.me=await L.user.me();L.owner=await L.user.isOwner();
- if(!L.me.id){L.state="signedout";render();return}
- L.db.doc("admin/structure").onSnapshot(s=>{if(s.exists){applyStructure(s.data());render()}},err);L.db.doc("admin/checklists").onSnapshot(s=>{L.checklists=s.exists?s.data():null;if(["inspm","chk"].includes(st.view))render()},err);L.db.doc("admin/workflows").onSnapshot(s=>{L.workflows=s.exists?s.data():null;if(st.view==="flows")render()},err);
- L.db.doc("admin/projects").onSnapshot(s=>{L.projects=(s.data()?.list)||[];L.ready=true;L.state="ok";resub();render()},err);
- L.db.doc("admin/members").onSnapshot(s=>{L.members=(s.data()?.map)||{};resub();render()},err);
- L.db.collection("admin/rv/months").onSnapshot(s=>{L.reviews={};s.docs.forEach(d=>L.reviews[d.id]=d.data());if(["sc","entry","casehome","casesearch","caseedit"].includes(st.view))render()},err);
-}catch(e){L.state="offline";render()}}
-// Subscribe per project for non-admins (the server only lets them read their own projects), whole collections for admins.
+async function liveInit(){const initId=L.initRun=(L.initRun||0)+1;stopInitSubscriptions();clearTimeout(L.projectReadyTimer);L.connectionStage="Starting sign-in";L.projectReadyTimer=setTimeout(()=>{if(initId===L.initRun&&!L.ready)projectLoadError({code:"timeout"},initId)},15000);try{
+ L.user=await claude.use("user");if(initId!==L.initRun)return;L.db=await claude.use("db");if(initId!==L.initRun)return;
+ if(!L.db||!L.user){projectLoadError({code:"network"},initId);return}
+ L.connectionStage="Loading account details";L.me=await L.user.me();if(initId!==L.initRun)return;
+ if(!L.me.id){clearTimeout(L.projectReadyTimer);L.state="signedout";render();return}
+ L.connectionStage="Checking project access";L.owner=false;void L.user.isOwner().then(owner=>{if(initId!==L.initRun)return;L.owner=!!owner;resub();render()}).catch(()=>{});
+ L.initUnsubs.push(L.db.doc("admin/structure").onSnapshot(s=>{if(s.exists){applyStructure(s.data());render()}},err));
+ L.initUnsubs.push(L.db.doc("admin/checklists").onSnapshot(s=>{L.checklists=s.exists?s.data():null;if(["inspm","chk"].includes(st.view))render()},err));
+ L.initUnsubs.push(L.db.doc("admin/workflows").onSnapshot(s=>{L.workflows=s.exists?s.data():null;if(st.view==="flows")render()},err));
+ L.connectionStage="Loading project list";L.initUnsubs.push(L.db.doc("admin/projects").onSnapshot(s=>{if(initId!==L.initRun)return;clearTimeout(L.projectReadyTimer);L.projects=(s.data()?.list)||[];L.ready=true;L.state="ok";L.connectionIssue="";L.connectionStage="Connected";resub();render()},e=>projectLoadError(e,initId)));
+ L.initUnsubs.push(L.db.doc("admin/members").onSnapshot(s=>{L.members=(s.data()?.map)||{};resub();render()},err));
+ L.initUnsubs.push(L.db.collection("admin/rv/months").onSnapshot(s=>{L.reviews={};s.docs.forEach(d=>L.reviews[d.id]=d.data());if(["sc","entry","casehome","casesearch","caseedit"].includes(st.view))render()},err));
+}catch(e){if(initId===L.initRun)projectLoadError(e,initId)}}
+function stopInitSubscriptions(){clearTimeout(L.projectReadyTimer);(L.initUnsubs||[]).forEach(u=>{try{u()}catch{}});L.initUnsubs=[]}
+function projectLoadError(e,initId=L.initRun){if(initId!==L.initRun)return;L.initRun++;clearTimeout(L.projectReadyTimer);L.connectionIssue=e?.code==="timeout"?"timeout":e?.code==="invalid_argument"?"access":"network";L.state="offline";render()}
+async function retryLive(){stopInitSubscriptions();(L.unsubs||[]).forEach(u=>{try{u()}catch{}});L.unsubs=[];L.subKey=null;L.ready=false;L.state="Connecting…";L.connectionIssue="";render();await liveInit()}
+// One collection subscription per record type. Database RLS filters each result to the user's projects.
 const COLS=[["reports","reports",["live","sc","entry","exec","leaders","incm","lactions"]],["actions","actions",["lactions","sc","entry","exec","leaders","inspm","incm","walk"]],["inspections","inspections",["sc","entry","insp","exec","leaders","inspm"]],["activities","activities",["activity","sc","entry","exec","leaders"]],["records","records",["exec","hdata","walk","train"]]];
-function resub(){if(!L.ready)return;const role=myRole();const key=role==="admin"?"*":myProjects().map(p=>p.id).sort().join(",");if(key===L.subKey)return;L.subKey=key;
+function resub(){if(!L.ready)return;const role=myRole();const key=role==="admin"?"admin":`${role||"none"}:${myProjects().map(p=>p.id).sort().join(",")}`;if(key===L.subKey)return;L.subKey=key;
  (L.unsubs||[]).forEach(u=>u());L.unsubs=[];L.dataLoads={};COLS.forEach(([c,k])=>{L[k]=[];L.dataLoads[k]='loading';});if(!role)return;
- COLS.forEach(([c,k,views])=>{const parts={};const merge=()=>{L[k]=Object.values(parts).flat();if(k==="inspections"){L.inspAll=L[k];L[k]=L[k].filter(i=>i.status!=="Scheduled")}if(k==="reports")L[k].sort((a,b)=>b.ts-a.ts);if(views.includes(st.view)||["casehome","casesearch","caseedit"].includes(st.view))render()};
-  const qs=key==="*"?[["*",L.db.collection(c)]]:myProjects().map(p=>[p.id,L.db.collection(c).where("project","==",p.id)]);
-  qs.forEach(([pk,q])=>L.unsubs.push(q.onSnapshot(s=>{parts[pk]=s.docs.map(d=>({id:d.id,...d.data()}));if(Object.keys(parts).length===qs.length)L.dataLoads[k]='ready';merge()},e=>{L.dataLoads[k]='error';err(e);if(['exec','casehome','casesearch'].includes(st.view))render();})))})}
+ COLS.forEach(([c,k,views])=>{const merge=s=>{L[k]=s.docs.map(d=>({id:d.id,...d.data()}));if(k==="inspections"){L.inspAll=L[k];L[k]=L[k].filter(i=>i.status!=="Scheduled")}if(k==="reports")L[k].sort((a,b)=>b.ts-a.ts);L.dataLoads[k]='ready';if(views.includes(st.view)||["casehome","casesearch","caseedit"].includes(st.view))render()};
+  L.unsubs.push(L.db.collection(c).onSnapshot(merge,e=>{L.dataLoads[k]='error';err(e);if(['exec','casehome','casesearch'].includes(st.view))render()}))})}
 function err(e){if(e?.code==="revoked"||e?.code==="not_granted"){L.state="offline";render()}}
 
-function liveGate(){if(L.state==="offline")return`<div class="panel"><h2>Live data is not available here</h2><p style="margin:0;color:var(--muted)">Check your internet connection and reload the page.</p></div>`;
+function liveGate(){if(L.state==="offline")return`<div class="panel"><h2>${L.connectionIssue==="timeout"?"The workspace is taking longer than expected":L.connectionIssue==="access"?"Your account could not load project access":"We couldn’t connect to the workspace"}</h2><p style="margin:0;color:var(--muted)">Stopped at: ${esc(L.connectionStage||"workspace connection")}. ${L.connectionIssue==="access"?"Ask your HSE administrator to check your project access.":"Check the connection, then try again."}</p><button class="btn pri" data-live-retry style="margin-top:12px">Try connection again</button></div>`;
  if(L.state==="signedout")return`<div class="panel"><h2>Sign in to use NAVO</h2><p style="margin:0;color:var(--muted)">Reload the page and sign in.</p></div>`;
  if(!L.ready)return`<div class="panel"><h2>Connecting to the live database…</h2></div>`;
  if(!myRole())return`<div class="panel"><h2>You are not on any project yet</h2><p style="margin:0;color:var(--muted)">Ask your HSE Admin to add you to a project. They will see you when they search your name on the Projects &amp; access page.</p></div>`;
@@ -1021,7 +1026,9 @@ function exec(){const g=liveGate();if(g)return g;if(myRole()==="worker")return l
  const tier=lv.project?"Project":has(lv.cluster)?"Cluster":has(lv.division)?"Business":lv.platform?"Platform":"Corporate executive";
  const crumbs=[[corpName(),{}]];if(lv.platform)crumbs.push([lv.platform,{platform:lv.platform}]);if(has(lv.division))crumbs.push([lv.division,{platform:lv.platform,division:lv.division}]);if(has(lv.cluster))crumbs.push([lv.cluster,{platform:lv.platform,division:lv.division,cluster:lv.cluster}]);if(lv.project)crumbs.push([projName(lv.project),lv]);
  const delta=(a,b,good)=>a==null||b==null||a===b?"":`<span style="color:${(a>b)===good?"var(--ok)":"var(--crit)"}">${a>b?"▲":"▼"} ${Math.abs(+(a-b).toFixed(1))}</span> vs last month`;
- const kids=execChildren(P).map(c=>({...c,k:levelMetrics(c.P,m)}));const months=lastMonths(m,6);
+ const kids=execChildren(P).map(c=>({...c,k:levelMetrics(c.P,m)}));const months=lastMonths(m,6),trendMonths=lastMonths(m,12),trendLabels=trendMonths.map(mm=>new Date(mm+"-01T00:00:00").toLocaleDateString("en-GB",{month:"short",year:"2-digit"})),scopeIds=new Set(P.map(p=>p.id));
+ const incidentTrend=trendMonths.map(mm=>L.reports.filter(r=>scopeIds.has(r.project)&&r.rt==="Incident"&&inMonth(r.eventTs||r.ts,mm)).length),nearMissTrend=trendMonths.map(mm=>L.reports.filter(r=>scopeIds.has(r.project)&&r.kind==="Near Miss"&&inMonth(r.eventTs||r.ts,mm)).length);
+ const proactiveTrend=trendMonths.map(mm=>L.reports.filter(r=>scopeIds.has(r.project)&&(r.kind==="Near Miss"||r.rt==="Hazard"||r.rt==="Good practice")&&inMonth(r.eventTs||r.ts,mm)).length),inspectionTrend=trendMonths.map(mm=>L.inspections.filter(r=>scopeIds.has(r.project)&&inMonth(r.ts,mm)).length),walkTrend=trendMonths.map(mm=>L.activities.filter(r=>scopeIds.has(r.project)&&/walkthrough/i.test(r.type||"")&&inMonth(r.date,mm)).reduce((n,r)=>n+(+r.count||1),0)),actionTrend=trendMonths.map(mm=>L.actions.filter(r=>scopeIds.has(r.project)&&r.closedAt&&inMonth(r.closedAt,mm)).length);
  const st6=s=>s==null?"":TRND[statusFor(s,null)]?`<span class="pill ${TRND[statusFor(s,null)][0]}">${statusFor(s,null)}</span>`:"";
  const cats=WHEEL.map(w=>[w,k.R.filter(r=>r.cat===w).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);
  const tile=(d,l,v,sub,cls="")=>`<div class="kpi hot ${cls}" data-drill="${d}" role="button" tabindex="0" title="Show the records"><span class="l">${l}</span><span class="v">${v}</span><span class="d">${sub||"&nbsp;"}</span></div>`;
@@ -1040,7 +1047,8 @@ function exec(){const g=liveGate();if(g)return g;if(myRole()==="worker")return l
  <div class="pbi-grid"><div class="panel"><h2>Workforce by country <small>click to filter</small></h2>${countryTable(P,m)}</div>
  <div class="panel"><h2>Recordable injuries <small>${m} · click a slice</small></h2>${recordables(P,m)}</div>
  <div class="panel pbi-tall"><h2>Lagging &amp; leading indicators <small>click a row</small></h2>${liveDiamond(P,m)}</div>
- <div class="panel"><h2>Reports, last 6 months <small>click a month</small></h2>${vbars(months.map(mm=>levelMetrics(P,mm).reports),months.map(mLabel),{color:(v,i)=>months[i]===m?"var(--accent)":"var(--brand)",attr:(v,i)=>`data-setm="${months[i]}"`})}</div>
+ <div class="panel"><h2>Incident trend <small>incidents and near misses · 12 months</small></h2>${line([{v:incidentTrend,c:"var(--crit)"},{v:nearMissTrend,c:"var(--info)"}],trendLabels,{h:105,dec:0})}<div class="legend"><span><i style="background:var(--crit)"></i>Incidents</span><span><i style="background:var(--info)"></i>Near misses</span></div><small class="mx-muted">Recorded events in your current project scope.</small></div>
+ <div class="panel"><h2>Leading indicators <small>monthly · 12 months</small></h2><div class="grid2"><div><b>Proactive reports &amp; inspections</b>${line([{v:proactiveTrend,c:"var(--ok)"},{v:inspectionTrend,c:"var(--info)"}],trendLabels,{h:90,dec:0})}<div class="legend"><span><i style="background:var(--ok)"></i>Near misses, hazards &amp; good practice</span><span><i style="background:var(--info)"></i>Inspections</span></div></div><div><b>Leadership &amp; action follow-through</b>${line([{v:walkTrend,c:"var(--brand)"},{v:actionTrend,c:"var(--warn)"}],trendLabels,{h:90,dec:0})}<div class="legend"><span><i style="background:var(--brand)"></i>Walkthroughs</span><span><i style="background:var(--warn)"></i>Actions closed</span></div></div></div><small class="mx-muted">Counts come from records logged in NAVO for the selected project scope.</small></div>
  <div class="panel"><h2>High-energy categories <small>click to see events</small></h2>${cats.length?`<div class="bars">${cats.map(([w,n])=>`<div class="bar hot" data-drill="cat:${esc(w)}" role="button" tabindex="0"><span>${w}</span><span class="t"><i style="width:${n/cats[0][1]*100}%;background:var(--crit)"></i></span><span class="n">${n}</span></div>`).join("")}</div>`:`<p style="margin:0;color:var(--muted)">No high-energy events this month.</p>`}</div></div>
  ${kids.length?`<div class="grid2"><div class="panel"><h2>${kidLabel(tier,lv)} <small>tap a row to open its dashboard</small></h2><div class="tbl"><table><thead><tr><th>${kidCol(tier,lv)}</th><th class="r">Projects</th><th class="r">Reports</th><th class="r">Incidents</th><th class="r">Closure</th><th class="r">Overdue</th><th class="r">Health</th></tr></thead><tbody>
  ${kids.map(c=>`<tr class="click" data-lvl='${esc(JSON.stringify(c.key))}'><td><b>${esc(c.name)}</b></td><td class="r num">${c.k.projects}</td><td class="r num">${c.k.reports}</td><td class="r num">${c.k.incidents}</td><td class="r num">${c.k.closure==null?"—":c.k.closure+"%"}</td><td class="r num ${c.k.overdue?"bad":""}">${c.k.overdue}</td><td class="r">${c.k.score==null?"—":`<span class="score-cell" style="background:${hcol(c.k.score)}">${c.k.score}</span>`}</td></tr>`).join("")}</tbody></table></div></div>
@@ -1083,7 +1091,7 @@ function reportPayload(){const m=L.scMonth||thisMonth();const lv=st.lvl||{};cons
   trend:lastMonths(m,6).map(mm=>{const x=levelMetrics(P,mm);return{month:mm,label:mLabel(mm),reports:x.reports,nearMiss:x.nearMiss,incidents:x.incidents,score:x.score}}),
   categories:WHEEL.map(w=>[w,k.R.filter(r=>r.cat===w).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]),mix:{incidents:k.incidents,hazards:k.hazards,good:k.good},overdue}}
 async function exportReport(fmt,btn){const old=btn.textContent;btn.disabled=true;btn.textContent="Preparing…";
- try{const data=reportPayload();const r=await fetch("/api/report?fmt="+fmt,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+ try{const data=reportPayload();const r=await fetch("/api/report?fmt="+fmt,{method:"POST",headers:{"Content-Type":"application/json",...L.db.authHeaders()},body:JSON.stringify(data)});
   if(!r.ok){let m="The report could not be created.";try{m=(await r.json()).error||m}catch(e){}throw new Error(m)}
   const blob=await r.blob();const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`NAVO ${data.title} ${data.month}.${fmt}`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
   toast(({xlsx:"Excel",docx:"Word",pptx:"PowerPoint"})[fmt]+" report downloaded")}
@@ -1149,7 +1157,7 @@ async function saveStructure(){const d=L.sdraft;const errs=[];
  const list=L.projects.map(pr=>{const pl=d.platforms.find(p=>p._o===(pr.platform||"Construction"));if(!pl)return pr;const n={...pr,platform:pl.name.trim()};
   const b=pl.businesses.find(x=>x._o===pr.division);if(b){n.division=b.name.trim();const c=b.clusters.find(x=>x._o===pr.cluster);if(c)n.cluster=c.name.trim()}return n});
  const changed=list.some((p,i)=>JSON.stringify(p)!==JSON.stringify(L.projects[i]));
- await liveSave(async()=>{await L.db.doc("admin/structure").set(clean);if(changed)await L.db.doc("admin/projects").set({list})},"Structure saved");L.sdraft=null;}
+  await liveSave(async()=>{await L.db.doc("admin/structure").set(clean);if(changed)await saveProjectList(list)},"Structure saved");L.sdraft=null;}
 
 /* ---- Demo data generator (same structure as the client's organisation) ---- */
 async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646};const pick=a=>a[Math.floor(R()*a.length)];
@@ -1173,7 +1181,7 @@ async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;
    if(d%7===0)acts.push({type:"Toolbox talk",project:id,date:t,count:Math.max(1,Math.round(hc/12)),by:null,ts:now});if(d%7===2)acts.push({type:"STARRT briefing",project:id,date:t,count:Math.max(1,Math.round(hc/25)),by:null,ts:now});if(d%14===3)acts.push({type:"Behaviour safety leadership engagement",project:id,date:t,count:1,by:null,ts:now});if(d%30===5)acts.push({type:"Inter-division / facility tour",project:id,date:t,count:1,by:null,ts:now});if(d%45===9)acts.push({type:"OHS campaign",project:id,date:t,count:1,by:null,ts:now});if(d%60===11)acts.push({type:"Emergency drill",project:id,date:t,count:1,by:null,ts:now})}});
  const prog=m=>{const b=document.getElementById("demo-load");if(b)b.textContent=m};const BI=L.db.bulkInsert;L.db.bulkInsert=async(t,rows)=>{for(let i=0;i<rows.length;i+=200){prog(`Loading ${t} ${Math.min(i+200,rows.length)} / ${rows.length}…`);await BI(t,rows.slice(i,i+200))}};
  const mxr=mxSample(projects,reports,actions,insp,R);
- try{await (async()=>{await L.db.doc("admin/projects").set({list:[...L.projects.filter(p=>!String(p.id).startsWith("demo-")),...projects]});
+  try{await (async()=>{await saveProjectList([...L.projects.filter(p=>!String(p.id).startsWith("demo-")),...projects]);
   await L.db.bulkInsert("reports",reports);await L.db.bulkInsert("actions",actions);await L.db.bulkInsert("inspections",insp);await L.db.bulkInsert("activities",acts);await L.db.bulkInsert("hsse_records",hsDemo(projects,R).concat(mxr))})();toast(`Sample data loaded: ${projects.length} projects, ${reports.length} reports, ${actions.length} actions, ${insp.length} inspections`)}
  catch(e){const m=String(e?.message||e);alert("Loading sample data stopped: "+m+(/column|schema cache/i.test(m)?"\n\nRun the SQL update in Supabase (supabase/007_exec_kpis.sql), then press Remove sample data and Load sample data again.":""))}
  finally{L.db.bulkInsert=BI;render()}L.subKey=null;resub()}
@@ -1197,10 +1205,21 @@ function access(){const g=liveGate();if(g)return g;if(myRole()!=="admin")return 
 async function fillNames(){if(!L.user)return;const els=[...document.querySelectorAll(".uname[data-uid]")];const ids=[...new Set(els.map(e=>e.dataset.uid).filter(Boolean))];if(!ids.length)return;
  const ps=await L.user.profiles(ids);els.forEach(e=>{const p=ps[e.dataset.uid];e.textContent=p?.isMe?(p.name||"you")+" (you)":(p?.name||"Someone")})}
 async function showHits(q){const box=document.getElementById("acc-hits");if(!box)return;const hits=await L.user.search(q);box.replaceChildren(...hits.slice(0,6).map(h=>{const d=document.createElement("div");const s=document.createElement("span");s.textContent=h.name+(h.isMe?" (you)":"");const b=document.createElement("button");b.className="btn";b.textContent="Select";b.dataset.pick=h.id;d.append(s,b);return d}))}
-async function saveMembers(map){await L.db.doc("admin/members").set({map})}
+async function saveProjectList(list){
+ const current=new Map(L.projects.map(p=>[p.id,p])),next=new Map(list.map(p=>[p.id,p])),writes=[];
+ for(const [id,p] of next){if(JSON.stringify(current.get(id))!==JSON.stringify(p))writes.push(L.db.doc(`projects/${id}`).set(p))}
+ for(const id of current.keys())if(!next.has(id))writes.push(L.db.doc(`projects/${id}`).delete());
+ await Promise.all(writes);
+}
+async function saveMembers(map){
+ const current=L.members||{},uids=new Set([...Object.keys(current),...Object.keys(map)]),writes=[];
+ for(const uid of uids){const before=current[uid],after=map[uid];if(!after){writes.push(L.db.doc(`members/${uid}`).delete());continue}if(JSON.stringify(before)!==JSON.stringify(after))writes.push(L.db.doc(`members/${uid}`).set(after))}
+ await Promise.all(writes);
+}
 async function liveSave(fn,ok){try{await fn();if(ok)toast(ok);return true}catch(e){toast(e?.code==="invalid_argument"?"You do not have permission to save this. Ask your HSE Admin to add you to this project.":e?.code==="quota_exceeded"?"Storage is full. Remove old records and try again.":"Could not save. Check your connection and try again.");return false}}
 
 document.addEventListener("click",async e=>{const t=e.target.closest("button,tr");if(!t)return;
+ if(t.hasAttribute("data-live-retry")){await retryLive();return}
  if(t.id==="mic"){toggleMic();return}
  if(t.id==="ai-run"){runAI();return}
  if(t.id==="ai-cat"){st.w.cat=st.w.ai.category;render();return}
@@ -1229,8 +1248,8 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,tr"
  if(t.dataset.scd){st.scd=t.dataset.scd;render();return}
  if(t.id==="scd-back"){st.scd=null;render();return}
  if(t.id==="np-add"){const n=document.getElementById("np-name").value.trim();if(!n){toast("Type a project name first");return}const c=document.getElementById("np-cty").value;
-  const id="p"+Date.now().toString(36);const pl=document.getElementById("np-plat").value,dv=document.getElementById("np-div").value,cl=(document.getElementById("np-clu")||{}).value||"";if(!dv){toast("Choose the business first");return}await liveSave(()=>L.db.doc("admin/projects").set({list:[...L.projects,{id,name:n,country:c,platform:pl,division:dv,cluster:cl}]}),"Project added");L.np={plat:pl};return}
- if(t.dataset.delp){if(t.dataset.confirm!=="1"){t.dataset.confirm="1";t.textContent="Confirm remove";return}await liveSave(()=>L.db.doc("admin/projects").set({list:L.projects.filter(p=>p.id!==t.dataset.delp)}),"Project removed");return}
+   const id="p"+Date.now().toString(36);const pl=document.getElementById("np-plat").value,dv=document.getElementById("np-div").value,cl=(document.getElementById("np-clu")||{}).value||"";if(!dv){toast("Choose the business first");return}await liveSave(()=>saveProjectList([...L.projects,{id,name:n,country:c,platform:pl,division:dv,cluster:cl}]),"Project added");L.np={plat:pl};return}
+  if(t.dataset.delp){if(t.dataset.confirm!=="1"){t.dataset.confirm="1";t.textContent="Confirm remove";return}await liveSave(()=>saveProjectList(L.projects.filter(p=>p.id!==t.dataset.delp)),"Project removed");return}
  if(t.dataset.pick){L.acc.pick=t.dataset.pick;const ex=L.members[t.dataset.pick];L.acc.role=ex?.role||null;L.acc.leader=!!ex?.leader;L.acc.walkTarget=ex?.walkTarget??"";L.acc.projects=[...(ex?.projects||[])];render();return}
  if(t.dataset.role){L.acc.role=t.dataset.role;render();return}
  if(t.dataset.pp){const s=new Set(L.acc.projects||[]);s.has(t.dataset.pp)?s.delete(t.dataset.pp):s.add(t.dataset.pp);L.acc.projects=[...s];render();return}
@@ -1253,7 +1272,7 @@ document.addEventListener("input",e=>{if(e.target.classList.contains("st-in")){s
  if(e.target.classList.contains("ov-in")&&!e.target.classList.contains("pe-in")){const k=L.scProj+"_"+L.scMonth;L.draft[k][e.target.dataset.f][e.target.dataset.k]=e.target.value;clearTimeout(L.t);L.t=setTimeout(()=>{const pos=e.target.dataset.k;render();const el=document.querySelector(`.ov-in[data-k="${pos}"]`);if(el){el.focus();const v=el.value;el.value="";el.value=v}},600)}
  if(e.target.id==="acc-q"){L.acc.q=e.target.value;showHits(e.target.value)}});
 document.addEventListener("focusin",e=>{if(e.target.id==="acc-q"&&!e.target.value)showHits("")});
-document.addEventListener("change",e=>{if(e.target.id==="np-plat"){L.np={plat:e.target.value};render()}if(e.target.id==="np-div"){L.np.div=e.target.value;render()}if(e.target.id==="ip")st.ip=e.target.value;if(e.target.classList.contains("pe-in")){const v=e.target.dataset.t==="text"?e.target.value.trim():e.target.value===""?null:+e.target.value;liveSave(()=>L.db.doc("admin/projects").set({list:L.projects.map(p=>{if(p.id!==e.target.dataset.pid)return p;const f=e.target.dataset.f;const n={...p,[f]:v};if(f==="platform"){n.division="";n.cluster=""}if(f==="division")n.cluster="";return n})}),"Project updated")}if(e.target.id==="sc-proj"){L.scProj=e.target.value;render()}if(e.target.id==="sc-month"||e.target.id==="sc-month2"){if(e.target.value){L.scMonth=e.target.value;render()}}});
+document.addEventListener("change",e=>{if(e.target.id==="np-plat"){L.np={plat:e.target.value};render()}if(e.target.id==="np-div"){L.np.div=e.target.value;render()}if(e.target.id==="ip")st.ip=e.target.value;if(e.target.classList.contains("pe-in")){const v=e.target.dataset.t==="text"?e.target.value.trim():e.target.value===""?null:+e.target.value;liveSave(()=>saveProjectList(L.projects.map(p=>{if(p.id!==e.target.dataset.pid)return p;const f=e.target.dataset.f;const n={...p,[f]:v};if(f==="platform"){n.division="";n.cluster=""}if(f==="division")n.cluster="";return n})),"Project updated")}if(e.target.id==="sc-proj"){L.scProj=e.target.value;render()}if(e.target.id==="sc-month"||e.target.id==="sc-month2"){if(e.target.value){L.scMonth=e.target.value;render()}}});
 
 render();liveInit();
 
@@ -1277,39 +1296,39 @@ document.addEventListener("click",async e=>{const t=e.target.closest("#br-defaul
  const ok=await liveSave(()=>L.db.doc("admin/structure").set(s),"Name & logo saved");if(ok!==false){L.structure=s;L.bdraft=null;applyBrand();render()}});
 applyBrand();
 </script>
-<script src="release-core.js"></script>
+<script defer src="release-core.js"></script>
 <link rel="stylesheet" href="client-review.css">
-<script src="hsse.js"></script>
-<script src="checklists.js"></script>
-<script src="modules.js"></script>
+<script defer src="hsse.js"></script>
+<script defer src="checklists.js"></script>
+<script defer src="modules.js"></script>
 <link rel="stylesheet" href="cases.css">
-<script src="cases-core.js"></script>
-<script src="case-lookups.js"></script>
-<script src="cases.js"></script>
-<script src="client-review.js"></script>
+<script defer src="cases-core.js"></script>
+<script defer src="case-lookups.js"></script>
+<script defer src="cases.js"></script>
+<script defer src="client-review.js"></script>
 <link rel="stylesheet" href="experience.css">
-<script src="experience.js"></script>
+<script defer src="experience.js"></script>
 <link rel="stylesheet" href="field-review.css">
-<script src="field-review-core.js"></script>
-<script src="field-review.js"></script>
-<script src="evidence-mobile.js"></script>
+<script defer src="field-review-core.js"></script>
+<script defer src="field-review.js"></script>
+<script defer src="evidence-mobile.js"></script>
 <link rel="stylesheet" href="command-dashboard.css">
-<script src="command-dashboard.js"></script>
+<script defer src="command-dashboard.js"></script>
 <link rel="stylesheet" href="vendor/leaflet-1.9.4.css">
 <link rel="stylesheet" href="vendor/markercluster-1.5.3.css">
-<script src="vendor/leaflet-1.9.4.js"></script>
-<script src="vendor/leaflet.markercluster-1.5.3.js"></script>
-<script src="portfolio-map-core.js"></script>
+<script defer src="vendor/leaflet-1.9.4.js"></script>
+<script defer src="vendor/leaflet.markercluster-1.5.3.js"></script>
+<script defer src="portfolio-map-core.js"></script>
 <link rel="stylesheet" href="portfolio-map.css">
-<script src="portfolio-map.js"></script>
-<script src="client-assurance-core.js"></script>
+<script defer src="portfolio-map.js"></script>
+<script defer src="client-assurance-core.js"></script>
 <link rel="stylesheet" href="client-assurance.css">
-<script src="client-assurance.js"></script>
-<script src="ceo-reporting.js"></script>
+<script defer src="client-assurance.js"></script>
+<script defer src="ceo-reporting.js"></script>
 <link rel="stylesheet" href="leadership-cockpit.css">
-<script src="leadership-cockpit.js"></script>
+<script defer src="leadership-cockpit.js"></script>
 
 <link rel="stylesheet" href="reporting-hub.css">
-<script src="reporting-hub.js"></script>
-<script src="investigation-wheel-core.js"></script><link rel="stylesheet" href="investigation-wheel.css"><script src="investigation-wheel.js"></script></body></html>
+<script defer src="reporting-hub.js"></script>
+<script defer src="investigation-wheel-core.js"></script><link rel="stylesheet" href="investigation-wheel.css"><script defer src="investigation-wheel.js"></script><script defer src="reporting-flow-core.js"></script><link rel="stylesheet" href="reporting-flow.css"><script defer src="reporting-flow.js"></script></body></html>
 

@@ -15,9 +15,8 @@ import re
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler
+from api.auth import verify_user
 
-SUPABASE_URL = os.environ.get("NAVO_SUPABASE_URL", "https://gvktcleqiidtmgqxbzsy.supabase.co")
-SUPABASE_KEY = os.environ.get("NAVO_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_9N-3NV87mniwgZB0dw3IVA_bqK3ppNb")
 MODEL = os.environ.get("NAVO_AI_MODEL", "claude-sonnet-5-5")
 CATEGORIES = ["Work at Height", "Lifting Operations", "Excavation", "Confined Space", "Moving Equipment",
               "Energized Systems", "Stored Energy", "Hazardous Substances"]
@@ -74,17 +73,6 @@ Reply with JSON only:
 {{"rating": "Low" | "Moderate" | "High" | "Critical", "score": int (0-100, higher = more risk),
  "headline": str, "drivers": [str], "watch_projects": [str], "recommended_focus": [str],
  "preventive_controls": [str], "protective_controls": [str], "data_gaps": [str], "confidence": "low" | "medium" | "high"}}"""
-
-
-def verify_user(token):
-    if not token:
-        return None
-    req = urllib.request.Request(SUPABASE_URL + "/auth/v1/user", headers={"apikey": SUPABASE_KEY, "Authorization": "Bearer " + token})
-    try:
-        with urllib.request.urlopen(req, timeout=8) as r:
-            return json.loads(r.read()).get("id")
-    except Exception:
-        return None
 
 
 def claude(content, max_tokens=1600):
