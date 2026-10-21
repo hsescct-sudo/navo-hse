@@ -45,7 +45,7 @@
   }
 
   function projectsFromRows(rows) { return { list: rows.map(r => ({ id: r.id, name: r.name, country: r.country, headcount: r.headcount, planInsp: r.plan_insp, planWalk: r.plan_walk, platform: r.platform || "Construction", division: r.division || "", cluster: r.cluster || "", location: r.latitude == null || r.longitude == null ? null : {lat:r.latitude,lng:r.longitude,label:r.location_label||'',mode:r.location_mode} })) }; }
-  function membersFromRows(rows) { return { map: Object.fromEntries(rows.map(r => [r.user_id, { role: r.role, projects: r.projects || [], leader: !!r.leader, walkTarget: r.walk_target }])) }; }
+  function membersFromRows(rows) { if (rows.length) L.scopeReady = 'scope_level' in rows[0]; return { map: Object.fromEntries(rows.map(r => [r.user_id, { role: r.role, projects: r.projects || [], leader: !!r.leader, walkTarget: r.walk_target, scopeLevel: r.scope_level || 'project', scopeValue: r.scope_value || null, title: r.title || '' }])) }; }
 
   async function syncList(table, key, rows) {
     if (rows.length) await run(sb.from(table).upsert(rows, { onConflict: key }));
@@ -67,7 +67,16 @@
       id, path,
       onSnapshot: (n, e) => watch("members", null, rows => n(snapDoc(id, membersFromRows(rows))), e),
       get: async () => snapDoc(id, membersFromRows(await run(sb.from("members").select("*")))),
-      set: async d => syncList("members", "user_id", Object.entries(d.map || {}).map(([uid, m]) => ({ user_id: uid, role: m.role, projects: m.projects || [], leader: !!m.leader, walk_target: m.walkTarget ?? null })))
+      set: async d => {
+        const base = ([uid, m]) => ({ user_id: uid, role: m.role, projects: m.projects || [], leader: !!m.leader, walk_target: m.walkTarget ?? null });
+        const rows = Object.entries(d.map || {});
+        if (L.scopeReady !== false) {
+          try { return await syncList("members", "user_id", rows.map(e => ({ ...base(e), scope_level: e[1].scopeLevel || 'project', scope_value: e[1].scopeValue || null, title: e[1].title || null }))); }
+          catch (err) { if (!/scope_level|scope_value|title|viewer|column|check constraint/i.test(String(err && (err.message || err.details) || ''))) throw err; L.scopeReady = false; }
+        }
+        // Database not yet updated (021_scope_access.sql): save project lists only; viewers fall back to the least-privileged role (worker) until the database is updated.
+        return syncList("members", "user_id", rows.map(e => ({ ...base(e), role: e[1].role === 'viewer' ? 'worker' : e[1].role })));
+      }
     };
     if (path === "admin/checklists" || path === "admin/workflows") { const sid = path.split("/")[1]; return {
       id, path,

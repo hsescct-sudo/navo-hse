@@ -11,7 +11,7 @@ NX_GROUPS.splice(0, NX_GROUPS.length,
   ['actions', 'Actions', 'lactions', 'capa', [['lactions', 'Action tracker']]],
   ['leadership', 'Leadership', 'leaders', 'leaders', [['leaders', 'Leadership engagement'], ['walk', 'HSE walkthroughs'], ['activity', 'Activities log']]],
   ['training', 'Training & competence', 'train', 'train', [['train', 'Training records']]],
-  ['admin', 'Administration', 'hdata', 'settings', [['hdata', 'Performance data'], ['entry', 'Monthly review'], ['flows', 'Workflows'], ['access', 'Projects & people'], ['settings', 'Settings']]]);
+  ['admin', 'Administration', 'hdata', 'settings', [['hdata', 'Performance data'], ['entry', 'Monthly review'], ['flows', 'Workflows'], ['access', 'Organisation & access'], ['settings', 'Settings']]]);
 Object.assign(TITLES, { incm: 'Incidents & investigations', inspm: 'Inspections & audits', chk: 'Checklist library', live: 'Field reports', lactions: 'Action tracker', walk: 'HSE walkthroughs', train: 'Training & competence', casehome: 'Hazards & records' });
 const NV_IC = {
   overview: '<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',
@@ -43,6 +43,7 @@ function nvDashboardCurrent() {
 function nvGroups() {
   const worker = typeof myRole === 'function' && myRole() === 'worker';
   const groups = NX_GROUPS.map(([id, label, route, , items]) => ({ id, label, route, items }));
+  if (typeof myRole === 'function' && myRole() === 'viewer') return groups.filter(g => g.id !== 'admin');
   return worker ? groups.filter(g => ['records', 'actions'].includes(g.id)) : groups;
 }
 function nvRender() {
