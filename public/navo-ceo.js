@@ -80,6 +80,9 @@ function ceoMonthly(ids, months) {
   const heads = months.map(m => M.filter(r => r.data.month === m).reduce((n, r) => n + (+r.data.empHead || 0) + (+r.data.conHead || 0), 0)).filter(Boolean);
   return { manhours: s('empHours') + s('conHours'), manpower: heads.length ? Math.round(heads.reduce((a, b) => a + b, 0) / heads.length) : null, trainHours: s('trainHours') + s('trainHoursExt') };
 }
+/* Monthly performance data asks for diesel in tonnes. A figure above 20,000 t for one project in one month is not credible
+   (that is ~24 million litres); it was entered in litres, so it is used as litres. */
+const cdDieselL = t => t > 20000 ? t : t * 1190;
 function envValues(ids, months) {
   const cfg = envCfg();
   const M = (L.records || []).filter(r => r.kind === 'monthly' && ids.has(r.project) && months.includes(r.data && r.data.month));
@@ -92,7 +95,7 @@ function envValues(ids, months) {
   const keys = new Set([...M, ...E].map(r => r.project + '|' + r.data.month)); let dieselL = 0, water = 0;
   keys.forEach(k => { const [p, m] = k.split('|'); const e = E.find(r => r.project === p && r.data.month === m), mo = M.find(r => r.project === p && r.data.month === m);
     const ok = v => v != null && v !== '';
-    dieselL += e && ok(e.data.dieselL) ? +e.data.dieselL : mo ? (+mo.data.diesel || 0) * 1190 : 0;
+    dieselL += e && ok(e.data.dieselL) ? +e.data.dieselL : mo ? cdDieselL(+mo.data.diesel || 0) : 0;
     water += e && (ok(e.data.waterPotable) || ok(e.data.waterNonPotable)) ? (+e.data.waterPotable || 0) + (+e.data.waterNonPotable || 0) : mo ? (+mo.data.water || 0) : 0; });
   const has = k => E.some(r => r.data[k] != null && r.data[k] !== '');
   const electricity = has('electricity') ? se('electricity') : null, renewable = has('renewable') ? se('renewable') : null;
