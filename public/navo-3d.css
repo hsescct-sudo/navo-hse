@@ -272,3 +272,9 @@ body.nv3d .nv-bottom{display:none}
 body.nv3d .app>main{background:transparent!important;margin-top:0!important;margin-right:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;border:0!important}
 body.nv3d .btn,body.nv3d .cx-btn{white-space:nowrap}
 @media (max-width:700px){body.nv3d .toast{bottom:96px!important}}
+
+/* Keep focused or scrolled-to elements clear of the sticky header. */
+html{scroll-padding-top:96px;scroll-padding-bottom:110px}
+
+/* Keep focused or scrolled-to elements clear of the sticky header. */
+html{scroll-padding-top:96px;scroll-padding-bottom:110px}

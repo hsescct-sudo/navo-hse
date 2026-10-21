@@ -37,7 +37,7 @@ function nvRender() {
   const current = nxGroup()[0];
   if (NV.open === null || NV.lastView !== st.view) NV.open = current;
   NV.lastView = st.view;
-  side.innerHTML = nvGroups().map(g => {
+  side.innerHTML = `<button class="nv-new" data-nvreport aria-current="${st.view === 'report'}"><span>+</span>New report</button>` + nvGroups().map(g => {
     let sub = '';
     if (g.id === 'overview') {
       const cur = nvDashboardCurrent();
@@ -75,8 +75,10 @@ function nvChrome() {
   if (!bottom) { document.body.insertAdjacentHTML('beforeend', '<nav class="nv-bottom" aria-label="Quick navigation"></nav>'); bottom = document.querySelector('.nv-bottom'); }
   const g = nxGroup()[0];
   const items = nvGroups().filter(x => x.id !== 'admin').slice(0, 4);
-  bottom.innerHTML = items.map(x => `<button data-go="${x.route}" aria-current="${g === x.id}">${nvIcon(x.id)}<span>${esc(x.label)}</span></button>`).join('') + `<button data-nv-drawer aria-label="All pages">${nvIcon('menu')}<span>Menu</span></button>`;
-  bottom.style.gridTemplateColumns = `repeat(${items.length + 1},1fr)`;
+  const btn = x => `<button data-go="${x.route}" aria-current="${g === x.id && st.view !== 'report'}">${nvIcon(x.id)}<span>${esc(x.label)}</span></button>`;
+  const half = Math.ceil(items.length / 2);
+  bottom.innerHTML = items.slice(0, half).map(btn).join('') + `<button class="nv-plus" data-nvreport aria-label="New report" aria-current="${st.view === 'report'}"><i>+</i><span>Report</span></button>` + items.slice(half).map(btn).join('') + `<button data-nv-drawer aria-label="All pages">${nvIcon('menu')}<span>Menu</span></button>`;
+  bottom.style.gridTemplateColumns = `repeat(${items.length + 2},1fr)`;
   document.querySelectorAll('.cd-appearance').forEach(n => n.remove());
 }
 
