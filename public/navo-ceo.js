@@ -197,7 +197,7 @@ function envPage() {
    <div class="nvr-hero ceo-hero env-hero"><div><span class="nvi-eyebrow">Environmental performance</span><h2>${esc(scopes.find(s => s[0] === E.scope)[1])} · ${E.year}</h2><p>Energy, emissions, water and waste against last year and the reduction targets. Scope 1 = diesel, scope 2 = grid electricity.</p></div>
     <div class="ceo-ctrl"><label>Scope<select data-env="scope">${scopes.map(([v, l]) => `<option value="${esc(v)}" ${v === E.scope ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Year<select data-env="year">${[0, 1, 2].map(i => new Date().getFullYear() - i).map(y => `<option ${y === E.year ? 'selected' : ''}>${y}</option>`).join('')}</select></label>
      <div class="ceo-btns">${staff ? '<button class="btn pri" data-enventry>Enter monthly data</button>' : ''}</div></div>
-    <div class="ceo-report"><span>Download report</span><select id="env-freq" aria-label="Report frequency"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><button class="btn" data-envrep="pptx">PowerPoint</button><button class="btn" data-envrep="docx">Word</button><button class="btn" data-envrep="xlsx">Excel</button></div></div>
+    <div class="ceo-report"><span>Download report</span><select id="env-freq" aria-label="Report frequency"><option value="monthly">Monthly</option><option value="bimonthly">Every two months</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><button class="btn" data-envrep="pptx">PowerPoint</button><button class="btn" data-envrep="docx">Word</button><button class="btn" data-envrep="xlsx">Excel</button></div></div>
    ${!ytd ? `<div class="nvi-alert">No environmental data for ${E.year} in this scope yet. ${staff ? 'Use “Enter monthly data” for energy and water; waste comes from Administration → Performance data.' : ''}</div>` : ''}
    ${E.entry ? envEntryForm() : ''}
    <div class="kpis env-tiles">
@@ -309,16 +309,16 @@ function ceoPayload() {
   };
 }
 function envPayload(freq) {
-  const E = CEO.env, ids = new Set(ceoProjects(E.scope).map(p => p.id)), cfg = envCfg(), n = freq === 'annual' ? 12 : freq === 'quarterly' ? 3 : 1;
+  const E = CEO.env, ids = new Set(ceoProjects(E.scope).map(p => p.id)), cfg = envCfg(), n = freq === 'annual' ? 12 : freq === 'quarterly' ? 3 : freq === 'bimonthly' ? 2 : 1;
   const mons = Array.from({ length: 12 }, (_, i) => E.year + '-' + String(i + 1).padStart(2, '0'));
   const now = ceoMonthNow(), upto = mons.filter(m => m <= now);
   const groups = Array.from({ length: 12 / n }, (_, i) => mons.slice(i * n, i * n + n)).filter(g => g[0] <= now);
-  const label = g => n === 12 ? String(E.year) : n === 3 ? `Q${Math.floor((+g[0].slice(5) - 1) / 3) + 1} ${E.year}` : fmtMonth(g[0]);
+  const label = g => n === 12 ? String(E.year) : n === 3 ? `Q${Math.floor((+g[0].slice(5) - 1) / 3) + 1} ${E.year}` : n === 2 ? `${fmtMonth(g[0]).slice(0, 3)}–${fmtMonth(g[1]).slice(0, 3)} ${E.year}` : fmtMonth(g[0]);
   const cov = g => { const have = new Set((L.records || []).filter(r => (r.kind === 'env' || r.kind === 'monthly') && ids.has(r.project) && g.includes(r.data && r.data.month)).map(r => r.project + r.data.month)); return `${have.size}/${ids.size * g.length}`; };
   const periods = groups.map(g => { const v = envValues(ids, g); return { label: label(g), coverage: cov(g), ...(v || {}), intensity: v && v.hours ? v.ghg / v.hours * 1e6 : null }; });
   const ytd = envValues(ids, upto), prev = envValues(ids, upto.map(m => (E.year - 1) + m.slice(4)));
   const source = (L.records || []).filter(r => r.kind === 'env' && ids.has(r.project) && String(r.data && r.data.month).startsWith(E.year)).map(r => ({ project: projName(r.project), ...r.data })).sort((a, b) => (a.month + a.project).localeCompare(b.month + b.project));
-  return { kind: 'env', title: 'Environmental report', month: String(E.year), year: E.year, scopeLabel: ceoScopeLabel(E.scope), frequencyLabel: { monthly: 'Monthly', quarterly: 'Quarterly', annual: 'Annual' }[freq],
+  return { kind: 'env', title: 'Environmental report', month: String(E.year), year: E.year, scopeLabel: ceoScopeLabel(E.scope), frequencyLabel: { monthly: 'Monthly', bimonthly: 'Every two months', quarterly: 'Quarterly', annual: 'Annual' }[freq],
     sample: typeof hsIsSample === 'function' && hsIsSample(), generated: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
     factors: { elec: cfg.elec, diesel: cfg.diesel }, targets: cfg.targets, periods, ytd: ytd ? { ...ytd, intensity: ytd.hours ? ytd.ghg / ytd.hours * 1e6 : null } : {}, prev: prev || {}, source };
 }
