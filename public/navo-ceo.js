@@ -328,7 +328,7 @@ async function ceoDownload(payload, fmt, btn) {
     const r = await fetch('/api/report?fmt=' + fmt, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if (!r.ok) throw new Error((await r.text()).slice(0, 200));
     const b = await r.blob(), a = document.createElement('a'); a.href = URL.createObjectURL(b);
-    a.download = `NAVO ${payload.kind === 'ceo' ? 'CEO HSSE report' : 'Environmental report'} ${payload.scopeLabel} ${payload.month}.${fmt}`.replace(/[^\w .()-]+/g, '-');
+    a.download = `NAVO ${({ ceo: 'CEO HSSE report', env: 'Environmental report', template: 'data import template' })[payload.kind] || 'report'} ${payload.kind === 'template' ? '' : payload.scopeLabel + ' '}${payload.month}.${fmt}`.replace(/[^\w .()-]+/g, '-');
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('Report downloaded');
   } catch (e) { toast('The report could not be created. ' + (e.message || '')); }
   finally { btn.disabled = false; btn.textContent = lbl; }

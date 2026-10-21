@@ -889,6 +889,10 @@ def make(fmt, data):
     if data.get("kind") == "case":
         if fmt != "pdf": raise ValueError("Case reports export as PDF")
         return case_pdf(data), "application/pdf"
+    if data.get("kind") == "template":
+        if fmt != "xlsx": raise ValueError("The import template is an Excel file")
+        from api.excel_io import template_xlsx
+        return template_xlsx(data), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     if data.get("kind") in ("ceo", "env"):
         from api.report_ceo import make_ceo
         data.setdefault("generated", datetime.utcnow().strftime("%d %b %Y"))

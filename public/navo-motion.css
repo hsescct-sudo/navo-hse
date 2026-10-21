@@ -1,0 +1,78 @@
+/* NAVO motion levels. body.mo-cinematic · body.mo-subtle · body.mo-off */
+
+/* Picker */
+#mo-pick{position:relative}
+.mo-btn{display:flex;align-items:center;gap:7px;height:40px;padding:0 12px;border-radius:12px;border:1px solid var(--nv-line);background:#fff;color:var(--nv-ink);font:600 12.5px var(--nv-body);cursor:pointer;
+  box-shadow:0 1px 0 #fff inset,0 3px 0 #d3dbe6,0 6px 14px -6px rgba(11,26,49,.3)}
+.mo-btn svg{width:18px;height:18px;color:var(--nv-teal-2)}
+.mo-pop{position:absolute;right:0;top:48px;z-index:80;width:290px;padding:10px;border-radius:16px;background:#fff;border:1px solid var(--nv-line);box-shadow:0 30px 60px -20px rgba(8,20,40,.45);display:grid;gap:4px;animation:mo-pop .22s cubic-bezier(.2,.8,.2,1)}
+.mo-pop>b{font:800 12px var(--nv-body);letter-spacing:.12em;text-transform:uppercase;color:var(--nv-muted);padding:4px 8px}
+.mo-pop button{display:grid;gap:2px;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid transparent;background:none;cursor:pointer}
+.mo-pop button span{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--nv-ink)}
+.mo-pop button i{width:14px;height:14px;border-radius:50%;border:2px solid #b8c4d4}
+.mo-pop button small{color:var(--nv-muted);padding-left:22px}
+.mo-pop button[aria-checked=true]{background:#eefaf8;border-color:#bfe9e2}
+.mo-pop button[aria-checked=true] i{border-color:var(--nv-teal-2);background:radial-gradient(circle,var(--nv-teal-2) 45%,transparent 50%)}
+@keyframes mo-pop{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:none}}
+@media (max-width:700px){.mo-btn span{display:none}.mo-pop{right:auto;left:0}}
+
+/* Off: nothing moves */
+body.mo-off *,body.mo-off *::before,body.mo-off *::after{animation:none!important;transition:none!important}
+
+/* Subtle: keep the existing soft rise (navo-3d.css). Disable cinematic-only effects. */
+body.mo-subtle .mo-ripple{display:none}
+
+/* ---------------- Cinematic ---------------- */
+body.mo-cinematic.mo-go #view{perspective:1400px}
+body.mo-cinematic.mo-go #view>*{animation:mo-page .75s cubic-bezier(.16,.84,.24,1) both}
+@keyframes mo-page{from{opacity:0;transform:translateY(34px) rotateX(9deg) scale(.975);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+body.mo-cinematic.mo-go :is(.kpi,.nx-stat,.panel,.hc,.co-panel,.cd-card,.nvr-card,.ceo-rate,.ceo-sec,.nvi-q,.rca-card,.rca-methods button,.wf-card,.nvi-find,.env-tile){
+  animation:mo-card .7s cubic-bezier(.16,.84,.24,1) both;animation-delay:var(--mo-d,0ms)}
+@keyframes mo-card{from{opacity:0;transform:perspective(900px) translateY(26px) rotateX(14deg) scale(.96)}to{opacity:1;transform:none}}
+
+/* Charts grow */
+body.mo-cinematic.mo-go .hc svg rect:not([fill="none"]):not([width="100%"]){transform-box:fill-box;transform-origin:50% 100%;animation:mo-bar .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--mo-d,0ms) + 180ms)}
+@keyframes mo-bar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+body.mo-cinematic.mo-go .hc svg :is(polyline,path[fill="none"]){stroke-dasharray:1600;animation:mo-line 1.4s ease-out both;animation-delay:.25s}
+@keyframes mo-line{from{stroke-dashoffset:1600}to{stroke-dashoffset:0}}
+body.mo-cinematic.mo-go .nvi-ring svg circle:last-child{animation:mo-ring 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes mo-ring{from{stroke-dasharray:0 999}}
+body.mo-cinematic.mo-go .rca-wheel .rcw-seg{animation:mo-seg .8s cubic-bezier(.2,.8,.2,1) both;transform-origin:260px 260px;transform-box:view-box}
+body.mo-cinematic.mo-go .rca-wheel .rcw-seg:nth-child(3n){animation-delay:.08s}body.mo-cinematic.mo-go .rca-wheel .rcw-seg:nth-child(3n+1){animation-delay:.16s}
+@keyframes mo-seg{from{opacity:0;transform:rotate(-40deg) scale(.6)}to{opacity:1}}
+
+/* Hero: living light, parallax art, drifting particles */
+body.mo-cinematic :is(.nx-hero,.nvr-hero){--mx:0;--my:0}
+body.mo-cinematic :is(.nx-hero,.nvr-hero)::after{content:"";position:absolute;inset:-40%;z-index:0;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(126,232,216,.18),transparent 70%) calc(50% + var(--mx) * 160px) calc(50% + var(--my) * 120px)/60% 60% no-repeat,
+  radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.7),transparent 60%),radial-gradient(2px 2px at 70% 60%,rgba(126,232,216,.8),transparent 60%),
+  radial-gradient(1.5px 1.5px at 40% 80%,rgba(255,255,255,.6),transparent 60%),radial-gradient(2px 2px at 85% 20%,rgba(69,184,255,.8),transparent 60%),
+  radial-gradient(1.5px 1.5px at 55% 15%,rgba(255,255,255,.5),transparent 60%);
+  animation:mo-drift 18s linear infinite}
+@keyframes mo-drift{from{transform:translate3d(0,0,0)}50%{transform:translate3d(-3%,-4%,0)}to{transform:translate3d(0,0,0)}}
+body.mo-cinematic :is(.nx-hero,.nvr-hero)>*{position:relative;z-index:1}
+body.mo-cinematic .nx-hero-art{transform:translate3d(calc(var(--mx) * -26px),calc(var(--my) * -18px),0);transition:transform .25s ease-out}
+body.mo-cinematic .nx-hero::before{animation:mo-floor 6s linear infinite}
+@keyframes mo-floor{from{background-position:0 0}to{background-position:0 40px}}
+
+/* Sidebar: moving floor and a breathing logo */
+body.mo-cinematic .app>aside::before{animation:mo-floor2 5s linear infinite}
+@keyframes mo-floor2{from{background-position:0 0}to{background-position:0 34px}}
+body.mo-cinematic .nv-cube i{animation:mo-cube 6s ease-in-out infinite}
+@keyframes mo-cube{0%,100%{transform:rotateX(14deg) rotateY(-18deg)}50%{transform:rotateX(4deg) rotateY(18deg) translateY(-2px)}}
+body.mo-cinematic .nv-group.is-current>button .nv-ic{animation:mo-glow 3s ease-in-out infinite}
+@keyframes mo-glow{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px -4px rgba(22,194,174,.7)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 22px 0 rgba(22,194,174,.9)}}
+body.mo-cinematic .nv-new{background-size:200% 100%!important;background-image:linear-gradient(110deg,#45e6cf 0%,#13a998 40%,#6ff3de 50%,#13a998 60%,#45e6cf 100%)!important;animation:mo-shine 4s linear infinite}
+@keyframes mo-shine{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* Pressed and hover depth */
+.mo-ripple{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.55),rgba(255,255,255,0) 60%);transform:scale(0);animation:mo-ripple .65s ease-out forwards;mix-blend-mode:screen}
+@keyframes mo-ripple{to{transform:scale(1);opacity:0}}
+body.mo-cinematic :is(.nvr-card,.ceo-rate,.rca-methods button){transition:transform .18s ease-out,box-shadow .25s}
+body.mo-cinematic .panel:hover,body.mo-cinematic .hc:hover{transform:translateY(-3px)}
+body.mo-cinematic .toast{animation:mo-toast .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes mo-toast{from{opacity:0;transform:translate(-50%,30px) scale(.9)}}
+body.mo-cinematic .nvi-o[aria-checked=true],body.mo-cinematic .rca-seg button[aria-pressed=true]{animation:mo-pick .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes mo-pick{from{transform:scale(.92)}}
+
+@media (prefers-reduced-motion:reduce){body.mo-cinematic *{animation-duration:.01ms!important;animation-iteration-count:1!important}}

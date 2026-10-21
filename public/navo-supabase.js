@@ -163,6 +163,7 @@
       for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(norm)));
     },
     removeDemo: async () => run(sb.from("projects").delete().like("id", "demo-%")),
+    token: async () => { try { const r = await sb.auth.getSession(); return (r && r.data && r.data.session && r.data.session.access_token) || (session && session.access_token) || null; } catch (e) { return session && session.access_token || null; } },
     ai: async (action, payload) => {
       const r = await fetch("/api/ai", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ action, ...payload }) });
       let j = {}; try { j = await r.json(); } catch (e) {}

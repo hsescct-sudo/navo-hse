@@ -25,5 +25,11 @@ jobs:
           for t in cases-core client-core field-review-core portfolio-map-core client-assurance-core; do
             node "tests/$t.cjs"
           done
+      - name: Python dependencies
+        run: pip install -r requirements.txt
       - name: AI and client tests
         run: python -I tests/client-ai.py
+      - name: Email automation and Excel import tests
+        run: |
+          python -I tests/notify.py
+          python -I tests/excel-import.py

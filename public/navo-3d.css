@@ -278,3 +278,6 @@ html{scroll-padding-top:96px;scroll-padding-bottom:110px}
 
 /* Keep focused or scrolled-to elements clear of the sticky header. */
 html{scroll-padding-top:96px;scroll-padding-bottom:110px}
+
+/* Disabled buttons look disabled. */
+body.nv3d .btn[disabled],body.nv3d .btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none!important;transform:none!important}

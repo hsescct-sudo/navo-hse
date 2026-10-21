@@ -1,4 +1,10 @@
 {
   "outputDirectory": "public",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "crons": [
+    {
+      "path": "/api/notify",
+      "schedule": "0 4 * * *"
+    }
+  ]
 }
