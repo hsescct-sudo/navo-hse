@@ -155,3 +155,26 @@ body.mo-off .au-sweep,body.mo-off .au-blip .au-ping,body.mo-off .au-ticker-t,bod
 .org-y{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:8px;background:#e2f6ec;color:#16774a;font-weight:800}
 .org-n0{color:#b8c4d4}
 @media (max-width:1000px){.org-grid{grid-template-columns:1fr}.org-left{position:static;max-height:none}}
+/* Accounts & passwords */
+.panel.acc-upload{display:flex!important;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.acc-upload>div:first-child{flex:1 1 360px}.acc-upload p{margin:4px 0 0;max-width:640px}
+.acc-file{cursor:pointer}
+.acc-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}.acc-head h2{margin:0;margin-right:auto}.acc-head .mx-in{max-width:280px}
+.acc-pill{background:#fff4e5;color:#8a4b00;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.acc-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.acc-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.acc-table th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--nv-line,#e3e8ef);white-space:nowrap}
+.acc-table td{padding:9px 10px;border-bottom:1px solid #eef1f5;vertical-align:middle}
+.acc-table tr.bad td{background:#fff5f5;color:#9b1c20}.acc-table tr.off td{opacity:.55}
+.acc-table code{background:#f1f4f9;padding:2px 6px;border-radius:6px;font-size:13px;user-select:all}
+.acc-st{border-radius:999px;padding:3px 9px;font-size:12px;font-weight:700}.acc-st.on{background:#e7f6ec;color:#146c2e}.acc-st.off{background:#eceff3;color:#4a5565}.acc-st.no{background:#fff4e5;color:#8a4b00}
+.acc-modal{position:fixed;inset:0;background:rgba(8,18,34,.45);z-index:2000;display:flex;justify-content:flex-end;backdrop-filter:blur(3px)}
+.acc-sheet{background:#fff!important;opacity:1!important;position:relative;width:min(520px,100%);height:100%;overflow:auto;padding:22px;box-shadow:-20px 0 40px rgba(0,0,0,.18);animation:accIn .22s ease-out}
+@keyframes accIn{from{transform:translateX(40px);opacity:0}}
+.acc-sheet-h{display:flex;justify-content:space-between;align-items:center;gap:10px}.acc-sheet-h h2{margin:0}
+.acc-form .fld{margin:14px 0;display:flex;flex-direction:column;gap:6px}.acc-form label{font-weight:700;font-size:13px}
+.acc-row{display:flex;gap:8px}.acc-row .mx-in{flex:1}
+.acc-chips{display:flex;flex-wrap:wrap;gap:6px}.acc-chips button{border:1px solid var(--nv-line,#d9e0ea);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px}.acc-chips button.on{background:var(--ac,#1d5fd1);color:#fff;border-color:transparent}
+.acc-foot{border-top:1px solid #eef1f5;padding-top:14px;margin-top:8px}
+.btn.danger{color:#b42318;border-color:#f4c4c5}
+@media(max-width:640px){.acc-sheet{padding:16px}.acc-head .mx-in{max-width:none;width:100%}}

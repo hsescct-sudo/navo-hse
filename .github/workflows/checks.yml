@@ -33,6 +33,7 @@ jobs:
         run: |
           python -I tests/notify.py
           python -I tests/excel-import.py
+          python -I tests/users-api.py
       - name: Database access by organisation level
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
