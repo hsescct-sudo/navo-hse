@@ -66,3 +66,28 @@ document.addEventListener('click', e => {
   if (t.dataset.nvpick) return nvrOpen(t.dataset.nvpick);
   st.w = { center: true }; if (st.view !== 'report') go('report'); else { window.scrollTo(0, 0); render(); }
 }, true);
+
+/* After an incident report is submitted, open its record with the investigation, instead of the general feed. */
+const NVR = { watch: 0, newId: null };
+document.addEventListener('click', e => {
+  const t = e.target.closest('#next'); if (!t || !st.w || st.w.step !== 3 || st.w.rt !== 'Incident' || !L.db || !(typeof isStaff === 'function' && isStaff())) return;
+  const db = L.db, base = db.collection;
+  db.collection = function (name) {
+    const c = base.apply(this, arguments);
+    if (name === 'reports' && c && c.add) { const add = c.add; c.add = async function (row) { const res = await add.call(c, row); NVR.newId = res && res.id; db.collection = base; return res; }; }
+    return c;
+  };
+  setTimeout(() => { if (db.collection !== base) db.collection = base; }, 20000);
+}, true);
+const nvrGo = go;
+go = function (v) {
+  if (v === 'live' && NVR.newId) { const id = NVR.newId; NVR.newId = null; MX.n.sel = id; toast('Incident registered. Start the investigation below.'); return nvrGo('incm'); }
+  return nvrGo(v);
+};
+
+/* An injury cannot be submitted without its actual severity: it drives classification and every injury rate. */
+document.addEventListener('click', e => {
+  const t = e.target.closest('#next'); if (!t || !st.w || st.w.step !== 0 || st.w.kind !== 'Injury' || st.w.sev) return;
+  e.preventDefault(); e.stopImmediatePropagation(); toast('Choose how serious the injury is before continuing.');
+  document.querySelector('[data-sev]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}, true);

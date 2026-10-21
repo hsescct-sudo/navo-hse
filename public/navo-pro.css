@@ -215,3 +215,26 @@ body.nv3d .nvr-wiz .wbtns{display:grid!important;grid-template-columns:1fr 2fr;g
 body.nv3d .nvr-wiz .wbtns .btn{min-height:52px;font-size:15px!important}
 @media (max-width:700px){.nvr-hero{padding:20px}.nvr-steps{display:none}.nvr-grid{grid-template-columns:1fr 1fr;gap:10px}.nvr-card{padding:14px}.nvr-card em{display:none}.nvr-ic{width:44px;height:44px}
   body.nv3d .nvr-wiz .phone{padding:18px!important}}
+
+/* ---------- Incident record ---------- */
+.rci .nvi-head p{max-width:900px}
+.rci-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.rci-dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0}
+.rci-dl dt{color:var(--nv-muted);font-size:12.5px;font-weight:600}
+.rci-dl dd{margin:0;color:var(--nv-ink)}
+.rci .rca-card h4{font:800 17px var(--nv-display);margin:0 0 12px}
+.rci .rca-card h4 small{color:var(--nv-muted);font-weight:600}
+.rca{margin:6px 0 16px;padding:20px;border-radius:20px;border:1px solid var(--nv-line);background:linear-gradient(180deg,#f8fbfe,#f1f5fa);box-shadow:inset 0 1px 0 #fff}
+.rci-actions{margin-bottom:16px}
+.rca-tip{text-align:center;margin:8px 0 0;font-size:12.5px;color:var(--nv-muted)}
+.rca-picked-h{display:flex;justify-content:space-between;align-items:center}
+.rca-clear{border:0;background:none;color:var(--nv-muted);text-decoration:underline;cursor:pointer;font-size:12px}
+.rca-pick{border-left:5px solid #c9252d}.rca-pick.r1{border-left-color:#17a34a}.rca-pick.r2{border-left-color:#0b7cc6}
+.rca-pick h4{margin:0 0 10px!important;font-size:17px!important}
+.rca-pick-h{display:flex;justify-content:space-between;align-items:center}
+.rca-pick .rca-x{width:30px;height:30px}
+.rca-seg.two{grid-template-columns:1fr 1fr}
+.rca-side{max-height:none}
+@media (max-width:1100px){.rci-grid{grid-template-columns:1fr}}
+.rca-grid .rca-visual{position:sticky;top:92px}
+@media (max-width:1100px){.rca-grid .rca-visual{position:static}}

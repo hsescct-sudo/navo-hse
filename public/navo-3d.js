@@ -2,11 +2,25 @@
    Replaces the stacked top nav, sub-nav, dashboard rail and return bar with a single navigation. */
 'use strict';
 const NV = { open: null, drawer: false };
+/* Navigation in HSE management-system terms. One place for each discipline. */
+NX_GROUPS.splice(0, NX_GROUPS.length,
+  ['overview', 'Dashboards', 'exec', 'dash', [['exec', 'Executive dashboard'], ['sc', 'Project scorecards']]],
+  ['incidents', 'Incidents & investigations', 'incm', 'inc', [['incm', 'Incident register']]],
+  ['records', 'Hazards & records', 'casehome', 'insp', [['casehome', 'All records'], ['live', 'Field reports']]],
+  ['inspections', 'Inspections & audits', 'inspm', 'obs', [['inspm', 'Inspections'], ['chk', 'Checklist library']]],
+  ['actions', 'Actions', 'lactions', 'capa', [['lactions', 'Action tracker']]],
+  ['leadership', 'Leadership', 'leaders', 'leaders', [['leaders', 'Leadership engagement'], ['walk', 'HSE walkthroughs'], ['activity', 'Activities log']]],
+  ['training', 'Training & competence', 'train', 'train', [['train', 'Training records']]],
+  ['admin', 'Administration', 'hdata', 'settings', [['hdata', 'Performance data'], ['entry', 'Monthly review'], ['flows', 'Workflows'], ['access', 'Projects & people'], ['settings', 'Settings']]]);
+Object.assign(TITLES, { incm: 'Incidents & investigations', inspm: 'Inspections & audits', chk: 'Checklist library', live: 'Field reports', lactions: 'Action tracker', walk: 'HSE walkthroughs', train: 'Training & competence', casehome: 'Hazards & records' });
 const NV_IC = {
   overview: '<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',
   records: '<path d="M9 3h6l1 2h3v16H5V5h3z"/><path d="M9 12l2 2 4-4"/>',
   actions: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
   assurance: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  incidents: '<path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17h.01"/>',
+  inspections: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  training: '<path d="M2 8l10-5 10 5-10 5z"/><path d="M6 10v5c3 2 9 2 12 0v-5"/>',
   leadership: '<circle cx="12" cy="7" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
   admin: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
@@ -74,8 +88,11 @@ function nvChrome() {
   let bottom = document.querySelector('.nv-bottom');
   if (!bottom) { document.body.insertAdjacentHTML('beforeend', '<nav class="nv-bottom" aria-label="Quick navigation"></nav>'); bottom = document.querySelector('.nv-bottom'); }
   const g = nxGroup()[0];
-  const items = nvGroups().filter(x => x.id !== 'admin').slice(0, 4);
-  const btn = x => `<button data-go="${x.route}" aria-current="${g === x.id && st.view !== 'report'}">${nvIcon(x.id)}<span>${esc(x.label)}</span></button>`;
+  const pickIds = ['overview', 'incidents', 'actions', 'inspections'];
+  const items = nvGroups().filter(x => pickIds.includes(x.id)).slice(0, 4);
+  if (items.length < 2) items.push(...nvGroups().filter(x => !pickIds.includes(x.id) && x.id !== 'admin').slice(0, 4 - items.length));
+  const short = { overview: 'Dashboard', incidents: 'Incidents', actions: 'Actions', inspections: 'Inspections', records: 'Records' };
+  const btn = x => `<button data-go="${x.route}" aria-current="${g === x.id && st.view !== 'report'}">${nvIcon(x.id)}<span>${esc(short[x.id] || x.label)}</span></button>`;
   const half = Math.ceil(items.length / 2);
   bottom.innerHTML = items.slice(0, half).map(btn).join('') + `<button class="nv-plus" data-nvreport aria-label="New report" aria-current="${st.view === 'report'}"><i>+</i><span>Report</span></button>` + items.slice(half).map(btn).join('') + `<button data-nv-drawer aria-label="All pages">${nvIcon('menu')}<span>Menu</span></button>`;
   bottom.style.gridTemplateColumns = `repeat(${items.length + 2},1fr)`;

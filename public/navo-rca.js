@@ -33,6 +33,7 @@ function rcaState(r) {
     const s = (r.investigation && r.investigation.studio) || {};
     RCA.by[r.id] = { method: s.method || 'wheel', problem: s.problem || r.desc || '', wheel: s.wheel || { a: {}, q: {}, sel: null }, whys: s.whys || [{ w: '', e: '' }, { w: '', e: '' }, { w: '', e: '' }], whyRoot: s.whyRoot ?? null, fish: s.fish || { sel: 'People', c: {} }, tap: s.tap || { ev: [{ t: '', e: '', cf: false, cat: [] }] }, own: s.own || {}, done: s.done || {} };
   }
+  const W = RCA.by[r.id].wheel; if (!Array.isArray(W.picked)) W.picked = Object.keys(W.a || {}).filter(k => W.a[k] && W.a[k].status && W.a[k].status !== 'Not relevant');
   return RCA.by[r.id];
 }
 function rcaSet(obj, path, v) { const p = path.split('.'); let o = obj; p.slice(0, -1).forEach(k => { if (o[k] == null) o[k] = /^\d+$/.test(k) ? [] : {}; o = o[k]; }); o[p.at(-1)] = v; }
@@ -88,7 +89,7 @@ function rcaWheelSvg(S) {
   RCA_WHEEL.forEach((ring, ri) => {
     const n = ring.items.length, step = 2 * Math.PI / n, off = -Math.PI / 2;
     ring.items.forEach(([label, group], i) => {
-      const id = ri + '-' + i, a0 = off + i * step, a1 = a0 + step, mid = (a0 + a1) / 2, st = S.wheel.a[id]?.status, sel = S.wheel.sel === id;
+      const id = ri + '-' + i, a0 = off + i * step, a1 = a0 + step, mid = (a0 + a1) / 2, st = S.wheel.a[id]?.status, sel = S.wheel.picked.includes(id);
       const col = RCA_COL[group][i % 2], lift = sel ? 7 : 0, dx = Math.cos(mid) * lift, dy = Math.sin(mid) * lift;
       const rm = (R[ri][0] + R[ri][1]) / 2, tx = C + Math.cos(mid) * rm, ty = C + Math.sin(mid) * rm;
       const words = label.split(' '); const lines = ri === 1 ? [label.length > 13 ? words.slice(0, Math.ceil(words.length / 2)).join(' ') : label, label.length > 13 ? words.slice(Math.ceil(words.length / 2)).join(' ') : ''].filter(Boolean) : words.length > 1 && label.length > 10 ? [words.slice(0, Math.ceil(words.length / 2)).join(' '), words.slice(Math.ceil(words.length / 2)).join(' ')] : [label];
@@ -119,16 +120,17 @@ function rcaFishSvg(S) {
 
 /* ---------- Panels ---------- */
 function rcaWheelPanel(S, rid) {
-  const f = RCA_FACTORS.find(x => x.id === S.wheel.sel); const a = f ? (S.wheel.a[f.id] = S.wheel.a[f.id] || {}) : null;
-  const set = RCA_FACTORS.filter(x => S.wheel.a[x.id]?.status && S.wheel.a[x.id].status !== 'Not relevant');
-  return `<div class="rca-grid"><div class="rca-visual">${rcaWheelSvg(S)}<div class="rca-legend"><span><i style="background:#c9252d"></i>Energy</span><span><i style="background:#17a34a"></i>Job</span><span><i style="background:#b27b4f"></i>Person</span><span><i style="background:#d9a514"></i>Organisation</span><span><i style="background:#0b7cc6"></i>System</span><span><i class="dot r"></i>Gap</span><span><i class="dot a"></i>Contributed</span></div></div>
-   <div class="rca-side">${f ? `<div class="rca-card"><span class="rca-kicker">${esc(f.group)}${f.ring === 2 ? ' · system factor' : f.ring === 0 ? ' · energy source' : ' · error-producing condition'}</span><h4>${esc(f.label)}</h4>
-     <div class="rca-seg">${['Not relevant', 'Contributed', 'Gap identified'].map(s => `<button data-rcset="wheel.a.${f.id}.status" data-v="${s}" aria-pressed="${a.status === s}">${s}</button>`).join('')}</div>
-     <div class="fld"><label>Evidence</label><textarea class="mx-in" rows="2" data-rcf="wheel.a.${f.id}.evidence" data-rid="${rid}" placeholder="What did the investigation find?">${esc(a.evidence || '')}</textarea></div>
-     <div class="fld"><label>${f.ring === 0 ? 'Critical control that should stop this energy' : 'Expected control or condition'}</label><input class="mx-in" data-rcf="wheel.a.${f.id}.control" data-rid="${rid}" value="${esc(a.control || '')}"></div></div>`
-     : `<div class="rca-card rca-hint"><h4>Click any segment of the wheel</h4><p>Start with the energy that caused harm, then the conditions that made the error likely, then the system factors behind them.</p></div>`}
-     <div class="rca-chips">${set.map(x => `<button data-rcw="${x.id}" class="${S.wheel.a[x.id].status === 'Gap identified' ? 'gap' : 'con'}">${esc(x.label)}</button>`).join('') || '<span class="mx-muted">No factors assessed yet.</span>'}</div>
-     <details class="rca-q"><summary>Leadership questions (${Object.values(S.wheel.q).filter(v => v && v.trim()).length}/10)</summary>${RCA_QUESTIONS.map((q, i) => `<div class="fld"><label>${i + 1}. ${q}</label><textarea class="mx-in" rows="2" data-rcf="wheel.q.${i}" data-rid="${rid}">${esc(S.wheel.q[i] || '')}</textarea></div>`).join('')}</details></div></div>`;
+  const picked = RCA_FACTORS.filter(f => S.wheel.picked.includes(f.id));
+  const ringName = f => f.ring === 0 ? 'Energy source' : f.ring === 2 ? 'System factor' : f.group + ' factor';
+  return `<div class="rca-grid"><div class="rca-visual">${rcaWheelSvg(S)}<div class="rca-legend"><span><i style="background:#c9252d"></i>Energy</span><span><i style="background:#17a34a"></i>Job</span><span><i style="background:#b27b4f"></i>Person</span><span><i style="background:#d9a514"></i>Organisation</span><span><i style="background:#0b7cc6"></i>System</span><span><i class="dot r"></i>Gap</span><span><i class="dot a"></i>Contributed</span></div>
+    <p class="rca-tip">Tap every segment that played a part. Tap again to remove it.</p></div>
+   <div class="rca-side"><div class="rca-picked-h"><b>${picked.length} selected</b>${picked.length ? `<button class="rca-clear" data-rcclear>Clear all</button>` : ''}</div>
+    ${picked.length ? picked.map(f => { const a = S.wheel.a[f.id] = S.wheel.a[f.id] || { status: 'Contributed' }; return `<div class="rca-card rca-pick r${f.ring}"><div class="rca-pick-h"><span class="rca-kicker">${esc(ringName(f))}</span><button class="rca-x" data-rcw="${f.id}" aria-label="Remove ${esc(f.label)}">×</button></div><h4>${esc(f.label)}</h4>
+      <div class="rca-seg two">${['Contributed', 'Gap identified'].map(v => `<button data-rcset="wheel.a.${f.id}.status" data-v="${v}" aria-pressed="${a.status === v}">${v}</button>`).join('')}</div>
+      <div class="fld"><label>Evidence</label><textarea class="mx-in" rows="2" data-rcf="wheel.a.${f.id}.evidence" data-rid="${rid}" placeholder="What did the investigation find?">${esc(a.evidence || '')}</textarea></div>
+      <div class="fld"><label>${f.ring === 0 ? 'Critical control that should stop this energy' : 'Expected control or condition'}</label><input class="mx-in" data-rcf="wheel.a.${f.id}.control" data-rid="${rid}" value="${esc(a.control || '')}"></div></div>`; }).join('')
+    : `<div class="rca-card rca-hint"><h4>Select the parts of the wheel</h4><p>Start with the energy that caused harm, then every condition that made the error likely, then the system factors behind them. You can select as many as apply.</p></div>`}
+    <details class="rca-q"><summary>Leadership questions (${Object.values(S.wheel.q).filter(v => v && v.trim()).length}/10)</summary>${RCA_QUESTIONS.map((q, i) => `<div class="fld"><label>${i + 1}. ${q}</label><textarea class="mx-in" rows="2" data-rcf="wheel.q.${i}" data-rid="${rid}">${esc(S.wheel.q[i] || '')}</textarea></div>`).join('')}</details></div></div>`;
 }
 function rcaWhysPanel(S, rid) {
   return `<div class="rca-whys"><div class="fld"><label>Problem statement</label><textarea class="mx-in" rows="2" data-rcf="problem" data-rid="${rid}">${esc(S.problem)}</textarea></div>
@@ -167,7 +169,7 @@ function rcaStudio(r) {
   if (!isStaff()) return '';
   const S = rcaState(r);
   const body = S.method === 'wheel' ? rcaWheelPanel(S, r.id) : S.method === 'whys' ? rcaWhysPanel(S, r.id) : S.method === 'fish' ? rcaFishPanel(S, r.id) : rcaTapPanel(S, r.id);
-  return `<section class="panel rca" data-rca="${r.id}"><div class="rca-head"><div><span class="rca-kicker">Root cause analysis</span><h3>Investigation studio</h3></div></div>
+  return `<section class="rca" data-rca="${r.id}"><div class="rca-head"><div><span class="rca-kicker">Root cause analysis</span><h3>Investigation studio</h3></div></div>
    <div class="rca-methods" role="tablist">${RCA_METHODS_UI.map(([id, t, d], i) => `<button role="tab" data-rcm="${id}" aria-selected="${S.method === id}"><span class="rca-mi m${i}"></span><b>${t}</b><small>${d}</small></button>`).join('')}</div>
    ${S.method !== 'whys' ? `<div class="fld rca-problem"><label>Problem statement</label><textarea class="mx-in" rows="2" data-rcf="problem" data-rid="${r.id}">${esc(S.problem)}</textarea></div>` : ''}
    ${body}${rcaResultCard(S, r)}</section>`;
@@ -177,7 +179,7 @@ function rcaStudio(r) {
 async function rcaSave(id, quiet) {
   const r = L.reports.find(x => x.id === id); if (!r) return; const S = rcaState(r); const R = rcaResult(S);
   const name = RCA_METHODS_UI.find(m => m[0] === S.method)[1];
-  const inv = { ...(r.investigation || {}), studio: JSON.parse(JSON.stringify(S)), rca: name, root: R.root.join('\n'), contributing: R.contrib.join('\n') };
+  const inv = { ...(r.investigation || {}), ...rcaPayload(r) }; r.investigation = inv;
   return liveSave(() => L.db.collection('reports').doc(id).update({ investigation: inv, history: hist(r, `Investigation saved (${name})`) }), quiet ? undefined : 'Investigation saved');
 }
 async function rcaActions(id) {
@@ -196,16 +198,46 @@ async function rcaActions(id) {
 }
 
 /* ---------- Wiring ---------- */
-const rcaBaseDetail = incDetail;
-incDetail = function (r) { return rcaBaseDetail(r) + rcaStudio(r); };
+/* Incident record: what happened, the investigation and the actions on one page, in that order. */
+function rcaPayload(r) {
+  const S = rcaState(r), R = rcaResult(S), name = RCA_METHODS_UI.find(m => m[0] === S.method)[1];
+  return { studio: JSON.parse(JSON.stringify(S)), rca: name, root: R.root.join('\n'), contributing: R.contrib.join('\n') };
+}
+incDetail = function (r) {
+  const s = nStage(r), cl = nClass(r), inv = r.investigation || {}, A = L.actions.filter(a => a.sourceId === r.id || a.report === r.id), canMed = canVerify(), edit = isStaff() && s !== 'Closed';
+  const next = { Notification: 'Registration', Registration: 'Classification', Classification: 'Investigation', Investigation: 'Management review', 'Management review': 'Approval', Approval: 'Corrective actions', 'Corrective actions': 'Verification', Verification: 'Closed' }[s];
+  const needV = ['Approval', 'Verification', 'Closed'].includes(next);
+  const p = L.projects.find(x => x.id === r.project) || {};
+  const sev = sevOf(r);
+  const facts = [['Date & time', new Date(r.eventTs || r.ts).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })], ['Project', projName(r.project)], ['Platform / division', [p.platform, divName(r.project)].filter(Boolean).join(' · ')], ['Location', r.loc || '—'], ['Contractor', r.contractor || '—'], ['Classification', cl + (r.incClass ? ' · ' + r.incClass : '')], ['Activity / department', [r.dept, r.cat].filter(Boolean).join(' · ') || '—']];
+  const keep = INV_F.filter(([k]) => ['response', 'witnesses', 'lessons', 'review'].includes(k));
+  return `<div class="panel mx-detail rci">
+   <div class="nvi-head"><div><span class="nvi-eyebrow">${ref('INC', r)} · ${esc(s)}</span><h2>${esc(cl)}</h2><p>${esc(r.desc || '')}</p></div><button class="btn" data-nclose-d>Close</button></div>
+   ${flowBar(N_STEPS, s)}
+   <div class="rci-grid"><div class="rca-card"><h4>What happened</h4><dl class="rci-dl">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}
+     ${sev ? (canMed ? `<dt>Injured person</dt><dd>${esc([r.personType, r.injuryType, r.bodyPart].filter(Boolean).join(' · '))}${r.lostDays ? ' · ' + r.lostDays + ' lost days' : ''}</dd>` : `<dt>Injury details</dt><dd class="mx-muted">Restricted to HSE staff</dd>`) : ''}
+     ${r.photo ? `<dt>Photo</dt><dd><button class="linkbtn" data-photo="${esc(r.photo)}">Open photo</button></dd>` : ''}</dl></div>
+    <div class="rca-card"><h4>Investigation record</h4><input type="hidden" id="inv-rca" value="${esc(inv.rca || '')}">
+     ${keep.map(([k, l]) => `<div class="fld"><label for="inv-${k}">${l}</label>${edit ? `<textarea id="inv-${k}" class="mx-in" rows="2">${esc(inv[k] || '')}</textarea>` : `<p>${esc(inv[k] || '—')}</p>`}</div>`).join('')}
+     <div class="fld"><label>Immediate cause codes</label>${causePick('Immediate', inv.immCodes, edit)}</div><div class="fld"><label>Root cause codes</label>${causePick('Root', inv.rootCodes, edit)}</div></div></div>
+   ${rcaStudio(r)}
+   <div class="rca-card rci-actions"><h4>Corrective and preventive actions <small>${A.length}</small>${edit ? ` <button class="btn" data-nact="${r.id}">+ Add action</button>` : ''}</h4>${A.length ? `<div class="tbl"><table><tbody>${A.map(a => `<tr class="hot" data-aopen="${a.id}" data-go2="lactions"><td class="id">${ref('ACT', a)}</td><td>${esc(a.title)}</td><td>${esc(a.owner || '')}</td><td>${fdt(a.due)}</td><td><span class="pill ${a.closedAt ? 'p-ok' : aOver(a) ? 'p-crit' : 'p-info'}">${aStatus(a)}</span></td></tr>`).join('')}</tbody></table></div>` : '<p class="mx-muted">No actions yet. Create them from the investigation result above.</p>'}</div>
+   <div class="rca-card"><h4>History</h4>${histList(r.history)}</div>
+   ${edit ? `<div class="nvi-foot"><div>Stage: <b>${esc(s)}</b>${next ? ` → next: <b>${esc(next)}</b>` : ''}</div><div class="filters"><button class="btn" data-nsave="${r.id}">Save</button>${next && (!needV || canVerify()) ? `<button class="btn pri" data-nnext="${r.id}" data-to="${next}">Move to ${next}</button>` : ''}${next && needV && !canVerify() ? `<span class="mx-muted">${next} needs an HSE Engineer or Admin.</span>` : ''}</div></div>` : ''}
+  </div>`;
+};
+/* Saving the incident always carries the investigation studio with it, so neither overwrites the other. */
+const rcaBaseIncSave = incSave;
+incSave = async function (id, to) { const r = L.reports.find(x => x.id === id); if (r && RCA.by[id]) r.investigation = { ...(r.investigation || {}), ...rcaPayload(r) }; return rcaBaseIncSave(id, to); };
 const rcaFor = el => { const sec = el.closest('[data-rca]'); return sec ? L.reports.find(x => x.id === sec.dataset.rca) : null; };
 document.addEventListener('click', async e => {
-  const t = e.target.closest('[data-rcm],[data-rcw],[data-rcset],[data-rcwhyroot],[data-rcwhyadd],[data-rcwhydel],[data-rcfish],[data-rcfadd],[data-rcfroot],[data-rcfdel],[data-rctapadd],[data-rctapdel],[data-rctapcf],[data-rctapcat],[data-rcsave],[data-rcact]');
+  const t = e.target.closest('[data-rcm],[data-rcw],[data-rcclear],[data-rcset],[data-rcwhyroot],[data-rcwhyadd],[data-rcwhydel],[data-rcfish],[data-rcfadd],[data-rcfroot],[data-rcfdel],[data-rctapadd],[data-rctapdel],[data-rctapcf],[data-rctapcat],[data-rcsave],[data-rcact]');
   if (!t) return; const r = rcaFor(t); if (!r) return; e.preventDefault(); e.stopPropagation(); const S = rcaState(r); const D = t.dataset;
   if (D.rcsave) return rcaSave(r.id);
   if (D.rcact) return rcaActions(r.id);
   if (D.rcm) S.method = D.rcm;
-  if (D.rcw) S.wheel.sel = D.rcw;
+  if (D.rcw) { const P = S.wheel.picked, k = P.indexOf(D.rcw); if (k >= 0) { P.splice(k, 1); delete S.wheel.a[D.rcw]; } else { P.push(D.rcw); S.wheel.a[D.rcw] = S.wheel.a[D.rcw] || { status: 'Contributed' }; } }
+  if (t.hasAttribute('data-rcclear')) { S.wheel.picked = []; S.wheel.a = {}; }
   if (D.rcset) rcaSet(S, D.rcset, D.v);
   if (D.rcwhyroot != null) S.whyRoot = S.whyRoot === +D.rcwhyroot ? null : +D.rcwhyroot;
   if (t.hasAttribute('data-rcwhyadd')) S.whys.push({ w: '', e: '' });
