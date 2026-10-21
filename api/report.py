@@ -889,6 +889,10 @@ def make(fmt, data):
     if data.get("kind") == "case":
         if fmt != "pdf": raise ValueError("Case reports export as PDF")
         return case_pdf(data), "application/pdf"
+    if data.get("kind") in ("ceo", "env"):
+        from api.report_ceo import make_ceo
+        data.setdefault("generated", datetime.utcnow().strftime("%d %b %Y"))
+        return make_ceo(data["kind"], fmt, data)
     if data.get("kind") == "exec":
         data.setdefault("generated", datetime.utcnow().strftime("%d %b %Y"))
         if fmt == "pdf":
@@ -915,10 +919,12 @@ class handler(BaseHTTPRequestHandler):
                 raise ValueError("Request too large")
             data = json.loads(self.rfile.read(n) or b"{}")
             body, mime = make(fmt, data)
-            safe = "".join(ch if ch.isalnum() or ch in "-_ " else "_" for ch in data.get("title", "report"))[:60].strip() or "report"
+            safe = "".join(ch if ch.isascii() and (ch.isalnum() or ch in "-_ ") else "_" for ch in str(data.get("title", "report")))[:60].strip() or "report"
             self.send_response(200)
             self.send_header("Content-Type", mime)
-            self.send_header("Content-Disposition", f'attachment; filename="NAVO {safe} {data.get("month", "")}.{fmt}"')
+            month = "".join(ch for ch in str(data.get("month", "")) if ch.isascii() and (ch.isalnum() or ch in "-_ "))[:24]
+            if fmt not in ("xlsx", "docx", "pptx", "pdf"): raise ValueError("Unknown format")
+            self.send_header("Content-Disposition", f'attachment; filename="NAVO {safe} {month}.{fmt}"')
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)

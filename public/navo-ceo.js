@@ -138,7 +138,8 @@ function ceoPage() {
   return `<div class="ceo">
    <div class="nvr-hero ceo-hero"><div><span class="nvi-eyebrow">CEO bi-monthly HSSE report</span><h2>${esc(scopes.find(s => s[0] === CEO.scope)[1])} · ${fmtMonth(CEO.month)}</h2><p>Safety, environment, health & camp, training, security, lifting and CCTV. Figures NAVO already holds are calculated automatically; the rest is entered per project and fortnight.</p></div>
     <div class="ceo-ctrl"><label>Scope<select data-ceo="scope">${scopes.map(([v, l]) => `<option value="${esc(v)}" ${v === CEO.scope ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Month<input type="month" data-ceo="month" value="${CEO.month}"></label>
-     <div class="ceo-btns">${staff ? '<button class="btn pri" data-ceoentry>Enter fortnight data</button>' : ''}<button class="btn" data-ceocsv>Download CSV</button><button class="btn" data-ceoprint>Print / PDF</button></div></div></div>
+     <div class="ceo-btns">${staff ? '<button class="btn pri" data-ceoentry>Enter fortnight data</button>' : ''}</div></div>
+    <div class="ceo-report"><span>Download report</span><button class="btn" data-ceorep="pptx">PowerPoint</button><button class="btn" data-ceorep="docx">Word</button><button class="btn" data-ceorep="xlsx">Excel</button><button class="btn" data-ceocsv>CSV</button><button class="btn" data-ceoprint>Print / PDF</button></div></div>
    <div class="ceo-rates">${rate('LTIFR', 'ltifr', tg.ltifr)}${rate('TRCF', 'trcf', tg.trcf)}${rate('LTISR', 'ltisr', tg.ltisr)}</div>
    <div class="kpis ceo-tiles">${tiles.map(([l, v]) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v == null ? '—' : v >= 1e5 ? hsN(v) : Math.round(v).toLocaleString('en-GB')}</div></div>`).join('')}</div>
    ${!C.ytd.manhours ? '<div class="nvi-alert">No man-hours recorded for this scope and year. Frequency rates cannot be calculated; enter monthly man-hours in Administration → Performance data.</div>' : ''}
@@ -195,7 +196,8 @@ function envPage() {
   return `<div class="ceo env">
    <div class="nvr-hero ceo-hero env-hero"><div><span class="nvi-eyebrow">Environmental performance</span><h2>${esc(scopes.find(s => s[0] === E.scope)[1])} · ${E.year}</h2><p>Energy, emissions, water and waste against last year and the reduction targets. Scope 1 = diesel, scope 2 = grid electricity.</p></div>
     <div class="ceo-ctrl"><label>Scope<select data-env="scope">${scopes.map(([v, l]) => `<option value="${esc(v)}" ${v === E.scope ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Year<select data-env="year">${[0, 1, 2].map(i => new Date().getFullYear() - i).map(y => `<option ${y === E.year ? 'selected' : ''}>${y}</option>`).join('')}</select></label>
-     <div class="ceo-btns">${staff ? '<button class="btn pri" data-enventry>Enter monthly data</button>' : ''}</div></div></div>
+     <div class="ceo-btns">${staff ? '<button class="btn pri" data-enventry>Enter monthly data</button>' : ''}</div></div>
+    <div class="ceo-report"><span>Download report</span><select id="env-freq" aria-label="Report frequency"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual</option></select><button class="btn" data-envrep="pptx">PowerPoint</button><button class="btn" data-envrep="docx">Word</button><button class="btn" data-envrep="xlsx">Excel</button></div></div>
    ${!ytd ? `<div class="nvi-alert">No environmental data for ${E.year} in this scope yet. ${staff ? 'Use “Enter monthly data” for energy and water; waste comes from Administration → Performance data.' : ''}</div>` : ''}
    ${E.entry ? envEntryForm() : ''}
    <div class="kpis env-tiles">
@@ -276,4 +278,63 @@ document.addEventListener('click', async e => {
   if (t.hasAttribute('data-envsave')) return envSave();
   if (t.dataset.ceotoggle) return ceoStructSave({ modules: { ...((L.structure || {}).modules || {}), ceoEnv: t.dataset.ceotoggle === 'on' } }, t.dataset.ceotoggle === 'on' ? 'Module turned on' : 'Module turned off');
   if (t.hasAttribute('data-envcfgsave')) { const g = id => +document.getElementById(id).value; return ceoStructSave({ env: { elec: g('env-f-elec'), diesel: g('env-f-diesel'), targets: { elec: g('env-t-elec'), diesel: g('env-t-diesel'), water: g('env-t-water'), diversion: g('env-t-div') } } }, 'Factors and targets saved'); }
+});
+
+/* ---------- Reports: PowerPoint, Word and Excel built by /api/report ---------- */
+const ceoScopeLabel = sc => (ceoScopes().find(s => s[0] === sc) || [sc, sc])[1];
+function ceoPayload() {
+  const C = ceoColumns(CEO.scope, CEO.month), cfgT = hsKpiCfg().targets[CEO.scope.startsWith('plat:') ? CEO.scope.slice(5) : 'Corporation'] || hsKpiCfg().targets.Corporation;
+  const ry = ceoRates(C.ytd), rm = ceoRates(C.mon);
+  const attention = [];
+  if (ry) [['LTIFR', 'ltifr'], ['TRCF', 'trcf'], ['LTISR', 'ltisr']].forEach(([l, k]) => { if (ry[k] > cfgT[k]) attention.push(`${l} year to date is ${ry[k].toFixed(2)}, above the target of ${cfgT[k].toFixed(2)}.`); });
+  if (C.ytd.fat) attention.push(`${C.ytd.fat} fatalit${C.ytd.fat > 1 ? 'ies' : 'y'} recorded this year.`);
+  if (C.mon.rtac) attention.push(`${C.mon.rtac} road traffic accident${C.mon.rtac > 1 ? 's' : ''} this month (${C.ytd.rtac} year to date): review journey management and driver controls.`);
+  if (C.mon.rlta || C.mon.rlti) attention.push(`${(C.mon.rlta || 0) + (C.mon.rlti || 0)} lost time injur${(C.mon.rlta || 0) + (C.mon.rlti || 0) > 1 ? 'ies' : 'y'} this month.`);
+  if (!C.ytd.manhours) attention.push('No man-hours recorded: frequency rates cannot be calculated.');
+  const blankSec = CEO_SECTIONS.filter(([, rows]) => rows.filter(r => r[2] === 'manual').length && rows.filter(r => r[2] === 'manual').every(r => C.mon[r[0]] == null)).map(s => s[0]);
+  if (blankSec.length) attention.push(`Figures still to be entered for this month: ${blankSec.join(', ')}.`);
+  const y = CEO.month.slice(0, 4), ids = C.ids, mons = Array.from({ length: 12 }, (_, i) => y + '-' + String(i + 1).padStart(2, '0')).filter(m => m <= CEO.month);
+  const ev = mons.map(m => envValues(ids, [m]));
+  return {
+    kind: 'ceo', title: 'CEO HSSE report', month: CEO.month, monthLabel: fmtMonth(CEO.month), scopeLabel: ceoScopeLabel(CEO.scope), sample: typeof hsIsSample === 'function' && hsIsSample(),
+    generated: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    rates: { ytd: ry, month: rm, targets: cfgT },
+    tiles: [['Man-hours YTD', C.ytd.manhours], ['Fatalities YTD', C.ytd.fat], ['Recordable cases YTD', ry ? ry.rec : null], ['Lost time injuries YTD', ry ? ry.lti : null], ['Days lost YTD', C.ytd.daysLost], ['Road traffic accidents YTD', C.ytd.rtac]],
+    attention, sections: CEO_SECTIONS.map(([title, rows]) => ({ title, rows: rows.map(([k, label, src]) => ({ label, src, w1: C.w1[k] ?? null, w2: C.w2[k] ?? null, mon: C.mon[k] ?? null, ytd: C.ytd[k] ?? null })) })),
+    env: { year: y, months: mons.map(m => fmtMonth(m).slice(0, 3)), scope1: ev.map(v => v ? +v.scope1.toFixed(1) : null), scope2: ev.map(v => v ? +v.scope2.toFixed(1) : null), diverted: ev.map(v => v ? +v.wasteDiverted.toFixed(1) : null), disposed: ev.map(v => v ? +v.wasteDisposed.toFixed(1) : null) },
+    notes: ['Figures already in NAVO are calculated from records: man-hours and manpower from monthly performance data; incidents, days lost, inspections and observations from reports and inspections by event date.',
+      'Weeks 1–2 = days 1–14; weeks 3–4 = day 15 to month end. Man-hours and environmental figures are monthly and appear in the month and YTD columns only.',
+      `Rates per ${hsN(hsKpiCfg().mult)} man-hours. LTIFR = (fatalities + SI + RLTA + RLTI) × basis ÷ man-hours; TRCF adds RWC and MTC; LTISR = (days lost + 6,000 per fatality) × basis ÷ man-hours.`,
+      'Blank (—) means not reported; zero means reported zero.', 'Health, camp, training, security, lifting and CCTV figures are entered per project and fortnight by HSE staff.'],
+  };
+}
+function envPayload(freq) {
+  const E = CEO.env, ids = new Set(ceoProjects(E.scope).map(p => p.id)), cfg = envCfg(), n = freq === 'annual' ? 12 : freq === 'quarterly' ? 3 : 1;
+  const mons = Array.from({ length: 12 }, (_, i) => E.year + '-' + String(i + 1).padStart(2, '0'));
+  const now = ceoMonthNow(), upto = mons.filter(m => m <= now);
+  const groups = Array.from({ length: 12 / n }, (_, i) => mons.slice(i * n, i * n + n)).filter(g => g[0] <= now);
+  const label = g => n === 12 ? String(E.year) : n === 3 ? `Q${Math.floor((+g[0].slice(5) - 1) / 3) + 1} ${E.year}` : fmtMonth(g[0]);
+  const cov = g => { const have = new Set((L.records || []).filter(r => (r.kind === 'env' || r.kind === 'monthly') && ids.has(r.project) && g.includes(r.data && r.data.month)).map(r => r.project + r.data.month)); return `${have.size}/${ids.size * g.length}`; };
+  const periods = groups.map(g => { const v = envValues(ids, g); return { label: label(g), coverage: cov(g), ...(v || {}), intensity: v && v.hours ? v.ghg / v.hours * 1e6 : null }; });
+  const ytd = envValues(ids, upto), prev = envValues(ids, upto.map(m => (E.year - 1) + m.slice(4)));
+  const source = (L.records || []).filter(r => r.kind === 'env' && ids.has(r.project) && String(r.data && r.data.month).startsWith(E.year)).map(r => ({ project: projName(r.project), ...r.data })).sort((a, b) => (a.month + a.project).localeCompare(b.month + b.project));
+  return { kind: 'env', title: 'Environmental report', month: String(E.year), year: E.year, scopeLabel: ceoScopeLabel(E.scope), frequencyLabel: { monthly: 'Monthly', quarterly: 'Quarterly', annual: 'Annual' }[freq],
+    sample: typeof hsIsSample === 'function' && hsIsSample(), generated: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    factors: { elec: cfg.elec, diesel: cfg.diesel }, targets: cfg.targets, periods, ytd: ytd ? { ...ytd, intensity: ytd.hours ? ytd.ghg / ytd.hours * 1e6 : null } : {}, prev: prev || {}, source };
+}
+async function ceoDownload(payload, fmt, btn) {
+  const lbl = btn.textContent; btn.disabled = true; btn.textContent = 'Preparing…';
+  try {
+    const r = await fetch('/api/report?fmt=' + fmt, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (!r.ok) throw new Error((await r.text()).slice(0, 200));
+    const b = await r.blob(), a = document.createElement('a'); a.href = URL.createObjectURL(b);
+    a.download = `NAVO ${payload.kind === 'ceo' ? 'CEO HSSE report' : 'Environmental report'} ${payload.scopeLabel} ${payload.month}.${fmt}`.replace(/[^\w .()-]+/g, '-');
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('Report downloaded');
+  } catch (e) { toast('The report could not be created. ' + (e.message || '')); }
+  finally { btn.disabled = false; btn.textContent = lbl; }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-ceorep],[data-envrep]'); if (!t) return; e.preventDefault();
+  if (t.dataset.ceorep) return ceoDownload(ceoPayload(), t.dataset.ceorep, t);
+  return ceoDownload(envPayload((document.getElementById('env-freq') || {}).value || 'monthly'), t.dataset.envrep, t);
 });
