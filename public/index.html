@@ -1144,7 +1144,7 @@ async function saveStructure(){const d=L.sdraft;const errs=[];
  const names=d.platforms.map(p=>p.name.trim());if(names.some(n=>!n))errs.push("Every platform needs a name");if(new Set(names).size!==names.length)errs.push("Two platforms have the same name");
  d.platforms.forEach(p=>{const bn=p.businesses.map(b=>b.name.trim());if(bn.some(n=>!n))errs.push(`A business in ${p.name} has no name`);if(new Set(bn).size!==bn.length)errs.push(`Two businesses in ${p.name} have the same name`)});
  if(errs.length){toast(errs[0]+". Move or remove those projects first.");return}
- const clean={corporation:(d.corporation||"Corporation").trim(),countries:d.countries,platforms:d.platforms.map(p=>({name:p.name.trim(),businesses:p.businesses.map(b=>({name:b.name.trim(),clusters:b.clusters.map(c=>c.name.trim()).filter(Boolean)}))}))};
+ const clean={...(L.structure||{}),corporation:(d.corporation||"Corporation").trim(),countries:d.countries,platforms:d.platforms.map(p=>({name:p.name.trim(),businesses:p.businesses.map(b=>({name:b.name.trim(),clusters:b.clusters.map(c=>c.name.trim()).filter(Boolean)}))}))};
  // carry renames through to projects
  const list=L.projects.map(pr=>{const pl=d.platforms.find(p=>p._o===(pr.platform||"Construction"));if(!pl)return pr;const n={...pr,platform:pl.name.trim()};
   const b=pl.businesses.find(x=>x._o===pr.division);if(b){n.division=b.name.trim();const c=b.clusters.find(x=>x._o===pr.cluster);if(c)n.cluster=c.name.trim()}return n});
@@ -1312,6 +1312,8 @@ applyBrand();
 <script src="navo-inspect.js"></script>
 <script src="navo-rca.js"></script>
 <script src="navo-report.js"></script>
+<script src="navo-ceo.js"></script>
+<link rel="stylesheet" href="navo-ceo.css">
 <link rel="stylesheet" href="navo-pro.css">
 <link rel="stylesheet" href="navo-3d.css">
 <script src="navo-3d.js"></script>
