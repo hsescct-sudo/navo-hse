@@ -5,6 +5,9 @@
 'use strict';
 const MO = { level: 'cinematic', view: null, open: false };
 try { MO.level = localStorage.getItem('navo-motion') || (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'subtle' : 'cinematic'); } catch (e) {}
+const MO_ACCENTS = [['ocean', 'Ocean blue', '#3b82f6'], ['royal', 'Royal violet', '#8b5cf6'], ['gold', 'Desert gold', '#f59e0b'], ['crimson', 'Crimson', '#f43f5e'], ['teal', 'Teal', '#16c2ae']];
+const moAccent = () => document.documentElement.dataset.accent || 'ocean';
+function moSetAccent(a) { document.documentElement.dataset.accent = a; try { localStorage.setItem('navo-accent', a); } catch (e) {} moPicker(); }
 const MO_LEVELS = [['cinematic', 'Cinematic', '3D transitions, counters, growing charts, parallax'], ['subtle', 'Subtle', 'Soft fade and rise only'], ['off', 'Off', 'No animation']];
 
 function moApply() {
@@ -17,8 +20,8 @@ function moPicker() {
   const top = document.querySelector('.top .ctrls'); if (!top) return;
   let w = document.getElementById('mo-pick');
   if (!w) { top.insertAdjacentHTML('afterbegin', '<div id="mo-pick"></div>'); w = document.getElementById('mo-pick'); }
-  w.innerHTML = `<button class="mo-btn" data-mo-toggle aria-expanded="${MO.open}" aria-label="Animation level" title="Animation level"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>${MO_LEVELS.find(l => l[0] === MO.level)[1]}</span></button>
-   ${MO.open ? `<div class="mo-pop" role="menu"><b>Animation</b>${MO_LEVELS.map(([v, l, d]) => `<button role="menuitemradio" aria-checked="${MO.level === v}" data-mo="${v}"><span><i></i>${l}</span><small>${d}</small></button>`).join('')}</div>` : ''}`;
+  w.innerHTML = `<button class="mo-btn" data-mo-toggle aria-expanded="${MO.open}" aria-label="Colour and animation" title="Colour and animation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>Look</span></button>
+   ${MO.open ? `<div class="mo-pop" role="menu"><b>Colour</b><div class="mo-sw">${MO_ACCENTS.map(([v, l, c]) => `<button role="menuitemradio" aria-checked="${moAccent() === v}" data-mo-ac="${v}" title="${l}" aria-label="${l}"><i style="background:${c}"></i><small>${l}</small></button>`).join('')}</div><b>Animation</b>${MO_LEVELS.map(([v, l, d]) => `<button role="menuitemradio" aria-checked="${MO.level === v}" data-mo="${v}"><span><i></i>${l}</span><small>${d}</small></button>`).join('')}</div>` : ''}`;
 }
 
 /* Numbers count up from zero, keeping their format (1,234 · 12.5 · 93% · 15.95M). */
@@ -63,14 +66,23 @@ document.addEventListener('pointerdown', e => {
 });
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-mo-toggle],[data-mo]');
+  const t = e.target.closest('[data-mo-toggle],[data-mo],[data-mo-ac]');
   if (!t) { if (MO.open && !e.target.closest('#mo-pick')) { MO.open = false; moPicker(); } return; }
   e.preventDefault(); e.stopPropagation();
+  if (t.dataset.moAc) return moSetAccent(t.dataset.moAc);
   if (t.dataset.mo) return moSet(t.dataset.mo);
   MO.open = !MO.open; moPicker();
 }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && MO.open) { MO.open = false; moPicker(); } });
 
+/* A live strip of the latest alerts on the dashboards. */
+function moLive() {
+  if (MO.level === 'off' || !['exec', 'ceo', 'env', 'casehome', 'incm', 'lactions', 'inspm'].includes(st.view) || typeof auAlerts !== 'function') return;
+  const v = document.getElementById('view'); if (!v || v.querySelector('.mo-live')) return;
+  const al = auAlerts(); if (!al.length) return;
+  const items = al.slice(0, 14).map((a, i) => `<button class="au-tick s-${a.sev}" data-au-goi="${i}"><i></i>${esc(a.title)}</button>`).join('');
+  v.insertAdjacentHTML('afterbegin', `<div class="mo-live" role="region" aria-label="Live alerts"><span class="au-ticker-l"><i class="au-live"></i>LIVE</span><div class="au-ticker-w"><div class="au-ticker-t">${items}${items}</div></div><button class="au-tick" data-go="auto">All ${al.length} alerts →</button></div>`);
+}
 const moBaseRender = render;
-render = function () { moBaseRender(); moApply(); moPicker(); moEnter(false); };
+render = function () { moBaseRender(); moApply(); moPicker(); try { moLive(); } catch (e) {} moEnter(false); };
 moApply(); try { moPicker(); } catch (e) {}

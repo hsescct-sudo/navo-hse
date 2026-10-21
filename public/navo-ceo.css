@@ -18,7 +18,7 @@
 .ceo-sec td.r,.ceo-sec th.r{text-align:right;font-variant-numeric:tabular-nums}
 .ceo-blank{color:#a3b0c2}.ceo-na{color:#b9c4d3;font-size:11px;font-style:italic}
 .ceo-src{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:1px}
-.ceo-src.auto{background:#e2f6ec;color:#16774a}.ceo-src.month{background:#e5f0ff;color:#2559a8}.ceo-src.env{background:#e6f7f4;color:#0e7c70}
+.ceo-src.auto{background:#e2f6ec;color:#16774a}.ceo-src.month{background:#e5f0ff;color:#2559a8}.ceo-src.env{background:var(--ac-tint);color:var(--ac-2)}
 .ceo-entry{margin:16px 0}
 .ceo-eh{margin:16px 0 8px!important;font:800 14px var(--nv-display)!important;color:var(--nv-ink)}
 .ceo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 14px}
@@ -27,7 +27,7 @@
 .env-tile .v small{font-size:13px;color:var(--nv-muted);font-weight:600}
 .env-tile.ok::before{background:linear-gradient(90deg,#1f9d63,#4fd68f)!important}.env-tile.bad::before{background:linear-gradient(90deg,#e5484d,#ff8a65)!important}
 .env-chg{font-size:12px;color:var(--nv-muted);margin-top:6px}.env-chg.down{color:#16774a}.env-chg.up{color:#c42b30}
-.env-hero{background:radial-gradient(500px 260px at 90% 0,rgba(79,214,143,.3),transparent 70%),radial-gradient(460px 260px at 0 120%,rgba(22,194,174,.3),transparent 70%),linear-gradient(135deg,#0b2a2a,#06141a)!important}
+.env-hero{background:radial-gradient(500px 260px at 90% 0,rgba(79,214,143,.3),transparent 70%),radial-gradient(460px 260px at 0 120%,rgba(var(--ac-rgb),.3),transparent 70%),linear-gradient(135deg,#0b2a2a,#06141a)!important}
 @media (max-width:1100px){.ceo-tiles,.env-tiles{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media (max-width:700px){.ceo-rates{grid-template-columns:1fr}.ceo-tiles,.env-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ceo-ctrl select,.ceo-ctrl input{min-width:0;width:100%}.ceo-ctrl label{width:100%}}
 @media print{.ceo-ctrl,.ceo-entry{display:none!important}.ceo-sec{break-inside:avoid}}

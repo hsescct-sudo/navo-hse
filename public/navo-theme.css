@@ -1,0 +1,11 @@
+/* NAVO accent colours. The viewer picks one in the header; status colours (safe, at risk, overdue) never change. */
+:root,:root[data-accent="ocean"]{--ac:#3b82f6;--ac-2:#2563eb;--ac-3:#1e3a8a;--ac-hi:#60a5fa;--ac-soft:#93c5fd;--ac-ink:#ffffff;--ac-tint:#eff6ff;--ac-line:#bfdbfe;--ac-rgb:59,130,246;--ac-soft-rgb:147,197,253}
+:root[data-accent="royal"]{--ac:#8b5cf6;--ac-2:#7c3aed;--ac-3:#4c1d95;--ac-hi:#a78bfa;--ac-soft:#c4b5fd;--ac-ink:#ffffff;--ac-tint:#f5f3ff;--ac-line:#ddd6fe;--ac-rgb:139,92,246;--ac-soft-rgb:196,181,253}
+:root[data-accent="gold"]{--ac:#f59e0b;--ac-2:#d97706;--ac-3:#92400e;--ac-hi:#fbbf24;--ac-soft:#fcd34d;--ac-ink:#1f1300;--ac-tint:#fffbeb;--ac-line:#fde68a;--ac-rgb:245,158,11;--ac-soft-rgb:252,211,77}
+:root[data-accent="crimson"]{--ac:#f43f5e;--ac-2:#e11d48;--ac-3:#881337;--ac-hi:#fb7185;--ac-soft:#fda4af;--ac-ink:#ffffff;--ac-tint:#fff1f2;--ac-line:#fecdd3;--ac-rgb:244,63,94;--ac-soft-rgb:253,164,175}
+:root[data-accent="teal"]{--ac:#16c2ae;--ac-2:#0e9e8e;--ac-3:#0a6f64;--ac-hi:#45e6cf;--ac-soft:#7ee8d8;--ac-ink:#04201d;--ac-tint:#eefaf8;--ac-line:#bfe9e2;--ac-rgb:22,194,174;--ac-soft-rgb:126,232,216}
+/* Illustrations drawn in teal follow the chosen accent. */
+:root[data-accent="ocean"] .nx-hero-art svg{filter:hue-rotate(45deg) saturate(1.2) drop-shadow(0 26px 30px rgba(0,0,0,.55))}
+:root[data-accent="royal"] .nx-hero-art svg{filter:hue-rotate(88deg) drop-shadow(0 26px 30px rgba(0,0,0,.55))}
+:root[data-accent="gold"] .nx-hero-art svg{filter:hue-rotate(-134deg) saturate(1.3) drop-shadow(0 26px 30px rgba(0,0,0,.55))}
+:root[data-accent="crimson"] .nx-hero-art svg{filter:hue-rotate(178deg) saturate(1.2) drop-shadow(0 26px 30px rgba(0,0,0,.55))}

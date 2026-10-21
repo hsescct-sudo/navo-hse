@@ -130,6 +130,41 @@ function auGo(a) {
 }
 
 /* ---------- Automations page ---------- */
+/* ---------- Control room visuals ---------- */
+const auHash = t => { let h = 0; for (const c of String(t)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); };
+function auRadar(al) {
+  const R = { critical: [0.1, 0.38], high: [0.42, 0.6], medium: [0.64, 0.82], info: [0.86, 0.98] }, col = { critical: '#ff4d57', high: '#ffb020', medium: '#5aa2ff', info: '#9fb6cf' };
+  const blips = al.slice(0, 80).map((a, i) => { const ang = (auHash(a.title + i) % 360) * Math.PI / 180, [lo, hi] = R[a.sev], r = 140 * (lo + (hi - lo) * ((auHash(a.detail + a.title) % 1000) / 1000));
+    return `<g class="au-blip s-${a.sev}" data-au-goi="${i}" style="--d:${(auHash(a.title) % 2600)}ms" transform="translate(${(160 + Math.cos(ang) * r).toFixed(1)} ${(160 + Math.sin(ang) * r).toFixed(1)})"><circle r="${a.sev === 'critical' ? 6 : a.sev === 'high' ? 5 : 4}" fill="${col[a.sev]}"/><circle class="au-ping" r="6" fill="none" stroke="${col[a.sev]}"/><title>${esc(a.title)}</title></g>`; }).join('');
+  return `<svg class="au-radar" viewBox="0 0 320 320" aria-label="Alert radar: the closer to the centre, the more urgent">
+   <defs><radialGradient id="au-bg"><stop offset="0" style="stop-color:rgba(var(--ac-rgb),.22)"/><stop offset="1" style="stop-color:rgba(var(--ac-rgb),0)"/></radialGradient>
+   <linearGradient id="au-sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:rgba(var(--ac-rgb),0)"/><stop offset="1" style="stop-color:rgba(var(--ac-rgb),.55)"/></linearGradient></defs>
+   <circle cx="160" cy="160" r="150" fill="url(#au-bg)"/>
+   ${[0.4, 0.62, 0.84, 1].map(f => `<circle cx="160" cy="160" r="${(140 * f).toFixed(0)}" fill="none" stroke="rgba(255,255,255,.12)"/>`).join('')}
+   <path d="M160 10V310M10 160H310" stroke="rgba(255,255,255,.08)"/>
+   <g class="au-sweep"><path d="M160 160 L160 18 A142 142 0 0 1 282 89 Z" fill="url(#au-sweep)"/><path d="M160 160L160 18" style="stroke:rgba(var(--ac-soft-rgb),.9)" stroke-width="2"/></g>
+   ${blips}<circle cx="160" cy="160" r="5" fill="#fff"/>
+   <text x="160" y="${160 - 140 * 0.4 + 10}" class="au-ring-l">critical</text><text x="160" y="${160 - 140 * 0.62 + 10}" class="au-ring-l">high</text><text x="160" y="${160 - 140 * 0.84 + 10}" class="au-ring-l">medium</text></svg>`;
+}
+function auPipeline(al, em) {
+  const recs = (L.reports || []).length + (L.inspections || []).length + (L.records || []).length, open = (L.actions || []).filter(a => !a.closedAt).length, rules = AU_RULES.filter(([id]) => auOn(id)).length;
+  const mailOn = (em.recipients || []).length > 0;
+  const nodes = [['Records', recs.toLocaleString('en-GB'), 'reports, inspections, data'], ['Rules', `${rules}/${AU_RULES.length}`, 'checking continuously'], ['Alerts', al.length.toLocaleString('en-GB'), 'in the bell'], ['Actions', open.toLocaleString('en-GB'), 'open and tracked'], ['Email', mailOn ? 'On' : 'Off', mailOn ? `${em.recipients.length} recipient${em.recipients.length > 1 ? 's' : ''}` : 'not configured']];
+  return `<div class="au-pipe">${nodes.map(([t, v, s], i) => `<div class="au-node" style="--i:${i}"><span class="au-node-ic">${i + 1}</span><b>${v}</b><em>${t}</em><small>${s}</small></div>${i < nodes.length - 1 ? '<div class="au-flow"><i></i><i></i><i></i></div>' : ''}`).join('')}</div>`;
+}
+function auControlRoom(al, em) {
+  const n = s => al.filter(a => a.sev === s).length, tot = Math.max(1, al.length);
+  const ring = (s, l, c) => { const v = n(s), pct = v / tot, C = 2 * Math.PI * 30; return `<div class="au-g"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="30" stroke="rgba(255,255,255,.1)" stroke-width="7" fill="none"/><circle class="au-g-arc" cx="38" cy="38" r="30" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${(C * pct).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 38 38)"/></svg><b>${v}</b><small>${l}</small></div>`; };
+  const live = al.slice(0, 14).map((a, i) => `<button class="au-tick s-${a.sev}" data-au-goi="${i}"><i></i>${esc(a.title)}</button>`).join('');
+  return `<div class="au-room">
+   <div class="au-room-l"><span class="nvi-eyebrow"><i class="au-live"></i> Live automation centre</span><h2>The system watches, reminds and escalates.</h2>
+    <p>${AU_RULES.length} rules scan every record as it changes. The closer an alert sits to the centre of the radar, the more urgent it is. Tap a point to open it.</p>
+    <div class="au-gauges">${ring('critical', 'Critical', '#ff4d57')}${ring('high', 'High', '#ffb020')}${ring('medium', 'Medium', '#5aa2ff')}${ring('info', 'Reminders', '#9fb6cf')}</div></div>
+   <div class="au-room-r">${auRadar(al)}</div>
+   ${al.length ? `<div class="au-ticker"><span class="au-ticker-l"><i class="au-live"></i>LIVE</span><div class="au-ticker-w"><div class="au-ticker-t">${live}${live}</div></div></div>` : ''}
+  </div>${auPipeline(al, em)}`;
+}
+
 function autoPage() {
   if (!isStaff()) return '<div class="panel"><h2>Automations are managed by the HSE team</h2></div>';
   const al = auAlerts(), c = auCfg(), admin = myRole() === 'admin', ids = new Set(myProjects().map(p => p.id));
@@ -137,8 +172,7 @@ function autoPage() {
   const gaps = auPlanGaps(ids), missingPlan = gaps.reduce((n, g) => n + Math.max(0, g.plan - g.planned), 0), rep = auRepeatGroups(ids).filter(g => !(L.actions || []).some(a => a.project === g.project && a.title === auSystemicTitle(g)));
   const em = c.email;
   return `<div class="au">
-   <div class="nvr-hero"><div><span class="nvi-eyebrow">Automation centre</span><h2>The system watches, reminds and escalates.</h2><p>${AU_RULES.length} rules run on live records. Alerts appear in the bell for everyone in scope. Email delivery runs every morning on the server once it is configured.</p></div>
-    <div class="au-sum"><span class="c">${sevCount('critical')}<small>critical</small></span><span class="h">${sevCount('high')}<small>high</small></span><span class="m">${sevCount('medium')}<small>medium</small></span><span class="i">${sevCount('info')}<small>reminders</small></span></div></div>
+   ${auControlRoom(al, em)}
    <div class="au-grid">
     <div class="panel au-act"><h2>Monthly inspection plan</h2><p>${gaps.length ? `${gaps.reduce((n, g) => n + g.plan, 0)} inspections planned this month across ${gaps.length} projects · ${missingPlan} not yet scheduled.` : 'Set “Inspections / month” for projects in Projects & people to use the plan.'}</p>
      <div class="filters">${admin ? `<button class="btn pri" data-au-plan ${missingPlan ? '' : 'disabled'}>Schedule ${missingPlan} inspection${missingPlan === 1 ? '' : 's'}</button>` : ''}${admin ? `<label class="au-sw"><input type="checkbox" data-au-auto="plan" ${c.auto.plan ? 'checked' : ''}><span></span>Run automatically at the start of each month</label>` : ''}</div></div>
@@ -146,7 +180,7 @@ function autoPage() {
      <div class="filters"><button class="btn pri" data-au-sys ${rep.length ? '' : 'disabled'}>Create ${rep.length} systemic action${rep.length === 1 ? '' : 's'}</button>${admin ? `<label class="au-sw"><input type="checkbox" data-au-auto="systemic" ${c.auto.systemic ? 'checked' : ''}><span></span>Create automatically</label>` : ''}</div></div>
    </div>
    <h3 class="nvr-g">Rules</h3>
-   <div class="au-rules">${AU_RULES.map(([id, t, d]) => { const x = by(id), on = auOn(id); return `<div class="panel au-rule ${on ? '' : 'off'}"><div class="au-rule-h"><div><b>${t}</b><small>${d}</small></div>${admin ? `<label class="au-sw"><input type="checkbox" data-au-rule="${id}" ${on ? 'checked' : ''}><span></span></label>` : ''}<em class="${x.some(a => a.sev === 'critical') ? 'c' : x.some(a => a.sev === 'high') ? 'h' : x.length ? 'm' : 'z'}">${on ? x.length : 'off'}</em></div>
+   <div class="au-rules">${AU_RULES.map(([id, t, d]) => { const x = by(id), on = auOn(id); return `<div class="panel au-rule ${on ? '' : 'off'} ${x.some(a => a.sev === 'critical') ? 'is-c' : x.some(a => a.sev === 'high') ? 'is-h' : x.length ? 'is-m' : 'is-z'}"><span class="au-led" title="${on ? 'Running' : 'Off'}"></span><div class="au-rule-h"><div><b>${t}</b><small>${d}</small></div>${admin ? `<label class="au-sw"><input type="checkbox" data-au-rule="${id}" ${on ? 'checked' : ''}><span></span></label>` : ''}<em class="${x.some(a => a.sev === 'critical') ? 'c' : x.some(a => a.sev === 'high') ? 'h' : x.length ? 'm' : 'z'}">${on ? x.length : 'off'}</em></div>
      ${on && x.length ? `<div class="au-list">${x.slice(0, 4).map(a => `<button class="au-item s-${a.sev}" data-au-goi="${al.indexOf(a)}"><i></i><span><b>${esc(a.title)}</b><small>${esc(projName(a.project))} · ${esc(a.detail)}</small></span></button>`).join('')}${x.length > 4 ? `<span class="mx-muted">+${x.length - 4} more</span>` : ''}</div>` : ''}</div>`; }).join('')}</div>
    ${admin ? `<h3 class="nvr-g">Email delivery</h3><div class="panel au-mail"><p>Every morning at 07:00 Riyadh time the server sends the HSE team a digest of overdue and escalated actions, serious and high-potential incidents. The CEO summary goes on the 1st and 15th; the environmental summary on the 1st. It needs the email service keys in Vercel (see the setup note below).</p>
      <div class="fld"><label for="au-rcpt">Recipients (comma separated)</label><input id="au-rcpt" class="mx-in" value="${esc((em.recipients || []).join(', '))}" placeholder="hse.manager@company.com, ceo.office@company.com"></div>

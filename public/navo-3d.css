@@ -7,8 +7,8 @@
   --nv-navy:#0b1a31;
   --nv-navy-2:#11284a;
   --nv-navy-3:#183a66;
-  --nv-teal:#16c2ae;
-  --nv-teal-2:#0e9e8e;
+  --nv-teal:var(--ac);
+  --nv-teal-2:var(--ac-2);
   --nv-cyan:#45b8ff;
   --nv-amber:#f2a516;
   --nv-red:#e5484d;
@@ -37,7 +37,7 @@ body.nv3d{
   color-scheme:light;
   background:
     radial-gradient(1200px 520px at 85% -120px,rgba(69,184,255,.16),transparent 70%),
-    radial-gradient(900px 480px at 20% -200px,rgba(22,194,174,.14),transparent 70%),
+    radial-gradient(900px 480px at 20% -200px,rgba(var(--ac-rgb),.14),transparent 70%),
     var(--nv-canvas)!important;
   color:var(--nv-text);
   font-family:var(--nv-body);
@@ -52,7 +52,7 @@ body.nv3d .app>aside{
   display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;
   padding:0!important;border:0!important;z-index:60!important;overflow:hidden;color:#cfdbea!important;
   background:
-    radial-gradient(420px 260px at 0 0,rgba(22,194,174,.22),transparent 70%),
+    radial-gradient(420px 260px at 0 0,rgba(var(--ac-rgb),.22),transparent 70%),
     radial-gradient(380px 300px at 100% 100%,rgba(69,184,255,.16),transparent 70%),
     linear-gradient(180deg,var(--nv-navy-2),var(--nv-navy) 55%,#081427)!important;
   box-shadow:1px 0 0 rgba(255,255,255,.06) inset,12px 0 40px -18px rgba(5,14,30,.55);
@@ -68,7 +68,7 @@ body.nv3d .app>aside .brand-name{color:#fff!important;font-family:var(--nv-displ
 body.nv3d .app>aside .brand-tag{color:#8fb2cf!important;letter-spacing:.16em;font-size:10px;text-transform:uppercase}
 body.nv3d .nv-cube{width:38px;height:38px;flex:none;perspective:200px}
 body.nv3d .nv-cube i{display:block;width:100%;height:100%;border-radius:11px;transform:rotateX(14deg) rotateY(-18deg);
-  background:linear-gradient(135deg,#3fe0cb,#139a8c 55%,#0b6f7a);box-shadow:4px 6px 0 #0a4e5c,6px 12px 22px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.55);
+  background:linear-gradient(135deg,var(--ac-hi),var(--ac-2) 55%,var(--ac-3));box-shadow:4px 6px 0 var(--ac-3),6px 12px 22px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.55);
   position:relative}
 body.nv3d .nv-cube i::after{content:"";position:absolute;inset:9px 10px;border:2.5px solid #fff;border-top-width:0;border-right-width:0;width:10px;height:6px;transform:rotate(-45deg);left:13px;top:12px;border-radius:1px}
 body.nv3d .app>aside .logo-mark{display:none!important}
@@ -88,13 +88,13 @@ body.nv3d .nv-group>button .nv-chev{margin-left:auto;opacity:.5;transition:trans
 body.nv3d .nv-group>button:hover{background:rgba(255,255,255,.06)!important;color:#fff!important}
 body.nv3d .nv-group.is-open>button{color:#fff!important}
 body.nv3d .nv-group.is-open>button .nv-chev{transform:rotate(90deg)}
-body.nv3d .nv-group.is-current>button .nv-ic{background:linear-gradient(160deg,#3fe0cb,#0f9c8d);color:#04201d;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px -4px rgba(22,194,174,.7)}
+body.nv3d .nv-group.is-current>button .nv-ic{background:linear-gradient(160deg,var(--ac-hi),var(--ac-2));color:var(--ac-ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px -4px rgba(var(--ac-rgb),.7)}
 body.nv3d .nv-sub{display:none;margin:2px 0 8px 28px;padding-left:14px;border-left:1px solid rgba(255,255,255,.1)}
 body.nv3d .nv-group.is-open .nv-sub{display:block}
 body.nv3d .nv-sub button{opacity:1!important;box-shadow:none!important;display:block!important;width:100%;text-align:left;border:0!important;background:none!important;color:#9fb4ca!important;
   padding:8px 10px!important;border-radius:8px!important;font:500 13px var(--nv-body)!important;cursor:pointer;position:relative}
 body.nv3d .nv-sub button:hover{color:#fff!important;background:rgba(255,255,255,.05)!important}
-body.nv3d .nv-sub button[aria-current=true]{color:#fff!important;background:linear-gradient(90deg,rgba(22,194,174,.24),rgba(22,194,174,.04))!important}
+body.nv3d .nv-sub button[aria-current=true]{color:#fff!important;background:linear-gradient(90deg,rgba(var(--ac-rgb),.24),rgba(var(--ac-rgb),.04))!important}
 body.nv3d .nv-sub button[aria-current=true]::before{content:"";position:absolute;left:-15px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--nv-teal);box-shadow:0 0 12px var(--nv-teal)}
 body.nv3d .nv-sub .nv-sub-label{display:block;color:#6f88a3;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:10px 10px 4px}
 
@@ -102,8 +102,8 @@ body.nv3d .nv-user{position:relative;margin:0 12px 14px;padding:12px;border-radi
   background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.03));box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
 body.nv3d .nv-user b{display:block;color:#fff;font-size:13px}
 body.nv3d .nv-user small{color:#8fa7c0;font-size:11px}
-body.nv3d .nv-avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--nv-display);color:#04201d;
-  background:linear-gradient(150deg,#7bf0de,#18b3a2);box-shadow:0 4px 10px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.6)}
+body.nv3d .nv-avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--nv-display);color:var(--ac-ink);
+  background:linear-gradient(150deg,var(--ac-hi),var(--ac));box-shadow:0 4px 10px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.6)}
 
 body.nv3d .app>main{margin-left:var(--nv-side)!important;width:auto!important;min-width:0;min-height:100vh}
 body.nv3d.co-has-rail .app>main,body.nv3d.co-has-rail main{margin-left:var(--nv-side)!important;width:auto!important}
@@ -163,7 +163,7 @@ body.nv3d .nx-hero{
   position:relative;overflow:hidden;border-radius:22px!important;border:0!important;color:#eaf3ff!important;isolation:isolate;
   background:
     radial-gradient(600px 300px at 80% 20%,rgba(69,184,255,.35),transparent 70%),
-    radial-gradient(500px 300px at 10% 110%,rgba(22,194,174,.35),transparent 70%),
+    radial-gradient(500px 300px at 10% 110%,rgba(var(--ac-rgb),.35),transparent 70%),
     linear-gradient(135deg,#0c2142,#0a1830 60%,#07111f)!important;
   box-shadow:0 30px 60px -28px rgba(8,20,40,.75),0 1px 0 rgba(255,255,255,.08) inset!important;
 }
@@ -173,7 +173,7 @@ body.nv3d .nx-hero::before{content:"";position:absolute;left:-20%;right:-20%;bot
   -webkit-mask-image:linear-gradient(to top,#000,transparent 90%);mask-image:linear-gradient(to top,#000,transparent 90%)}
 body.nv3d .nx-hero h2{font:800 clamp(26px,3vw,40px)/1.08 var(--nv-display)!important;color:#fff!important}
 body.nv3d .nx-hero p{color:#b7c9df!important}
-body.nv3d .nx-eyebrow{color:#7ee8d8!important;letter-spacing:.2em!important}
+body.nv3d .nx-eyebrow{color:var(--ac-soft)!important;letter-spacing:.2em!important}
 body.nv3d .nx-hero-art{perspective:700px}
 body.nv3d .nx-hero-art svg{transform:rotateY(-18deg) rotateX(8deg);filter:drop-shadow(0 26px 30px rgba(0,0,0,.55));animation:nv-float 7s ease-in-out infinite}
 @keyframes nv-float{0%,100%{transform:rotateY(-18deg) rotateX(8deg) translateY(0)}50%{transform:rotateY(-12deg) rotateX(4deg) translateY(-8px)}}
@@ -191,9 +191,9 @@ body.nv3d .btn:hover,body.nv3d .cx-btn:hover{background:#f6f9fc!important}
 body.nv3d .btn:active,body.nv3d .cx-btn:active{transform:translateY(2px);box-shadow:0 0 0 #d6dee9,0 2px 4px -2px rgba(11,26,49,.3)!important}
 body.nv3d .btn.pri,body.nv3d .btn.acc,body.nv3d .cx-primary,body.nv3d .nx-primary,body.nv3d button.pri{
   color:#fff!important;border:0!important;
-  background:linear-gradient(180deg,#22d3bd,#0e9e8e)!important;
-  box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 3px 0 #0a6f64,0 10px 18px -8px rgba(14,158,142,.75)!important;text-shadow:0 1px 0 rgba(0,0,0,.18)}
-body.nv3d .btn.pri:active,body.nv3d .cx-primary:active,body.nv3d .nx-primary:active{transform:translateY(3px);box-shadow:0 0 0 #0a6f64,0 3px 8px -4px rgba(14,158,142,.7)!important}
+  background:linear-gradient(180deg,var(--ac-hi),var(--ac-2))!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 3px 0 var(--ac-3),0 10px 18px -8px rgba(14,158,142,.75)!important;text-shadow:0 1px 0 rgba(0,0,0,.18)}
+body.nv3d .btn.pri:active,body.nv3d .cx-primary:active,body.nv3d .nx-primary:active{transform:translateY(3px);box-shadow:0 0 0 var(--ac-3),0 3px 8px -4px rgba(14,158,142,.7)!important}
 body.nv3d .nx-hero .nx-ghost{background:rgba(255,255,255,.08)!important;color:#e6f1ff!important;border-color:rgba(255,255,255,.22)!important;box-shadow:0 2px 0 rgba(0,0,0,.35)!important}
 body.nv3d .co-scope-tabs button[aria-current=true],body.nv3d .co-scope-tabs button.on,body.nv3d .nx-dashboard-tabs button[aria-current=true]{
   background:linear-gradient(180deg,#14325c,#0c1f3c)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 3px 0 #06111f,0 10px 18px -10px rgba(8,20,40,.8)!important}
@@ -202,7 +202,7 @@ body.nv3d .co-scope-tabs button[aria-current=true],body.nv3d .co-scope-tabs butt
 body.nv3d input:not([type=checkbox]):not([type=radio]):not([type=range]),body.nv3d select,body.nv3d textarea{
   border-radius:11px!important;border:1px solid #d5dde8!important;background:#fff!important;color:var(--nv-ink)!important;
   box-shadow:inset 0 2px 3px rgba(11,26,49,.05)!important;transition:border-color .15s,box-shadow .15s;font-family:var(--nv-body)}
-body.nv3d input:focus,body.nv3d select:focus,body.nv3d textarea:focus{outline:none!important;border-color:var(--nv-teal-2)!important;box-shadow:0 0 0 4px rgba(22,194,174,.18),inset 0 2px 3px rgba(11,26,49,.04)!important}
+body.nv3d input:focus,body.nv3d select:focus,body.nv3d textarea:focus{outline:none!important;border-color:var(--nv-teal-2)!important;box-shadow:0 0 0 4px rgba(var(--ac-rgb),.18),inset 0 2px 3px rgba(11,26,49,.04)!important}
 body.nv3d .fld label{font-weight:600;color:var(--nv-ink);font-size:12.5px}
 
 /* ---------- Tables ---------- */
@@ -259,7 +259,7 @@ body.nv3d .nv-bottom{display:none}
     background:linear-gradient(180deg,rgba(20,50,92,.96),rgba(11,26,49,.97));box-shadow:0 18px 40px -12px rgba(5,12,25,.8),inset 0 1px 0 rgba(255,255,255,.12)}
   body.nv3d .nv-bottom button{border:0;background:none;color:#a9bdd3;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border-radius:14px;font:600 10.5px var(--nv-body);cursor:pointer}
   body.nv3d .nv-bottom button svg{width:20px;height:20px}
-  body.nv3d .nv-bottom button[aria-current=true]{color:#fff;background:linear-gradient(160deg,rgba(63,224,203,.35),rgba(22,194,174,.12));box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+  body.nv3d .nv-bottom button[aria-current=true]{color:#fff;background:linear-gradient(160deg,rgba(63,224,203,.35),rgba(var(--ac-rgb),.12));box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
   body.nv3d .tabbar{display:none!important}
 }
 @media print{

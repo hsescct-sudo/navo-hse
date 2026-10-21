@@ -11,7 +11,7 @@
 .mo-pop button span{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--nv-ink)}
 .mo-pop button i{width:14px;height:14px;border-radius:50%;border:2px solid #b8c4d4}
 .mo-pop button small{color:var(--nv-muted);padding-left:22px}
-.mo-pop button[aria-checked=true]{background:#eefaf8;border-color:#bfe9e2}
+.mo-pop button[aria-checked=true]{background:var(--ac-tint);border-color:var(--ac-line)}
 .mo-pop button[aria-checked=true] i{border-color:var(--nv-teal-2);background:radial-gradient(circle,var(--nv-teal-2) 45%,transparent 50%)}
 @keyframes mo-pop{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:none}}
 @media (max-width:700px){.mo-btn span{display:none}.mo-pop{right:auto;left:0}}
@@ -44,8 +44,8 @@ body.mo-cinematic.mo-go .rca-wheel .rcw-seg:nth-child(3n){animation-delay:.08s}b
 /* Hero: living light, parallax art, drifting particles */
 body.mo-cinematic :is(.nx-hero,.nvr-hero){--mx:0;--my:0}
 body.mo-cinematic :is(.nx-hero,.nvr-hero)::after{content:"";position:absolute;inset:-40%;z-index:0;pointer-events:none;
-  background:radial-gradient(closest-side,rgba(126,232,216,.18),transparent 70%) calc(50% + var(--mx) * 160px) calc(50% + var(--my) * 120px)/60% 60% no-repeat,
-  radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.7),transparent 60%),radial-gradient(2px 2px at 70% 60%,rgba(126,232,216,.8),transparent 60%),
+  background:radial-gradient(closest-side,rgba(var(--ac-soft-rgb),.18),transparent 70%) calc(50% + var(--mx) * 160px) calc(50% + var(--my) * 120px)/60% 60% no-repeat,
+  radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.7),transparent 60%),radial-gradient(2px 2px at 70% 60%,rgba(var(--ac-soft-rgb),.8),transparent 60%),
   radial-gradient(1.5px 1.5px at 40% 80%,rgba(255,255,255,.6),transparent 60%),radial-gradient(2px 2px at 85% 20%,rgba(69,184,255,.8),transparent 60%),
   radial-gradient(1.5px 1.5px at 55% 15%,rgba(255,255,255,.5),transparent 60%);
   animation:mo-drift 18s linear infinite}
@@ -61,8 +61,8 @@ body.mo-cinematic .app>aside::before{animation:mo-floor2 5s linear infinite}
 body.mo-cinematic .nv-cube i{animation:mo-cube 6s ease-in-out infinite}
 @keyframes mo-cube{0%,100%{transform:rotateX(14deg) rotateY(-18deg)}50%{transform:rotateX(4deg) rotateY(18deg) translateY(-2px)}}
 body.mo-cinematic .nv-group.is-current>button .nv-ic{animation:mo-glow 3s ease-in-out infinite}
-@keyframes mo-glow{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px -4px rgba(22,194,174,.7)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 22px 0 rgba(22,194,174,.9)}}
-body.mo-cinematic .nv-new{background-size:200% 100%!important;background-image:linear-gradient(110deg,#45e6cf 0%,#13a998 40%,#6ff3de 50%,#13a998 60%,#45e6cf 100%)!important;animation:mo-shine 4s linear infinite}
+@keyframes mo-glow{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px -4px rgba(var(--ac-rgb),.7)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 22px 0 rgba(var(--ac-rgb),.9)}}
+body.mo-cinematic .nv-new{background-size:200% 100%!important;background-image:linear-gradient(110deg,var(--ac-hi) 0%,var(--ac-2) 40%,var(--ac-soft) 50%,var(--ac-2) 60%,var(--ac-hi) 100%)!important;animation:mo-shine 4s linear infinite}
 @keyframes mo-shine{from{background-position:200% 0}to{background-position:-200% 0}}
 
 /* Pressed and hover depth */
@@ -76,3 +76,52 @@ body.mo-cinematic .nvi-o[aria-checked=true],body.mo-cinematic .rca-seg button[ar
 @keyframes mo-pick{from{transform:scale(.92)}}
 
 @media (prefers-reduced-motion:reduce){body.mo-cinematic *{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+.mo-sw{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:0 4px 8px}
+.mo-sw button{display:grid!important;justify-items:center;gap:4px;padding:8px 2px!important;border-radius:12px}
+.mo-sw i{width:26px;height:26px;border-radius:9px;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 3px 0 rgba(0,0,0,.18)}
+.mo-sw small{font-size:10px!important;padding:0!important;text-align:center;line-height:1.2}
+.mo-sw button[aria-checked=true]{background:var(--ac-tint);border-color:var(--ac-line)}
+.mo-sw button[aria-checked=true] i{outline:2px solid var(--ac);outline-offset:2px}
+.mo-pop{width:330px}
+.mo-sw button i{border:0!important}
+
+/* ---------------- Living dashboards (cinematic) ---------------- */
+/* Drifting light behind every page */
+body.mo-cinematic .app>main{position:relative;isolation:isolate}
+body.mo-cinematic .app>main::before{content:"";position:fixed;inset:0 0 0 var(--nv-side);z-index:-1;pointer-events:none;opacity:.9;
+  background:radial-gradient(420px 420px at var(--bx1,20%) var(--by1,30%),rgba(var(--ac-rgb),.16),transparent 70%),
+             radial-gradient(520px 520px at var(--bx2,80%) var(--by2,70%),rgba(var(--ac-soft-rgb),.14),transparent 70%),
+             radial-gradient(360px 360px at 60% 10%,rgba(124,58,237,.07),transparent 70%);
+  animation:mo-blobs 22s ease-in-out infinite alternate}
+@property --bx1{syntax:'<percentage>';inherits:false;initial-value:20%}
+@property --by1{syntax:'<percentage>';inherits:false;initial-value:30%}
+@property --bx2{syntax:'<percentage>';inherits:false;initial-value:80%}
+@property --by2{syntax:'<percentage>';inherits:false;initial-value:70%}
+@keyframes mo-blobs{0%{--bx1:15%;--by1:25%;--bx2:85%;--by2:75%}50%{--bx1:40%;--by1:60%;--bx2:60%;--by2:30%}100%{--bx1:70%;--by1:20%;--bx2:25%;--by2:80%}}
+@media (max-width:1100px){body.mo-cinematic .app>main::before{inset:0}}
+
+/* KPI tiles: a light runs along the top edge; alert tiles breathe */
+body.mo-cinematic :is(.kpi,.nx-stat,.env-tile)::before{background-size:300% 100%!important;background-image:linear-gradient(90deg,var(--ac-2),var(--ac-hi),#fff,var(--ac-hi),var(--ac-2))!important;animation:mo-edge 3.5s linear infinite}
+@keyframes mo-edge{from{background-position:100% 0}to{background-position:-200% 0}}
+body.mo-cinematic :is(.kpi.alert,.kpi.bad,.env-tile.bad)::before{background-image:linear-gradient(90deg,#d23b3f,#ff8a65,#fff,#ff8a65,#d23b3f)!important}
+body.mo-cinematic .kpi.alert{animation:mo-alert 2.4s ease-in-out infinite}
+@keyframes mo-alert{50%{box-shadow:var(--nv-shadow),0 0 0 1px rgba(229,72,77,.25),0 0 26px -6px rgba(229,72,77,.55)}}
+
+/* Chart cards: a soft light passes across every few seconds */
+body.mo-cinematic :is(.hc,.cd-card,.co-panel){position:relative;overflow:hidden}
+body.mo-cinematic :is(.hc,.cd-card,.co-panel)::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;pointer-events:none;z-index:2;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-14deg);animation:mo-sheen 9s ease-in-out infinite}
+body.mo-cinematic :is(.hc,.cd-card,.co-panel):nth-child(2n)::after{animation-delay:3s}
+body.mo-cinematic :is(.hc,.cd-card,.co-panel):nth-child(3n)::after{animation-delay:6s}
+@keyframes mo-sheen{0%,70%{left:-60%}100%{left:130%}}
+/* Bars lift and glow on hover */
+body.mo-cinematic .hc svg rect{transition:filter .2s,opacity .2s}
+body.mo-cinematic .hc svg:hover rect{opacity:.75}
+body.mo-cinematic .hc svg rect:hover{opacity:1;filter:brightness(1.15) drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+/* Status pills on overdue items pulse */
+body.mo-cinematic :is(.pill.p-crit,.cx-pill.crit){animation:mo-pill 2s ease-in-out infinite}
+@keyframes mo-pill{50%{filter:brightness(1.15);box-shadow:0 0 0 3px rgba(229,72,77,.15)}}
+
+/* Live strip on dashboards */
+.mo-live{display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:10px 12px;border-radius:16px;color:#e6f0fb;background:linear-gradient(135deg,#0c1f3e,#08152a);box-shadow:0 18px 34px -22px rgba(5,12,25,.8)}
+.mo-live .au-ticker-w{flex:1}
