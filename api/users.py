@@ -37,7 +37,8 @@ class ApiError(Exception):
 
 
 def _key():
-    k = os.environ.get("NAVO_SUPABASE_SERVICE_KEY")
+    k = os.environ.get("NAVO_SUPABASE_SERVICE_KEY") or next((v for n, v in os.environ.items() if n.strip() == "NAVO_SUPABASE_SERVICE_KEY"), None)
+    k = (k or "").strip()
     if not k:
         raise ApiError(503, "Account management is not set up yet. Add NAVO_SUPABASE_SERVICE_KEY in Vercel, then redeploy.")
     return k
