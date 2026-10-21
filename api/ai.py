@@ -108,19 +108,20 @@ def claude(content, max_tokens=1600):
 
 
 def clean_analysis(a):
-    lk = max(1, min(5, int(a.get("likelihood") or 1)))
-    sv = max(1, min(5, int(a.get("severity") or 1)))
-    score = lk * sv
-    level = "Low" if score <= 4 else "Medium" if score <= 9 else "High" if score <= 16 else "Critical"
+    known = a.get("likelihood") is not None and a.get("severity") is not None
+    lk = max(1, min(5, int(a.get("likelihood") or 1))) if known else None
+    sv = max(1, min(5, int(a.get("severity") or 1))) if known else None
+    score = lk * sv if known else None
+    level = "Unknown" if not known else "Low" if score <= 4 else "Medium" if score <= 9 else "High" if score <= 16 else "Critical"
     cat = a.get("category")
     a.update({"likelihood": lk, "severity": sv, "risk_score": score, "risk_level": level,
               "category": cat if cat in CATEGORIES else None, "model": MODEL})
     a["corrective_actions"] = [c for c in (a.get("corrective_actions") or []) if isinstance(c, dict) and c.get("title")][:6]
-    days = {"Critical": 1, "High": 3, "Medium": 7, "Low": 14}[level]
+    days = {"Critical": 1, "High": 3, "Medium": 7, "Low": 14, "Unknown": 3}[level]
     for action in a["corrective_actions"]:
         action["title"] = str(action["title"])[:800]
         action["due_days"] = days
-        action["priority"] = "High" if level in ("Critical", "High") else "Normal"
+        action["priority"] = "High" if level in ("Critical", "High", "Unknown") else "Normal"
     a["suggested_close_out_days"] = days
     a["immediate_actions"] = [str(x) for x in (a.get("immediate_actions") or [])][:6]
     a["hazards"] = [str(x) for x in (a.get("hazards") or [])][:8]

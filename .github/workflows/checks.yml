@@ -1,0 +1,29 @@
+name: NAVO checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: JavaScript syntax
+        run: |
+          for f in public/*.js; do node --check "$f"; done
+      - name: Python syntax
+        run: python -m py_compile api/*.py
+      - name: Core rule tests
+        run: |
+          for t in cases-core client-core field-review-core portfolio-map-core client-assurance-core; do
+            node "tests/$t.cjs"
+          done
+      - name: AI and client tests
+        run: python -I tests/client-ai.py

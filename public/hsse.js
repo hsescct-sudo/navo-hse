@@ -313,7 +313,7 @@ function hsExecMetrics(P,cut){const h=hsInit();const ids=hsIds(P);const inP=ts=>
  const R=L.reports.filter(r=>ids.has(r.project)&&inP(r.ts)&&(!con||r.contractor===con));const M=hsMon(P).filter(m=>!cut||+m.data.month.slice(5)<=cut);
  const A=L.actions.filter(a=>ids.has(a.project)&&inP(a.ts)&&(!con||a.contractor===con));const I=L.inspections.filter(i=>ids.has(i.project)&&inP(i.ts));const V=L.activities.filter(v=>ids.has(v.project)&&inP(v.date));
  const cfg=hsKpiCfg();const hrs=hsSum(M,"empHours")+hsSum(M,"conHours");const rate=n=>hrs?+(n*cfg.mult/hrs).toFixed(2):0;
- const lti=R.filter(r=>LTI_SEV.includes(sevOf(r))),trc=R.filter(r=>REC_SEV.includes(sevOf(r)));const lost=lti.reduce((s,r)=>s+(+r.lostDays||0),0);
+ const lti=R.filter(r=>LTI_SEV.includes(sevOf(r))),trc=R.filter(r=>REC_SEV.includes(sevOf(r)));const lostOf=r=>sevOf(r)==="Fatality"?(+r.lostDays||6000):(+r.lostDays||0);const lost=lti.reduce((s,r)=>s+lostOf(r),0);
  const months=[...new Set(M.map(m=>m.data.month))].sort();const lastM=months[months.length-1];const lm=M.filter(m=>m.data.month===lastM);
  const cnt=t=>V.filter(v=>v.type===t).reduce((s,v)=>s+(+v.count||1),0);const now=Date.now();
  const closed=A.filter(a=>a.closedAt);const over=A.filter(a=>!a.closedAt&&a.due&&a.due<now);
