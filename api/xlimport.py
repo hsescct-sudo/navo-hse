@@ -6,6 +6,7 @@ import json
 import logging
 from http.server import BaseHTTPRequestHandler
 
+from api.auth import token_from, user_id
 from api.excel_io import parse_xlsx
 
 
@@ -20,6 +21,8 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(b)
 
     def do_POST(self):
+        if not user_id(token_from(self.headers)):
+            return self._send(401, {"error": "Please sign in again."})
         try:
             n = int(self.headers.get("content-length") or 0)
             if n <= 0 or n > 8_000_000:

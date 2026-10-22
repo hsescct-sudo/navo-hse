@@ -914,7 +914,18 @@ def make(fmt, data):
 
 
 class handler(BaseHTTPRequestHandler):
+    def _deny(self):
+        msg = json.dumps({"error": "Please sign in again to download reports."}).encode()
+        self.send_response(401)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(msg)))
+        self.end_headers()
+        self.wfile.write(msg)
+
     def do_POST(self):
+        from api.auth import token_from, user_id
+        if not user_id(token_from(self.headers)):
+            return self._deny()
         try:
             from urllib.parse import urlparse, parse_qs
             fmt = parse_qs(urlparse(self.path).query).get("fmt", ["xlsx"])[0]

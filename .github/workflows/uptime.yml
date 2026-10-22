@@ -1,0 +1,19 @@
+name: Uptime check
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Site and database respond
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o body.json -w "%{http_code}" --max-time 20 https://navo-hse.vercel.app/api/health || echo 000)
+            if [ "$code" = "200" ]; then cat body.json; exit 0; fi
+            echo "Attempt $i: HTTP $code"; cat body.json 2>/dev/null; sleep 30
+          done
+          echo "::error::NAVO is down or cannot reach the database"; exit 1

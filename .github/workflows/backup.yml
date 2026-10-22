@@ -1,0 +1,25 @@
+name: Daily backup
+on:
+  schedule:
+    - cron: "17 1 * * *"   # 04:17 Riyadh time
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export all tables
+        env:
+          NAVO_SUPABASE_SERVICE_KEY: ${{ secrets.NAVO_SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ -z "$NAVO_SUPABASE_SERVICE_KEY" ]; then echo "::warning::Add the NAVO_SUPABASE_SERVICE_KEY secret to turn on daily backups."; exit 0; fi
+          python scripts/backup.py "backup"
+      - name: Keep for 30 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: navo-backup-${{ github.run_id }}
+          path: backup
+          retention-days: 30
+          if-no-files-found: ignore

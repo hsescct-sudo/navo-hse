@@ -4,25 +4,11 @@ Nothing is written here: saving goes through the signed-in person's own database
 import base64
 import json
 import logging
-import os
-import urllib.request
 from http.server import BaseHTTPRequestHandler
 
 from api.ceo_xlsx import parse
 
-URL = os.environ.get("NAVO_SUPABASE_URL", "https://gvktcleqiidtmgqxbzsy.supabase.co")
-PUB = os.environ.get("NAVO_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_9N-3NV87mniwgZB0dw3IVA_bqK3ppNb")
-
-
-def signed_in(token):
-    if not token:
-        return False
-    try:
-        req = urllib.request.Request(URL + "/auth/v1/user", headers={"apikey": PUB, "Authorization": "Bearer " + token})
-        with urllib.request.urlopen(req, timeout=8) as r:
-            return bool(json.loads(r.read() or b"{}").get("id"))
-    except Exception:
-        return False
+from api.auth import token_from, user_id
 
 
 class handler(BaseHTTPRequestHandler):
@@ -37,8 +23,7 @@ class handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try:
-            auth = self.headers.get("authorization", "")
-            if not signed_in(auth[7:] if auth.lower().startswith("bearer ") else ""):
+            if not user_id(token_from(self.headers)):
                 return self._send(401, {"error": "Please sign in again."})
             n = int(self.headers.get("content-length") or 0)
             if n <= 0 or n > 14_000_000:

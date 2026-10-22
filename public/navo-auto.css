@@ -178,3 +178,11 @@ body.mo-off .au-sweep,body.mo-off .au-blip .au-ping,body.mo-off .au-ticker-t,bod
 .acc-foot{border-top:1px solid #eef1f5;padding-top:14px;margin-top:8px}
 .btn.danger{color:#b42318;border-color:#f4c4c5}
 @media(max-width:640px){.acc-sheet{padding:16px}.acc-head .mx-in{max-width:none;width:100%}}
+/* phones: headings with buttons wrap, tab rows scroll inside themselves */
+@media(max-width:700px){
+  .panel>h2{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .panel>h2 .btn{white-space:normal}
+  .org-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .org-tabs button{flex:0 0 auto}
+  .org-dh{flex-wrap:wrap}
+}
