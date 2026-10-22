@@ -89,4 +89,4 @@ const IGNORE = /createClient|supabase|Failed to fetch|NetworkError|ERR_/i;
   await browser.close(); server.close();
   if (problems.length) { problems.slice(0, 15).forEach(p => console.log('::error::' + p)); process.exit(1); }
   console.log('e2e ok');
-})().catch(e => { console.log('::error::' + String(e })().catch(e => { console.error(e); process.exit(1); });})().catch(e => { console.error(e); process.exit(1); }); e.message || e).split('\n')[0]); process.exit(1); });
+})().catch(e => { console.log('::error::' + String((e && e.message) || e).split('\n')[0]); process.exit(1); });
