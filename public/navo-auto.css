@@ -186,3 +186,5 @@ body.mo-off .au-sweep,body.mo-off .au-blip .au-ping,body.mo-off .au-ticker-t,bod
   .org-tabs button{flex:0 0 auto}
   .org-dh{flex-wrap:wrap}
 }
+/* never let one wide element make the whole page slide sideways on a phone; tables scroll inside their own box */
+@media(max-width:700px){html,body{overflow-x:clip}}
