@@ -4,3 +4,7 @@ node_modules/
 sa.json
 
 __pycache__/
+__pycache__/
+*.pyc
+node_modules/
+backup/
