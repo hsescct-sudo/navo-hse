@@ -9,7 +9,7 @@ create table auth.users(id uuid primary key);create function auth.uid() returns 
 grant usage on schema auth to authenticated;grant execute on function auth.uid() to authenticated;
 create table storage.buckets(id text primary key,name text,public boolean);create table storage.objects(id uuid,name text,bucket_id text);`);
   const base = path.join(__dirname, '../supabase'), read = f => fs.readFileSync(path.isAbsolute(f) ? f : path.join(base, f), 'utf8').replace(/alter publication supabase_realtime add table[\s\S]*?;/g, '');
-  const chain = ['schema.sql', ...fs.readdirSync(base).filter(f => /^00[2-8]_/.test(f)).sort(), ...(process.env.EXTRA_MIGRATION ? [process.env.EXTRA_MIGRATION] : []), '018_project_location_visibility.sql', '021_scope_access.sql', '021_scope_access.sql'];
+  const chain = ['schema.sql', ...fs.readdirSync(base).filter(f => /^00[2-8]_/.test(f)).sort(), ...(process.env.EXTRA_MIGRATION ? [process.env.EXTRA_MIGRATION] : []), '018_project_location_visibility.sql', '021_scope_access.sql', '021_scope_access.sql', '023_speed_indexes.sql', '023_speed_indexes.sql'];
   for (const f of chain) { try { await db.exec(read(f)); } catch (e) { console.error('Failed', f, e.message); process.exit(1); } }
   const id = n => `20000000-0000-0000-0000-00000000000${n}`;
   const U = { admin: id(1), corp: id(2), plat: id(3), div: id(4), clu: id(5), proj: id(6), view: id(7) };

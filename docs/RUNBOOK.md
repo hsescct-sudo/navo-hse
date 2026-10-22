@@ -13,6 +13,8 @@
 **GitHub → Settings → Secrets and variables → Actions:** `NAVO_SUPABASE_SERVICE_KEY` (turns on daily backups).
 
 ## Database changes
+
+Run in order in Supabase → SQL Editor (each is safe to run again): `021_scope_access.sql` (organisation levels), `022_client_errors.sql` (error log), `023_speed_indexes.sql` (speed).
 Run new files in `supabase/` in number order in Supabase → SQL Editor. Current: `021_scope_access.sql`, `022_client_errors.sql`.
 Try every change on staging first.
 
