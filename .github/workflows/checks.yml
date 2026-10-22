@@ -41,8 +41,9 @@ jobs:
         run: |
           cd tests && npm ci --ignore-scripts && node scope-sql.cjs
       - name: Whole app in a real browser (admin, division manager, site worker; desktop and phone)
+        timeout-minutes: 12
         run: |
           mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null
           npm i --no-save playwright@1.56.0 > install.log 2>&1 || { echo "::error::npm install of playwright failed: $(tail -3 install.log | tr '\n' ' ')"; exit 1; }
-          npx playwright install --with-deps chromium > browser.log 2>&1 || { echo "::error::browser install failed: $(tail -3 browser.log | tr '\n' ' ')"; exit 1; }
-          cd "$GITHUB_WORKSPACE" && PLAYWRIGHT_PATH=/tmp/pw/node_modules/playwright node tests/e2e/app.cjs
+          echo "::group::browser install"; timeout 420 npx playwright install --with-deps chromium 2>&1 | tail -20; echo "::endgroup::"; test -d ~/.cache/ms-playwright || { echo "::error::browser install failed: $(tail -3 browser.log | tr '\n' ' ')"; exit 1; }
+          cd "$GITHUB_WORKSPACE" && PLAYWRIGHT_PATH=/tmp/pw/node_modules/playwright timeout 300 node tests/e2e/app.cjs || { echo "::error::browser test failed or took longer than 5 minutes"; exit 1; }
