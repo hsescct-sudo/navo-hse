@@ -188,3 +188,7 @@ body.mo-off .au-sweep,body.mo-off .au-blip .au-ping,body.mo-off .au-ticker-t,bod
 }
 /* never let one wide element make the whole page slide sideways on a phone; tables scroll inside their own box */
 @media(max-width:700px){html,body{overflow-x:clip}}
+.panel.acc-upload{display:flex!important;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;min-height:0!important;height:auto!important;grid-template-columns:none!important}
+.panel.acc-upload>*{margin:0!important;min-height:0!important}
+.panel.acc-upload>div:first-child{flex:1 1 380px}
+.panel.acc-upload .filters{flex:0 0 auto;justify-content:flex-end}
