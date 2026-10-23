@@ -113,7 +113,7 @@ table.qa td{vertical-align:middle}.bad{color:var(--crit)}td.bad{background:#fbec
 @media(max-width:900px){.mx-2,.mx-3,.mx-cb{grid-template-columns:1fr}.mx-dl{grid-template-columns:120px 1fr}.wf-cards{grid-template-columns:1fr}}
 .cpick{border:1px solid var(--line);border-radius:8px;padding:6px 10px;max-height:340px;overflow:auto}.cpick summary{cursor:pointer;font-weight:600;color:#0067C5}.cpick b{display:block;margin:8px 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#555}.cpick label{display:flex;gap:6px;font-size:13px;padding:2px 0}
 .cchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.cchips span{background:#e8eefb;color:#0f1f4b;border-radius:4px;padding:2px 8px;font-size:12px}
-</style><script>try{document.documentElement.dataset.accent=localStorage.getItem('navo-accent')||'ocean'}catch(e){document.documentElement.dataset.accent='ocean'}</script></head><body>
+</style><script>try{document.documentElement.dataset.accent=(function(){try{var st=localStorage.getItem('navo-style')||'cinema';if(st!=='classic')document.documentElement.dataset.style=st}catch(e){}})(),localStorage.getItem('navo-accent')||'ocean'}catch(e){document.documentElement.dataset.accent='ocean'}</script></head><body>
 <title>NAVO HSE</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -1322,8 +1322,8 @@ applyBrand();
 <link rel="stylesheet" href="navo-pro.css?v=20261022b">
 <link rel="stylesheet" href="navo-3d.css?v=20261022b">
 <script src="navo-3d.js?v=20261022b"></script>
-<link rel="stylesheet" href="navo-motion.css?v=20261022b">
-<script src="navo-motion.js?v=20261022b"></script>
+<link rel="stylesheet" href="navo-motion.css?v=20261022b"><link rel="stylesheet" href="navo-cinema.css?v=20261023c">
+<script src="navo-motion.js?v=20261022b"></script><script src="navo-cinema.js?v=20261023c"></script>
 
 </body></html>
 

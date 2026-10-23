@@ -1,0 +1,116 @@
+/* NAVO "Cinematic 3D" style — chosen from Look → Style. Dark glass, chrome edges, deep shadows, light that follows the pointer,
+   a moving 3D floor and floating chrome orbs behind every page. Everything is scoped to html[data-style=cinema]. */
+html[data-style=cinema]{
+  --nv-canvas:#05080f;--nv-surface:#0d1422;--nv-line:rgba(148,178,220,.14);--nv-text:#e8eef8;--nv-muted:#93a3ba;
+  --cm-glass:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.02) 40%,rgba(255,255,255,.01));
+  --cm-edge:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.06) 30%,rgba(var(--ac-rgb),.55) 60%,rgba(255,255,255,.1));
+  --nv-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 0 0 1px rgba(148,178,220,.10),0 18px 40px -18px rgba(0,0,0,.9),0 40px 80px -40px rgba(var(--ac-rgb),.35);
+  --nv-shadow-hi:0 1px 0 rgba(255,255,255,.12) inset,0 0 0 1px rgba(var(--ac-rgb),.35),0 24px 50px -16px rgba(0,0,0,.95),0 50px 100px -40px rgba(var(--ac-rgb),.55);
+  color-scheme:dark;background:#05080f
+}
+html[data-style=cinema] body.nv3d{
+  --bg:#05080f!important;--surface:#0d1422!important;--surface2:#121b2c!important;--fg:#e8eef8!important;--muted:#93a3ba!important;--line:rgba(148,178,220,.14)!important;
+  --cd-bg:#05080f!important;--cd-ink:#e8eef8!important;color-scheme:dark;
+  background:#05080f!important;color:#e8eef8
+}
+/* ---------- living 3D backdrop ---------- */
+#cm-stage{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:none}
+html[data-style=cinema] #cm-stage{display:block}
+html[data-style=cinema] .app{position:relative;z-index:1}
+#cm-stage .cm-sky{position:absolute;inset:-20%;background:
+  radial-gradient(900px 600px at calc(30% + var(--px,0)*60px) calc(10% + var(--py,0)*40px),rgba(var(--ac-rgb),.28),transparent 60%),
+  radial-gradient(800px 600px at 85% 15%,rgba(120,80,255,.20),transparent 60%),
+  radial-gradient(1000px 700px at 60% 110%,rgba(0,200,255,.14),transparent 60%),#05080f}
+#cm-stage .cm-floor{position:absolute;left:-50%;right:-50%;bottom:-10%;height:70%;transform:perspective(600px) rotateX(72deg);transform-origin:bottom;
+  background-image:linear-gradient(rgba(var(--ac-rgb),.45) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ac-rgb),.45) 1px,transparent 1px);background-size:70px 70px;
+  -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 85%);mask-image:linear-gradient(to top,#000 0%,transparent 85%);opacity:.55;animation:cmFloor 6s linear infinite}
+@keyframes cmFloor{to{background-position:0 70px,0 0}}
+#cm-stage .cm-orb{position:absolute;border-radius:50%;filter:blur(.3px);opacity:.9;
+  background:radial-gradient(circle at 32% 28%,#fff 0,#dfe8f7 8%,#8ea3c4 26%,#2a3a58 55%,#0a1222 78%);box-shadow:inset -18px -24px 50px rgba(0,0,0,.6),0 30px 80px -20px rgba(var(--ac-rgb),.6);animation:cmFloat 16s ease-in-out infinite}
+#cm-stage .cm-orb::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 70% 75%,rgba(var(--ac-rgb),.55),transparent 45%)}
+#cm-stage .o1{width:220px;height:220px;right:6%;top:12%}
+#cm-stage .o2{width:120px;height:120px;left:22%;top:62%;animation-delay:-5s;animation-duration:19s}
+#cm-stage .o3{width:70px;height:70px;right:32%;top:70%;animation-delay:-9s;animation-duration:13s}
+#cm-stage .cm-ring{position:absolute;width:520px;height:520px;right:-120px;top:-140px;border-radius:50%;border:1px solid rgba(255,255,255,.12);box-shadow:0 0 0 30px rgba(var(--ac-rgb),.03),0 0 0 80px rgba(var(--ac-rgb),.02);transform:rotateX(70deg) rotateZ(20deg);animation:cmSpin 40s linear infinite}
+@keyframes cmFloat{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-20px,-34px,0)}}
+@keyframes cmSpin{to{transform:rotateX(70deg) rotateZ(380deg)}}
+html[data-style=cinema] body.mo-off #cm-stage *{animation:none!important}
+
+/* ---------- surfaces: dark glass with a chrome edge ---------- */
+html[data-style=cinema] body.nv3d :is(.panel,.kpi,.nx-stat,.hc,.co-panel,.cd-band,.nvr-card,.ceo-rate,.ceo-sec,.wf-card,.rca-card,.nvi-q,.env-tile,.au-card,.org-left,.org-right,.acc-sheet,.cx-card,.card,.box){
+  background:var(--cm-glass),rgba(13,20,34,.72)!important;border:1px solid rgba(148,178,220,.14)!important;color:#e8eef8!important;
+  box-shadow:var(--nv-shadow)!important;-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);position:relative}
+html[data-style=cinema] body.nv3d :is(.panel,.kpi,.ceo-rate,.nvr-card,.cd-band)::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:var(--cm-edge);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55}
+html[data-style=cinema] body.nv3d :is(.panel,.kpi,.ceo-rate,.nvr-card):hover{box-shadow:var(--nv-shadow-hi)!important;transform:translateY(-2px)}
+html[data-style=cinema] body.nv3d :is(.panel,.kpi,.ceo-rate,.nvr-card){transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+/* light that follows the pointer across cards */
+html[data-style=cinema] body.nv3d :is(.panel,.kpi,.ceo-rate,.nvr-card,.cd-card)::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(420px circle at var(--lx,-200px) var(--ly,-200px),rgba(var(--ac-rgb),.16),transparent 45%)}
+html[data-style=cinema] body.nv3d .cd-card{background:rgba(10,16,28,.55)!important}
+html[data-style=cinema] body.nv3d .cd-grid{background:rgba(148,178,220,.08)!important}
+html[data-style=cinema] body.nv3d .cd-band>header{background:linear-gradient(90deg,color-mix(in srgb,var(--b) 30%,transparent),transparent 70%)!important;border-color:rgba(148,178,220,.12)!important}
+html[data-style=cinema] body.nv3d .cd-band>header span{color:color-mix(in srgb,var(--b) 55%,#fff)!important;text-shadow:0 0 18px color-mix(in srgb,var(--b) 70%,transparent)}
+html[data-style=cinema] body.nv3d .cd-card h4{color:#dfe7f3!important}
+
+/* ---------- text ---------- */
+html[data-style=cinema] body.nv3d :is(.mx-muted,.muted,.cd-leg,.cd-none){color:#93a3ba!important}
+html[data-style=cinema] body.nv3d .kpi .v,html[data-style=cinema] body.nv3d .ceo-rate b,html[data-style=cinema] body.nv3d .nx-stat strong{
+  background:linear-gradient(180deg,#fff 20%,#9fb3d1 100%);-webkit-background-clip:text;background-clip:text;color:transparent!important;filter:drop-shadow(0 6px 18px rgba(var(--ac-rgb),.35))}
+html[data-style=cinema] body.nv3d .ceo-rate.bad b{background:linear-gradient(180deg,#ffd0d0,#ff5a5f);-webkit-background-clip:text;background-clip:text}
+html[data-style=cinema] body.nv3d .ceo-rate.ok b{background:linear-gradient(180deg,#d6ffe9,#2fd38a);-webkit-background-clip:text;background-clip:text}
+/* charts */
+html[data-style=cinema] .cd-svg :is(.cd-v,.cd-hv){fill:#eef3fb!important}
+html[data-style=cinema] .cd-svg :is(.cd-x,.cd-l){fill:#9fb0c8!important}
+html[data-style=cinema] .cd-svg .cd-axis{stroke:rgba(148,178,220,.25)!important}
+html[data-style=cinema] .cd-bar rect,html[data-style=cinema] .cd-hbar rect{filter:drop-shadow(0 0 6px rgba(var(--ac-rgb),.25))}
+html[data-style=cinema] .cd-bul i{background:rgba(148,178,220,.12)!important}
+html[data-style=cinema] .cd-bul b{color:#eef3fb!important}
+html[data-style=cinema] body.nv3d svg text{fill:currentColor}
+html[data-style=cinema] body.nv3d svg :is(text.cd-dl){fill:#fff}
+
+/* ---------- tables ---------- */
+html[data-style=cinema] body.nv3d table{color:#e8eef8;background:transparent!important}
+html[data-style=cinema] body.nv3d :is(th){background:rgba(255,255,255,.03)!important;color:#9fb0c8!important;border-color:rgba(148,178,220,.14)!important}
+html[data-style=cinema] body.nv3d td{border-color:rgba(148,178,220,.08)!important;background:transparent!important}
+html[data-style=cinema] body.nv3d tbody tr:hover td{background:rgba(var(--ac-rgb),.08)!important}
+html[data-style=cinema] body.nv3d .tbl,html[data-style=cinema] body.nv3d .cx-table{background:transparent!important;border-color:rgba(148,178,220,.12)!important}
+
+/* ---------- controls ---------- */
+html[data-style=cinema] body.nv3d :is(input,select,textarea,.mx-in){background:rgba(5,9,18,.7)!important;color:#e8eef8!important;border:1px solid rgba(148,178,220,.2)!important;box-shadow:inset 0 2px 6px rgba(0,0,0,.5)!important}
+html[data-style=cinema] body.nv3d :is(input,select,textarea):focus{border-color:rgba(var(--ac-rgb),.8)!important;box-shadow:0 0 0 3px rgba(var(--ac-rgb),.25),inset 0 2px 6px rgba(0,0,0,.5)!important}
+html[data-style=cinema] body.nv3d option{background:#0d1422;color:#e8eef8}
+html[data-style=cinema] body.nv3d :is(.btn,button.btn,.cx-btn,.nx-ghost,.seg button,.org-tabs button,.acc-chips button,.cd-mode button){
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.02))!important;color:#e8eef8!important;border:1px solid rgba(148,178,220,.22)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.12) inset,0 4px 0 rgba(0,0,0,.55),0 10px 20px -10px rgba(0,0,0,.8)!important}
+html[data-style=cinema] body.nv3d :is(.btn.pri,.btn.primary,.pri,.nx-primary,.cx-primary,.org-tabs button[aria-current=true],.cd-mode button[aria-selected=true],.acc-chips button.on){
+  background:linear-gradient(180deg,var(--ac-hi,#6aa8ff),var(--ac) 55%,var(--ac-2))!important;color:#fff!important;border-color:transparent!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 4px 0 color-mix(in srgb,var(--ac-2) 60%,#000),0 14px 30px -8px rgba(var(--ac-rgb),.7)!important}
+html[data-style=cinema] body.nv3d :is(.btn,.pri):active{transform:translateY(3px)}
+
+/* ---------- shell ---------- */
+html[data-style=cinema] body.nv3d .top{background:rgba(5,8,15,.6)!important;border-color:rgba(148,178,220,.10)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+html[data-style=cinema] body.nv3d .top :is(h1,h2,.title){color:#fff!important}
+html[data-style=cinema] body.nv3d .app>aside{background:linear-gradient(180deg,rgba(8,13,24,.92),rgba(4,7,14,.96))!important;border-right:1px solid rgba(148,178,220,.10)!important;box-shadow:20px 0 60px -30px rgba(var(--ac-rgb),.4)!important}
+html[data-style=cinema] body.nv3d :is(.nx-hero,.nvr-hero){background:
+  radial-gradient(600px 300px at calc(70% + var(--mx,0)*80px) calc(20% + var(--my,0)*60px),rgba(var(--ac-rgb),.45),transparent 70%),
+  linear-gradient(135deg,#0a1324,#060a14)!important;border:1px solid rgba(148,178,220,.16)!important;box-shadow:var(--nv-shadow-hi)!important}
+html[data-style=cinema] body.nv3d .nv-bottom{background:rgba(8,13,24,.8)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid rgba(148,178,220,.14)!important}
+html[data-style=cinema] body.nv3d .toast{background:#111a2c!important;color:#fff!important;border:1px solid rgba(var(--ac-rgb),.4)}
+html[data-style=cinema] body.nv3d :is(.mo-pop,.au-pop,.nv-pop,.dropdown,.menu){background:#0d1422!important;color:#e8eef8!important;border:1px solid rgba(148,178,220,.18)!important}
+html[data-style=cinema] body.nv3d .nvi-alert{background:rgba(229,72,77,.12)!important;border-color:rgba(229,72,77,.4)!important;color:#ffb4b6!important}
+html[data-style=cinema] body.nv3d ::-webkit-scrollbar{width:10px;height:10px}html[data-style=cinema] body.nv3d ::-webkit-scrollbar-thumb{background:rgba(148,178,220,.2);border-radius:8px}
+/* any leftover white blocks written inline */
+html[data-style=cinema] body.nv3d main [style*="background:#fff"],html[data-style=cinema] body.nv3d main [style*="background: #fff"],html[data-style=cinema] body.nv3d main [style*="background:white"]{background:rgba(13,20,34,.8)!important;color:#e8eef8!important}
+@media print{html[data-style=cinema] #cm-stage{display:none!important}}
+/* surfaces and text fixed on the fly by navo-cinema.js */
+html[data-style=cinema] .cm-dk{background-color:rgba(13,20,34,.78)!important;border-color:rgba(148,178,220,.14)!important}
+html[data-style=cinema] .cm-tint{filter:brightness(.42) saturate(1.4)}
+html[data-style=cinema] .cm-tint *{filter:brightness(2.2)}
+html[data-style=cinema] .cm-lt{color:#e3eaf5!important}
+html[data-style=cinema] svg .cm-lt{fill:#dfe7f3!important}
+html[data-style=cinema] svg rect.cm-dk{fill:rgba(13,20,34,.8)!important}
+html[data-style=cinema] body.nv3d main :is(input,input[type],select,textarea,input.cx-search,input[type=search]),html[data-style=cinema] body.nv3d .app :is(input[type=search],input[type=text]){background:rgba(5,9,18,.7)!important;color:#e8eef8!important;border-color:rgba(148,178,220,.2)!important}
+html[data-style=cinema] body.nv3d :is(.top,#mo-pick) :is(button,.btn,select,.seg){background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.02))!important;color:#e8eef8!important;border:1px solid rgba(148,178,220,.22)!important}
+html[data-style=cinema] body.nv3d .top :is(.seg button[aria-pressed=true],.seg .on,button[aria-pressed=true]){background:linear-gradient(180deg,var(--ac-hi,#6aa8ff),var(--ac))!important;color:#fff!important}
+html[data-style=cinema] :is(.pill,.cx-pill){filter:saturate(1.2) brightness(.95)}
