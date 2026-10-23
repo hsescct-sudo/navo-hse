@@ -284,3 +284,6 @@ body.nv3d .btn[disabled],body.nv3d .btn:disabled{opacity:.5;cursor:not-allowed;b
 /* the sidebar never scrolls sideways (labels were cut on the left after a sideways scroll) */
 body.nv3d .app>aside{overflow-x:hidden!important}
 body.nv3d .app>aside{overscroll-behavior:contain}
+/* menu items never show their own scroll bars (Windows draws arrows on any scroll box) */
+body.nv3d .app>aside *{scrollbar-width:none}
+body.nv3d .app>aside *::-webkit-scrollbar{display:none;width:0;height:0}
