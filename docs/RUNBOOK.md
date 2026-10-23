@@ -49,3 +49,7 @@ Then fix on a branch and release again.
 3. Copy its URL and publishable key into `STAGING` in `public/supabase-config.js`.
 4. In Vercel, add `NAVO_SUPABASE_URL`, `NAVO_SUPABASE_PUBLISHABLE_KEY` and its own `NAVO_SUPABASE_SERVICE_KEY` for **Preview** only.
 5. Preview links now show a purple **STAGING** strip and never touch live data. Until then they show a red **PREVIEW · LIVE data** strip.
+
+## Usage analytics (PostHog)
+
+System admin → Settings → Usage analytics: paste the PostHog project key (phc_…, EU region). No redeploy needed. Privacy: no session recording, no typed text, element text masked, people identified only by a hashed account id, page names only (no record ids). Each user can opt out on their device. Staging never sends analytics.
