@@ -281,3 +281,6 @@ html{scroll-padding-top:96px;scroll-padding-bottom:110px}
 
 /* Disabled buttons look disabled. */
 body.nv3d .btn[disabled],body.nv3d .btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none!important;transform:none!important}
+/* the sidebar never scrolls sideways (labels were cut on the left after a sideways scroll) */
+body.nv3d .app>aside,body.nv3d .app>aside *{overflow-x:hidden!important}
+body.nv3d .app>aside{overscroll-behavior:contain}
