@@ -175,3 +175,23 @@ if (typeof cdHbars === 'function') { const v2Hb = cdHbars; cdHbars = function (i
 
 /* navigation wording: one clear name per section */
 try { const g = NX_GROUPS.find(x => x[0] === 'records'); if (g) { g[1] = 'Observations & records'; g[4] = g[4].map(([v, l]) => [v, v === 'casehome' ? 'Search all records' : v === 'live' ? 'Observations (field reports)' : l]); const lv = g[4].findIndex(x => x[0] === 'live'); if (lv > 0) g[4].unshift(g[4].splice(lv, 1)[0]); g[2] = g[4][0][0]; } if (typeof TITLES !== 'undefined') TITLES.casehome = 'Search all records'; } catch (e) { }
+
+/* ---------- background darkness (dark style) and readable text on dark surfaces ---------- */
+const V2_BG = [['normal', 'Normal', '#1b2b44'], ['dim', 'Darker', '#0f1828'], ['dark', 'Very dark', '#080d16'], ['black', 'Black', '#000']];
+const v2Bg = () => { try { return localStorage.getItem('navo-bg') || 'normal'; } catch (e) { return 'normal'; } };
+function v2BgSet(v) { document.documentElement.dataset.bg = v; try { localStorage.setItem('navo-bg', v); } catch (e) { } }
+v2BgSet(v2Bg());
+if (typeof moPicker === 'function') { const v2Pk = moPicker; moPicker = function () { v2Pk.apply(this, arguments); const pop = document.querySelector('#mo-pick .mo-pop'); if (!pop || pop.querySelector('[data-v2bg]')) return; pop.insertAdjacentHTML('beforeend', `<b>Background (dark style)</b><div class="mo-sw">${V2_BG.map(([v, l, c]) => `<button role="menuitemradio" aria-checked="${v2Bg() === v}" data-v2bg="${v}" title="${l}"><i style="background:${c};border:1px solid #556"></i><small>${l}</small></button>`).join('')}</div>`); }; }
+document.addEventListener('click', e => { const t = e.target.closest('[data-v2bg]'); if (!t) return; e.preventDefault(); e.stopPropagation(); v2BgSet(t.dataset.v2bg); try { moPicker(); } catch (x) { } }, true);
+/* dark style: text drawn in dark colours (navy, maroon, near-black) becomes a light tint of the same colour */
+function v2Lift() {
+  if (document.documentElement.dataset.style !== 'cinema') return;
+  const lum = (r, g, b) => { const f = x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }; return .2126 * f(r) + .7152 * f(g) + .0722 * f(b); };
+  const light = el => { for (let e = el; e && e !== document.body; e = e.parentElement) { if (e.classList && e.classList.contains('cm-dk')) return false; if (e.classList && (e.classList.contains('cm-lt') || e.classList.contains('hb-cell') || e.classList.contains('score-cell') || e.classList.contains('ta-hot') || e.classList.contains('v2-k-light'))) return true; const bg = getComputedStyle(e).backgroundColor, m = bg.match(/[\d.]+/g); if (m && (m.length < 4 || +m[3] > .6)) return lum(+m[0], +m[1], +m[2]) > .45; } return false; };
+  document.querySelectorAll('main *:not(svg *)').forEach(el => { if (el.dataset.v2l) return; if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return; const m = getComputedStyle(el).color.match(/[\d.]+/g); if (!m) return; const [r, g, b] = m.map(Number); if (lum(r, g, b) > .12 || light(el)) return; el.style.setProperty('color', `rgb(${Math.round(r + (255 - r) * .62)},${Math.round(g + (255 - g) * .62)},${Math.round(b + (255 - b) * .62)})`, 'important'); el.dataset.v2l = '1'; });
+  document.querySelectorAll('main svg text').forEach(el => { if (el.dataset.v2l) return; const m = getComputedStyle(el).fill.match(/[\d.]+/g); if (!m) return; const [r, g, b] = m.map(Number); if (lum(r, g, b) > .12) return; const box = el.closest('svg'); if (box && light(box)) return; el.style.setProperty('fill', `rgb(${Math.round(r + (255 - r) * .62)},${Math.round(g + (255 - g) * .62)},${Math.round(b + (255 - b) * .62)})`, 'important'); el.dataset.v2l = '1'; });
+}
+let v2lT = null;
+try { new MutationObserver(() => { clearTimeout(v2lT); v2lT = setTimeout(v2Lift, 120); }).observe(document.body, { childList: true, subtree: true }); } catch (e) { }
+/* switching style repaints the page so every surface takes the new colours at once */
+if (typeof cmSet === 'function') { const v2Cm = cmSet; cmSet = function () { const o = v2Cm.apply(this, arguments); try { document.querySelectorAll('[data-v2l]').forEach(e => { e.style.removeProperty('color'); e.style.removeProperty('fill'); delete e.dataset.v2l; }); document.querySelectorAll('.cm-dk,.cm-lt').forEach(e => e.classList.remove('cm-dk', 'cm-lt')); render(); } catch (e) { } return o; }; }

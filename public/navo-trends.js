@@ -17,7 +17,7 @@ try { hcol = function (s) { const b = hbFor(s); return b ? b.color : 'var(--mute
 /* status words are the band words, so the colour and the word always agree */
 statusFor = function (cur) { const b = hbFor(cur); return b ? b.label : null; };
 const HB_SYM = ['▲', '●', '◆', '■', '■'];
-function hbApply() { try { Object.keys(HSTAT).forEach(k => delete HSTAT[k]); hbBands().forEach((b, i) => HSTAT[b.label] = [HB_SYM[i] || '■', b.color]); } catch (e) {} }
+function hbApply() { try { Object.keys(HSTAT).forEach(k => delete HSTAT[k]); hbBands().forEach((b, i) => HSTAT[b.label] = [HB_SYM[i] || '■', b.color]); } catch (e) {} try { const cls = ['p-ok', 'p-info', 'p-warn', 'p-crit', 'p-crit']; hbBands().forEach((b, i) => { TRND[b.label] = [cls[i] || 'p-crit', HB_SYM[i] || '■']; }); } catch (e) {} }
 hbApply();
 function hbSettings() {
   const B = hbBands();

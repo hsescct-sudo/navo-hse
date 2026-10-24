@@ -54,3 +54,21 @@ body:has(.v2-kpis) .ta-board{grid-auto-rows:300px!important}
 .rg-dash>.cd-card h3{margin-bottom:8px}
 @media (max-width:1100px){.rg-dash{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media (max-width:640px){.rg-dash{grid-template-columns:1fr!important}}
+/* background darkness for the dark style */
+html[data-style=cinema][data-bg=dim] #cm-stage{filter:brightness(.6)}
+html[data-style=cinema][data-bg=dark] #cm-stage{filter:brightness(.32)}
+html[data-style=cinema][data-bg=black] #cm-stage{display:none!important}
+html[data-style=cinema][data-bg=black] body{background:#000!important}
+html[data-style=cinema][data-bg=black] .panel,html[data-style=cinema][data-bg=black] .cd-card,html[data-style=cinema][data-bg=black] .rg-kpi,html[data-style=cinema][data-bg=black] .v2-k,html[data-style=cinema][data-bg=black] .nvr-hero{background:#0d0f13!important;border-color:#23272f!important}
+html[data-style=cinema][data-bg=black] .app>aside{background:#050608!important}
+html[data-style=cinema][data-bg=dark] .panel,html[data-style=cinema][data-bg=dark] .cd-card,html[data-style=cinema][data-bg=dark] .rg-kpi{background-color:rgba(8,12,20,.88)!important}
+/* readable text on dark: muted greys a little brighter */
+html[data-style=cinema] .mx-muted,html[data-style=cinema] .rg-note,html[data-style=cinema] .cd-none,html[data-style=cinema] small{color:#a9b6c8}
+html[data-style=cinema] .nx-dashboard-tabs button,html[data-style=cinema] .nx-dashboard-tabs select,html[data-style=cinema] .co-scope-tabs button,html[data-style=cinema] .cd-tools button{background:rgba(255,255,255,.07)!important;color:#e3eaf4!important;border:1px solid rgba(255,255,255,.16)!important}
+html[data-style=cinema] .nx-dashboard-tabs button[aria-current=true],html[data-style=cinema] .co-scope-tabs button[aria-current=true],html[data-style=cinema] .co-scope-tabs button.on{background:var(--cd-accent,#2f73c9)!important;color:#fff!important;border-color:transparent!important}
+html[data-style=cinema] .co-kpis button{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#e6edf6!important}
+html[data-style=cinema] .co-kpis button span{color:#a9b6c8!important}html[data-style=cinema] .co-kpis button b{color:#fff!important}
+html[data-style=cinema] .co-kpis button:last-child b{color:#ff6b72!important}
+html[data-style=cinema][data-bg=black],html[data-style=cinema][data-bg=black] .app,html[data-style=cinema][data-bg=black] main,html[data-style=cinema][data-bg=black] .top{background:#000!important;background-image:none!important}
+html[data-style=cinema][data-bg=black] .nvr-hero,html[data-style=cinema][data-bg=black] .au-ticker{background:#0b0d11!important;background-image:none!important}
+html[data-style=cinema][data-bg=dark],html[data-style=cinema][data-bg=dark] .app,html[data-style=cinema][data-bg=dark] main{background-color:#05070b!important}
