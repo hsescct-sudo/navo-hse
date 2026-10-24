@@ -928,7 +928,7 @@ function activity(){const g=liveGate();if(g)return g;const P=myProjects();const 
 
 /* ---- Executive dashboards: Overall > Platform > Division > Project, generated from live records ---- */
 const PLATFORMS=["Construction","Non-Construction"];
-const HIER={"Construction":{"Contracting":["Construction","Infrastructure","Asphalt"],"MEP":[],"Asphalt":[],"Plant":[],"NIS":[],"Landscapes":[]},
+const HIER={"Construction":{"Contracting":["Construction","Infrastructure","Asphalt"],"MEP":[],"Asphalt":[],"Plant":["Central Garage","Quarry","Yard"],"Industrial Service":[],"Landscapes":[]},
  "Non-Construction":{"Precast & Readymix":[],"Food":[],"Logistics":[],"Sand plant":[],"Ice plant":[],"Scafform":[],"Commercial (heavy equipment)":[]}};
 const divOpts=(pl,cur)=>`<option value="">Choose business</option>${Object.keys(HIER[pl||"Construction"]).map(d=>`<option ${d===cur?"selected":""}>${esc(d)}</option>`).join("")}`;
 const cluOpts=(pl,dv,cur)=>{const c=(HIER[pl||"Construction"]||{})[dv]||[];return c.length?`<option value="">Choose cluster</option>${c.map(x=>`<option ${x===cur?"selected":""}>${esc(x)}</option>`).join("")}`:""};
@@ -1300,8 +1300,8 @@ applyBrand();
 <script src="vendor/leaflet-1.9.4.js"></script>
 <script src="vendor/leaflet.markercluster-1.5.3.js"></script>
 <script src="portfolio-map-core.js?v=20261022b"></script>
-<link rel="stylesheet" href="portfolio-map.css?v=20261024f">
-<script src="portfolio-map.js?v=20261024f"></script>
+<link rel="stylesheet" href="portfolio-map.css?v=20261024g">
+<script src="portfolio-map.js?v=20261024g"></script>
 <script src="client-assurance-core.js?v=20261022b"></script>
 <link rel="stylesheet" href="client-assurance.css?v=20261022b">
 <script src="client-assurance.js?v=20261022b"></script>
@@ -1322,8 +1322,8 @@ applyBrand();
 <link rel="stylesheet" href="navo-pro.css?v=20261022b">
 <link rel="stylesheet" href="navo-3d.css?v=20261022b">
 <script src="navo-3d.js?v=20261022b"></script>
-<link rel="stylesheet" href="navo-motion.css?v=20261022b"><link rel="stylesheet" href="navo-wfstudio.css?v=20261024a"><link rel="stylesheet" href="navo-reg.css?v=20261024c"><link rel="stylesheet" href="navo-trends.css?v=20261024f"><link rel="stylesheet" href="navo-cinema.css?v=20261024f">
-<script src="navo-motion.js?v=20261022b"></script><script src="navo-cinema.js?v=20261024f"></script><script src="navo-reg.js?v=20261024c"></script><script src="navo-m-training.js?v=20261024c"></script><script src="navo-m-equipment.js?v=20261024c"></script><script src="navo-m-scaffold.js?v=20261024c"></script><script src="navo-m-food.js?v=20261024c"></script><script src="navo-m-connected.js?v=20261024c"></script><script src="navo-m-leadership.js?v=20261024c"></script><script src="navo-m-nav.js?v=20261024c"></script><script src="navo-trends.js?v=20261024f"></script>
+<link rel="stylesheet" href="navo-motion.css?v=20261022b"><link rel="stylesheet" href="navo-wfstudio.css?v=20261024a"><link rel="stylesheet" href="navo-reg.css?v=20261024c"><link rel="stylesheet" href="navo-trends.css?v=20261024g"><link rel="stylesheet" href="navo-cinema.css?v=20261024g">
+<script src="navo-motion.js?v=20261022b"></script><script src="navo-cinema.js?v=20261024g"></script><script src="navo-reg.js?v=20261024c"></script><script src="navo-m-training.js?v=20261024c"></script><script src="navo-m-equipment.js?v=20261024c"></script><script src="navo-m-scaffold.js?v=20261024c"></script><script src="navo-m-food.js?v=20261024c"></script><script src="navo-m-connected.js?v=20261024c"></script><script src="navo-m-leadership.js?v=20261024c"></script><script src="navo-m-nav.js?v=20261024c"></script><script src="navo-trends.js?v=20261024g"></script>
 
 </body></html>
 

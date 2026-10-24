@@ -34,3 +34,17 @@ td.hsc{font-weight:800}
 .co-exposure.co-one table.co-one-t thead th{letter-spacing:0!important;text-transform:none!important;font-size:11.5px!important;padding:6px 10px!important;text-align:right!important;word-break:normal!important;overflow-wrap:normal!important}
 .co-exposure.co-one table.co-one-t thead th:first-child{text-align:left!important}
 .co-exposure.co-one table.co-one-t td{padding:8px 10px!important;text-align:right!important;white-space:nowrap}
+.ta-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:12px}
+.ta-chips>span{opacity:.7;margin-right:4px}
+.ta-chip{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:inherit;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.ta-chip.on{background:#2f73c9;border-color:#2f73c9;color:#fff}
+.ta-chip:disabled{opacity:.35;cursor:default}
+.ta-chip b{color:#ff8a8f;margin-left:3px}
+[data-ta-lagchart] svg{cursor:pointer}
+.ta-drill{border:1px solid rgba(47,115,201,.5)!important}
+.ta-drill-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ta-div .ta-l0 th{font-weight:800;text-transform:uppercase;font-size:12px}
+.ta-div .ta-l0 td{font-weight:700}
+.ta-div .ta-l1 th{padding-left:18px!important;font-weight:700}
+.ta-div .ta-l2 th{padding-left:34px!important;font-weight:600;opacity:.9}
+.ta-div .ta-l3 th{padding-left:50px!important;font-weight:400;opacity:.8;font-size:12px}
