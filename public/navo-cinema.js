@@ -1,6 +1,6 @@
 /* NAVO style switch: Classic (light) or Cinematic 3D (dark glass, chrome, moving 3D floor). Saved on this device. */
 'use strict';
-const CM_STYLES = [['classic', 'Classic', 'Light, clean, print friendly'], ['cinema', 'Cinematic 3D', 'Dark glass, chrome and depth']];
+const CM_STYLES = [['classic', 'Classic', 'Light, clean, print friendly'], ['cinema', 'Cinematic 3D', 'Dark glass, chrome and depth'], ['report', 'Report (Power BI)', 'Flat, light, executive report look']];
 const cmStyle = () => document.documentElement.dataset.style || 'classic';
 function cmSet(s) { if (s === 'classic') delete document.documentElement.dataset.style; else document.documentElement.dataset.style = s; try { localStorage.setItem('navo-style', s); } catch (e) {} cmStage(); moPicker(); }
 function cmStage() {

@@ -1,0 +1,26 @@
+/* NAVO "Report" style: flat, light, Power BI-like. Teal-navy title bars, white tiles with thin borders, no glass, no 3D. */
+html[data-style=report]{--rp-bg:#eef1f5;--rp-card:#fff;--rp-line:#d5dce5;--rp-ink:#1b2a3a;--rp-mut:#5d6b7c;--rp-navy:#0f4c6e;--rp-teal:#127a8a;--rp-acc:#2f73c9}
+html[data-style=report] body{background:var(--rp-bg)!important;color:var(--rp-ink)!important;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif!important}
+html[data-style=report] .app>aside,html[data-style=report] body.nv3d .app>aside{background:#0e2f45!important;border-right:0!important;box-shadow:none!important}
+html[data-style=report] .app>aside *{color:#dce8f2}
+html[data-style=report] .nv-group[aria-current],html[data-style=report] .nv-group.is-current>button{background:rgba(255,255,255,.08)!important}
+html[data-style=report] .nv-sub button[aria-current=true]{background:#127a8a!important;color:#fff!important}
+html[data-style=report] .nv-new{background:#127a8a!important;box-shadow:none!important;border-radius:6px!important}
+html[data-style=report] .top{background:#fff!important;border-bottom:1px solid var(--rp-line)!important;box-shadow:none!important}
+html[data-style=report] .panel,html[data-style=report] .cd-card,html[data-style=report] .rg-card,html[data-style=report] .hs-card,html[data-style=report] .xsec,html[data-style=report] .co-exposure>section,html[data-style=report] .rg-kpi{background:var(--rp-card)!important;border:1px solid var(--rp-line)!important;border-radius:4px!important;box-shadow:none!important;backdrop-filter:none!important;color:var(--rp-ink)!important}
+html[data-style=report] .rg-kpi{border-top:3px solid var(--rp-teal)!important}
+html[data-style=report] .rg-kpi.t-bad{border-top-color:#ED1C24!important}html[data-style=report] .rg-kpi.t-warn{border-top-color:#F7941D!important}html[data-style=report] .rg-kpi.t-ok{border-top-color:#00A651!important}
+html[data-style=report] .nvr-hero,html[data-style=report] .rg-head{background:var(--rp-navy)!important;border:0!important;border-radius:2px!important;box-shadow:none!important;padding:12px 18px!important;min-height:0!important;color:#fff!important}
+html[data-style=report] .nvr-hero h2{font-size:22px!important;margin:2px 0!important;color:#fff!important;font-weight:600!important;letter-spacing:0!important}
+html[data-style=report] .nvr-hero p{color:#cfe1ee!important;font-size:13px!important;margin:0!important}
+html[data-style=report] .nvr-hero .nvi-eyebrow{color:#8fd3dd!important}
+html[data-style=report] .panel h2,html[data-style=report] .cd-card h3,html[data-style=report] .rg-card h3{color:var(--rp-navy)!important;font-weight:600!important}
+html[data-style=report] .btn{border-radius:4px!important;box-shadow:none!important}
+html[data-style=report] .btn.pri{background:var(--rp-teal)!important;border-color:var(--rp-teal)!important;color:#fff!important}
+html[data-style=report] table th{background:#f3f6f9!important;color:var(--rp-mut)!important}
+html[data-style=report] table td{border-color:#e6ebf0!important}
+html[data-style=report] .mx-in,html[data-style=report] select,html[data-style=report] input{border-radius:3px!important;background:#fff!important;color:var(--rp-ink)!important;border:1px solid var(--rp-line)!important}
+html[data-style=report] .ta-chip{border-color:var(--rp-line);background:#fff}
+html[data-style=report] .ta-chip.on{background:var(--rp-teal);color:#fff}
+html[data-style=report] .rg-tab[aria-current=true],html[data-style=report] .rg-tabs button[aria-current=true]{background:var(--rp-teal)!important;color:#fff!important;border-radius:3px!important}
+html[data-style=report] *{text-shadow:none!important}
