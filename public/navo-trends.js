@@ -67,13 +67,13 @@ function taTree(P, val) {
   P.forEach(p => { const a = taPl(p), b = taDv(p), c = taCl(p) || '—'; ((((T[a] = T[a] || {})[b] = T[a][b] || {})[c] = T[a][b][c] || [])).push(p); });
   const sum = a => a.reduce((x, y) => x + (y || 0), 0);
   let h = '';
-  Object.keys(T).sort().forEach(a => {
+  Object.keys(T).sort(orgSortAt('plat')).forEach(a => {
     const pa = Object.values(T[a]).flatMap(x => Object.values(x).flat());
     h += `<tr class="ta-l0"><th>${esc(a)} platform</th>${val(pa).map(v => `<td>${v || ''}</td>`).join('')}<td><b>${sum(val(pa))}</b></td></tr>`;
-    Object.keys(T[a]).sort().forEach(b => {
+    Object.keys(T[a]).sort(orgSortAt('div')).forEach(b => {
       const pb = Object.values(T[a][b]).flat();
       h += `<tr class="ta-l1"><th>${esc(b)}</th>${val(pb).map(v => `<td class="${v ? 'ta-hot' : ''}" style="${v ? `background:rgba(237,28,36,${Math.min(.85, .15 + v * .2)});color:#fff` : ''}">${v || ''}</td>`).join('')}<td><b>${sum(val(pb))}</b></td></tr>`;
-      Object.keys(T[a][b]).sort().forEach(c => {
+      Object.keys(T[a][b]).sort(orgSortAt('clu')).forEach(c => {
         const pc = T[a][b][c];
         if (c !== '—') h += `<tr class="ta-l2"><th>${esc(c)}</th>${val(pc).map(v => `<td>${v || ''}</td>`).join('')}<td>${sum(val(pc))}</td></tr>`;
         pc.forEach(p => { const v = val([p]); if (sum(v)) h += `<tr class="ta-l3"><th>${esc(p.name)}</th>${v.map(x => `<td>${x || ''}</td>`).join('')}<td>${sum(v)}</td></tr>`; });
@@ -119,7 +119,7 @@ function taPage() {
   const recVal = PP => { const s = new Set(PP.map(p => p.id)); return M.map(m => R.filter(r => s.has(r.project) && r.rt === 'Incident' && inM(r.eventTs || r.ts, m) && recIdx.includes(sevOf(r))).length); };
   const ncrVal = PP => { const s = new Set(PP.map(p => p.id)); return M.map(m => F.filter(r => s.has(r.project) && inM(r.ts, m)).length); };
   const sum = a => a.reduce((x, y) => x + (y || 0), 0);
-  const all = myProjects(), uniq = a => [...new Set(a)].filter(Boolean).sort();
+  const all = myProjects(), uniq = a => [...new Set(a)].filter(Boolean).sort(orgSort);
   const plats = uniq(all.map(taPl)), divs = uniq(all.filter(p => !TA.plat || taPl(p) === TA.plat).map(taDv)), clus = uniq(all.filter(p => (!TA.plat || taPl(p) === TA.plat) && (!TA.div || taDv(p) === TA.div)).map(taCl));
   const sel = (k, label, opts, allLbl) => `<label>${label}<select class="mx-in" data-ta="${k}"><option value="">${allLbl}</option>${opts.map(o => { const [v, t] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(v)}" ${TA[k] === v ? 'selected' : ''}>${esc(t)}</option>`; }).join('')}</select></label>`;
   const lagChips = `<div class="ta-chips"><span>Drill down:</span>${Object.entries(TA_CLS).map(([k, [n]]) => `<button class="ta-chip ${TA.lag && TA.lag.cls === k && !TA.lag.m ? 'on' : ''}" data-ta-lag="${k}">${esc(n)}</button>`).join('')}</div><div class="ta-chips ta-mon"><span>Month:</span>${M.map((m, i) => { const n = lti[i] + rwc[i] + mtc[i] + fac[i]; return `<button class="ta-chip ${TA.lag && TA.lag.m === m ? 'on' : ''}" data-ta-lag="${TA.lag ? TA.lag.cls : 'rec'}" data-ta-m="${m}" ${n ? '' : 'disabled'}>${lbl[i]}${n ? ` <b>${n}</b>` : ''}</button>`; }).join('')}</div>`;

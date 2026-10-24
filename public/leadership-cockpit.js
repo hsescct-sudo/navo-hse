@@ -330,7 +330,6 @@ function coWorkforce(P) {
     "Corporation",
     "Construction",
     "Non-Construction",
-    ...(P.some((p) => /office/i.test(p.platform || "")) ? ["Offices"] : []),
   ].map((name) => ({
     name,
     ...coWorkRow(
@@ -350,7 +349,6 @@ function coScopeTabs() {
     ["", "Corporation"],
     ["Construction", "Construction platform"],
     ["Non-Construction", "Nonconstruction platform"],
-    ["Offices", "Offices"],
   ]
     .map(
       ([id, label]) =>
