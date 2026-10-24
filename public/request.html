@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Request access · NAVO</title><link rel="stylesheet" href="navo-public.css?v=2"></head>
+<body><main><div class="top"><div class="mark"></div><div><b>NAVO</b><small>HSE PLATFORM</small></div></div>
+<div class="card" id="box"><h1>Request access</h1><p class="sub">An administrator reviews your request and sets your position and projects. You will receive your sign-in details by email or from your HSE manager.</p>
+<form id="f"><label for="name">Full name</label><input id="name" required maxlength="120" autocomplete="name">
+<label for="email">Work email</label><input id="email" type="email" required maxlength="160" autocomplete="email">
+<label for="phone">Mobile</label><input id="phone" type="tel" maxlength="40">
+<label for="company">Company</label><input id="company" maxlength="120">
+<label for="position">Position</label><input id="position" maxlength="120" placeholder="e.g. HSE engineer, site supervisor">
+<label for="project">Project</label><select id="project"><option value="">Choose your project</option></select>
+<label for="manager">Line manager</label><input id="manager" maxlength="120">
+<label for="reason">What do you need NAVO for?</label><textarea id="reason" maxlength="600"></textarea>
+<input class="hp" id="website" tabindex="-1" autocomplete="off">
+<button class="go" id="go">Send request</button><div class="msg" id="msg" role="status"></div>
+<p class="note"><a href="/">Back to sign in</a></p></form></div></main>
+<script>
+const $=id=>document.getElementById(id),api=b=>fetch('/api/public',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Failed');return d});
+api({op:'projects'}).then(d=>d.projects.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;$('project').appendChild(o)})).catch(()=>{});
+$('f').onsubmit=async e=>{e.preventDefault();$('go').disabled=true;$('msg').className='msg';$('msg').textContent='Sending…';
+try{const b={op:'access_request'};['name','email','phone','company','position','project','manager','reason','website'].forEach(k=>b[k]=$(k).value);const d=await api(b);
+$('box').innerHTML=`<div class="done"><div class="big">📨</div><h1>${d.already?'Your request is already waiting':'Request sent'}</h1><p class="sub">An administrator will review it. You will be told when your account is ready.</p><a class="go" style="display:block;text-decoration:none" href="/">Back to sign in</a></div>`}
+catch(x){$('msg').className='msg bad';$('msg').textContent=x.message;$('go').disabled=false}};
+</script></body></html>

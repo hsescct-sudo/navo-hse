@@ -281,6 +281,18 @@ def handle(d, caller):
         return update_user(d, caller)
     if op == "delete":
         return delete_user(d.get("id"), caller)
+    if op == "requests":
+        rows = _http("/rest/v1/access_requests?select=*&order=created_at.desc&limit=200") or []
+        return {"requests": rows}
+    if op == "request_decide":
+        rid, status = str(d.get("id") or ""), d.get("status")
+        if status not in ("Approved", "Rejected") or not re.match(r"^[0-9a-f-]{36}$", rid):
+            raise ApiError(400, "Bad request.")
+        _http("/rest/v1/access_requests?id=eq." + rid, "PATCH", {"status": status, "decided_by": caller, "decided_at": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(), "note": str(d.get("note") or "")[:300]}, extra={"Prefer": "return=minimal"})
+        return {"ok": True}
+    if op == "qr_tokens":
+        import hashlib, hmac
+        return {"tokens": {str(p): hmac.new(_key().encode(), ("navo-qr:" + str(p)).encode(), hashlib.sha256).hexdigest()[:20] for p in (d.get("projects") or [])[:500]}}
     raise ApiError(400, "Unknown request.")
 
 

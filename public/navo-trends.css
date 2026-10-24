@@ -80,3 +80,26 @@ body:has(.ta-board) .rg-kpi span,body:has(.ta-board) .rg-kpi small{font-size:11p
 .ta-board .ta-lagc{flex-direction:column}
 @media (max-width:1100px){body:has(.ta-board) .rg-kpis{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 .ta-board{grid-auto-rows:calc((100vh - 300px)/2)!important}
+/* pilot: access requests, QR posters, alerts, guide */
+.pq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.pq-card{display:flex;gap:12px;align-items:center;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px}
+.pq-card svg{width:110px;height:110px;background:#fff;border-radius:8px;flex:none}
+.pq-qr-wait{width:110px;height:110px;border-radius:8px;background:rgba(255,255,255,.06);flex:none}
+.pq-card small{display:block;opacity:.7;font-size:12px}
+.pq-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pq-req select{min-width:150px}
+.al-box{position:fixed;right:18px;bottom:18px;z-index:2000;width:min(440px,calc(100vw - 32px));animation:alIn .35s ease}
+.al-in{background:#1a0b0d;color:#fff;border:2px solid #ED1C24;border-radius:16px;padding:16px 18px;box-shadow:0 20px 60px rgba(237,28,36,.35)}
+.al-high .al-in{border-color:#F7941D;box-shadow:0 20px 60px rgba(247,148,29,.3);background:#1a120b}
+.al-esc .al-in{animation:alPulse 1.2s infinite}
+.al-h{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.12em}
+.al-dot{width:10px;height:10px;border-radius:50%;background:#ED1C24;box-shadow:0 0 0 0 rgba(237,28,36,.7);animation:alDot 1.2s infinite}
+.al-high .al-dot{background:#F7941D}
+.al-n{margin-left:auto;opacity:.7}
+.al-in h3{margin:8px 0 2px;font-size:18px}.al-in p{margin:4px 0;font-size:14px;opacity:.9}.al-p{opacity:.7!important;font-size:12px!important}
+.al-e{color:#ffb3b6;font-weight:600}
+.al-b{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+@keyframes alIn{from{transform:translateY(30px);opacity:0}}
+@keyframes alDot{70%{box-shadow:0 0 0 10px rgba(237,28,36,0)}}
+@keyframes alPulse{50%{box-shadow:0 0 0 6px rgba(237,28,36,.35),0 20px 60px rgba(237,28,36,.5)}}
+.dg-t td{vertical-align:top;font-size:13px;min-width:120px}

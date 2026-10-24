@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Report a hazard · NAVO</title><link rel="stylesheet" href="navo-public.css?v=2"></head>
+<body><main><div class="top"><div class="mark"></div><div><b>NAVO</b><small>HSE PLATFORM</small></div></div>
+<div class="card" id="box"><button class="lang" id="lang">عربي</button><h1 data-t="h">Report a safety concern</h1><p class="sub" id="proj" data-t="sub">No account needed. Your report goes straight to the site HSE team.</p>
+<form id="f"><label data-t="what">What are you reporting?</label><div class="types" id="types">
+<button type="button" data-v="unsafe"><span>⚠️</span><i data-t="unsafe">Unsafe condition</i></button><button type="button" data-v="act"><span>🚷</span><i data-t="act">Unsafe act</i></button>
+<button type="button" data-v="nearmiss"><span>💥</span><i data-t="nearmiss">Near miss</i></button><button type="button" data-v="injury"><span>🩹</span><i data-t="injury">Injury</i></button>
+<button type="button" data-v="damage"><span>🛠️</span><i data-t="damage">Damage</i></button><button type="button" data-v="good"><span>👍</span><i data-t="good">Good practice</i></button></div>
+<label for="desc" data-t="desc">What happened? Where exactly?</label><textarea id="desc" required maxlength="2000"></textarea>
+<label for="loc" data-t="loc">Area / location</label><input id="loc" maxlength="160">
+<label for="photo" data-t="photo">Photo (optional)</label><input id="photo" type="file" accept="image/*" capture="environment">
+<label for="name" data-t="name">Your name (optional)</label><input id="name" maxlength="80">
+<label for="company" data-t="company">Company (optional)</label><input id="company" maxlength="80">
+<label for="phone" data-t="phone">Phone (optional)</label><input id="phone" type="tel" maxlength="40">
+<input class="hp" id="website" tabindex="-1" autocomplete="off">
+<button class="go" id="go" data-t="send">Send report</button><div class="msg" id="msg" role="status"></div>
+<p class="note" data-t="note">You can report without your name. In an emergency, stop work and call the site emergency number first.</p></form></div></main>
+<script>
+const T={ar:{h:'بلّغ عن خطر',sub:'بدون حساب. البلاغ بيوصل لفريق السلامة في الموقع على طول.',what:'بتبلّغ عن إيه؟',unsafe:'وضع غير آمن',act:'تصرف غير آمن',nearmiss:'كاد أن يحدث',injury:'إصابة',damage:'تلف',good:'ممارسة جيدة',desc:'إيه اللي حصل؟ وفين بالظبط؟',loc:'المنطقة / المكان',photo:'صورة (اختياري)',name:'اسمك (اختياري)',company:'الشركة (اختياري)',phone:'التليفون (اختياري)',send:'ابعت البلاغ',note:'تقدر تبلّغ من غير اسمك. في الطوارئ أوقف الشغل واتصل برقم الطوارئ الأول.'}},q=new URLSearchParams(location.search),P=q.get('p'),K=q.get('t');let type='',lang='en';const $=id=>document.getElementById(id);
+const EN={};document.querySelectorAll('[data-t]').forEach(e=>EN[e.dataset.t]=e.textContent);
+$('lang').onclick=()=>{lang=lang==='en'?'ar':'en';document.documentElement.dir=lang==='ar'?'rtl':'ltr';$('lang').textContent=lang==='ar'?'English':'عربي';document.querySelectorAll('[data-t]').forEach(e=>{if(e.id==='proj'&&e.dataset.p)return;e.textContent=(lang==='ar'?T.ar:EN)[e.dataset.t]})};
+const api=b=>fetch('/api/public',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Failed');return d});
+if(!P||!K){$('box').innerHTML='<h1>Scan the QR code on the site poster</h1><p class="sub">This page opens from the project QR code.</p>'}else api({op:'qr_info',p:P,t:K}).then(d=>{$('proj').dataset.p=1;$('proj').textContent=d.project}).catch(e=>{$('box').innerHTML='<h1>QR code not valid</h1><p class="sub">'+e.message+'</p>'});
+$('types').onclick=e=>{const b=e.target.closest('button');if(!b)return;type=b.dataset.v;[...$('types').children].forEach(x=>x.setAttribute('aria-pressed',x===b))};
+const shrink=f=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>{const s=Math.min(1,1600/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.8))};i.onerror=no;i.src=URL.createObjectURL(f)});
+$('f').onsubmit=async e=>{e.preventDefault();const m=$('msg');m.className='msg';if(!type){m.className='msg bad';m.textContent=lang==='ar'?'اختار نوع البلاغ':'Choose what you are reporting';return}
+$('go').disabled=true;m.textContent=lang==='ar'?'جاري الإرسال…':'Sending…';try{const f=$('photo').files[0],photo=f?await shrink(f):null;
+const d=await api({op:'qr_report',p:P,t:K,type,desc:$('desc').value,loc:$('loc').value,name:$('name').value,company:$('company').value,phone:$('phone').value,photo,website:$('website').value});
+$('box').innerHTML=`<div class="done"><div class="big">✅</div><h1>${lang==='ar'?'شكراً، البلاغ وصل':'Thank you, your report was received'}</h1><p class="sub">${lang==='ar'?'رقم البلاغ':'Reference'}: <code>${d.ref||''}</code></p><button class="go" onclick="location.reload()">${lang==='ar'?'بلاغ جديد':'Report another'}</button></div>`}
+catch(x){m.className='msg bad';m.textContent=x.message;$('go').disabled=false}};
+</script></body></html>
