@@ -1,0 +1,39 @@
+/* Workflow studio */
+.wfs-hero{align-items:center}
+.wfs-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#c9d6ea}
+.wfs-legend span{display:inline-flex;align-items:center;gap:6px}
+.wfs-ico{display:inline-block;width:16px;height:11px;border:1.6px solid currentColor;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.wfs-ico.k-s,.wfs-ico.k-e{border-radius:999px}
+.wfs-ico.k-d{width:10px;height:10px;transform:rotate(45deg);border-radius:1px;margin:0 7px 0 3px}
+.wfs-ico.k-a{border-color:#f2a516}
+.wfs-nav{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.wfs-nav button{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:9px 14px;font-weight:700;cursor:pointer;font-size:13.5px}
+.wfs-nav button i{width:9px;height:9px;border-radius:3px;background:var(--c);box-shadow:0 0 10px var(--c)}
+.wfs-nav button small{font-weight:500;color:var(--muted);font-size:11.5px}
+.wfs-nav button[aria-selected=true]{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 22%,transparent)}
+.wfs-nav .wfs-new{border-style:dashed;color:var(--muted)}
+.wfs-panel{display:grid;gap:14px;border-top:3px solid var(--c)!important}
+.wfs-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+.wfs-dirty{color:#c97c06;font-weight:700;font-size:13px}
+.wfs-tools{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
+.wfs-group{display:grid;gap:6px;min-width:0}
+.wfs-group .mx-in{min-width:240px}
+.wfs-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.wfs-sw{display:flex;gap:6px}
+.wfs-sw button{width:26px;height:26px;border-radius:8px;background:var(--c);border:2px solid transparent;cursor:pointer}
+.wfs-sw button[aria-pressed=true]{border-color:var(--fg);box-shadow:0 0 0 2px var(--c)}
+.wfs-add .btn{display:inline-flex;align-items:center}
+.wfs-edit{border:1px solid color-mix(in srgb,var(--c) 45%,var(--line));border-radius:14px;padding:12px 14px;background:color-mix(in srgb,var(--c) 6%,transparent);display:grid;gap:10px}
+.wfs-edit-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
+.wfs-fields{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1.3fr) 140px;gap:10px}
+.wfs-fields .fld{display:grid;gap:4px}.wfs-fields label{font-size:12px;font-weight:700}
+.wfs-hint{margin:0}
+.wfs-canvas{overflow-x:auto;border-radius:14px;background:radial-gradient(600px 300px at 80% 0%,color-mix(in srgb,var(--c) 10%,transparent),transparent 70%),var(--surface2);border:1px solid var(--line);padding:6px}
+.wfs-svg{display:block;width:100%;height:auto}
+.wfs-n{cursor:default;outline:none}
+.wfs-panel .wfs-n[role=button]{cursor:pointer}
+.wfs-n[role=button]:hover>:first-child,.wfs-n:focus-visible>:first-child{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--c) 70%,transparent))}
+.wfs-n.on>:first-child{filter:drop-shadow(0 0 12px color-mix(in srgb,var(--c) 90%,transparent))}
+.wfs-table summary{cursor:pointer;font-weight:700}
+@media(max-width:900px){.wfs-fields{grid-template-columns:1fr 1fr}.wfs-group .mx-in{min-width:0;width:100%}}
+html[data-style=cinema] .wfs-canvas{background:radial-gradient(600px 300px at 80% 0%,color-mix(in srgb,var(--c) 14%,transparent),transparent 70%),rgba(5,9,18,.6)!important}
