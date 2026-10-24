@@ -185,6 +185,13 @@
       if (error) fail(error);
       return path;
     },
+    uploadFile: async (project, file) => {
+      const ext = ((file.name || '').split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) || 'bin';
+      const path = project + "/files/" + crypto.randomUUID() + "." + ext;
+      const { error } = await sb.storage.from("photos").upload(path, file, { contentType: file.type || "application/octet-stream" });
+      if (error) fail(error);
+      return path;
+    },
     photoUrl: async path => { const { data, error } = await sb.storage.from("photos").createSignedUrl(path, 600); if (error) fail(error); return data.signedUrl; }
   };
 
