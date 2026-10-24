@@ -66,8 +66,14 @@ def _http(path, method="GET", body=None, extra=None, raw=None, ctype="applicatio
             b = r.read()
             return json.loads(b) if b else None
     except urllib.error.HTTPError as e:
-        logging.error("supabase %s %s: %s", method, path, e.read()[:300])
-        raise ApiError(502, "The request could not be saved. Please try again.")
+        detail = e.read()[:400].decode("utf-8", "replace")
+        logging.error("supabase %s %s: %s", method, path, detail)
+        try:
+            msg = json.loads(detail).get("message", "")
+        except Exception:
+            msg = ""
+        hint = " (run supabase/027_server_grants.sql)" if "permission denied" in msg else ""
+        raise ApiError(502, "The request could not be saved" + hint + (": " + msg[:160] if msg else ". Please try again."))
 
 
 def _s(d, k, n=300):

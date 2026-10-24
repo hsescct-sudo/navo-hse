@@ -95,3 +95,16 @@ html[data-style=cinema][data-bg=black] #cm-stage{display:none!important}
 html[data-style=cinema][data-bg=black],html[data-style=cinema][data-bg=black] body,html[data-style=cinema][data-bg=black] .app,html[data-style=cinema][data-bg=black] main,html[data-style=cinema][data-bg=black] .top{background:#16181c!important;background-image:none!important}
 html[data-style=cinema][data-bg=black] .panel,html[data-style=cinema][data-bg=black] .cd-card,html[data-style=cinema][data-bg=black] .rg-kpi,html[data-style=cinema][data-bg=black] .v2-k,html[data-style=cinema][data-bg=black] .nvr-hero,html[data-style=cinema][data-bg=black] .au-ticker{background:color-mix(in srgb,#16181c 82%,#ffffff 7%)!important;background-image:none!important;border-color:color-mix(in srgb,#16181c 70%,#ffffff 22%)!important}
 html[data-style=cinema][data-bg=black] .app>aside{background:color-mix(in srgb,#16181c 85%,#000 15%)!important}
+/* NASS marina background (default) */
+html[data-bg=nass] body,html[data-style=cinema][data-bg=nass] body{background:linear-gradient(rgba(8,14,26,.58),rgba(8,14,26,.72)),url(brand/nass-bg.jpg) center/cover fixed!important}
+html[data-bg=nass] #cm-stage{display:none!important}
+html[data-bg=nass] .app,html[data-bg=nass] main{background:transparent!important;background-image:none!important}
+html[data-style=cinema][data-bg=nass] .top{background:rgba(8,14,26,.72)!important;backdrop-filter:blur(10px)}
+html[data-style=cinema][data-bg=nass] .panel,html[data-style=cinema][data-bg=nass] .cd-card,html[data-style=cinema][data-bg=nass] .rg-kpi,html[data-style=cinema][data-bg=nass] .v2-k{background:rgba(14,22,38,.82)!important;backdrop-filter:blur(8px)}
+html:not([data-style=cinema])[data-bg=nass] body,html[data-style=report][data-bg=nass] body{background:linear-gradient(rgba(240,244,249,.80),rgba(240,244,249,.88)),url(brand/nass-bg.jpg) center/cover fixed!important}
+.mo-sw i[style*="url("]{background-size:cover!important}
+
+html[data-bg=nass] .app{background:transparent!important}
+html[data-bg=nass] body::before,html[data-bg=nass] body::after{display:none!important}
+html[data-style=cinema][data-bg=nass] body.nv3d,html[data-style=cinema][data-bg=nass] body.nv3d.nx-app{background:linear-gradient(rgba(8,14,26,.58),rgba(8,14,26,.72)),url(brand/nass-bg.jpg) center/cover fixed!important}
+html[data-style=cinema][data-bg=nass]{background:#08101c!important}
