@@ -104,17 +104,24 @@ function orgMatrix() {
 }
 
 /* ---------- Page ---------- */
+/* Other features add tabs (addOrgTab) and admin panels (addOrgPanel) here instead of wrapping access(). */
+const ORG_TABS = [], ORG_PANELS = [];
+function addOrgTab(id, label, page) { ORG_TABS.push([id, label, page]); }
+function addOrgPanel(f) { ORG_PANELS.push(f); }
 const orgBaseAccess = access;
 access = function () {
   if (myRole() !== 'admin') return orgBaseAccess();
   const M = Object.values(L.members), lv = l => M.filter(m => (m.scopeLevel || 'project') === l && m.role !== 'admin').length;
-  const tabs = `<div class="org-tabs"><button data-org-tab="access" aria-current="${ORG.tab === 'access'}">People & access</button><button data-org-tab="projects" aria-current="${ORG.tab === 'projects'}">Projects</button><button data-org-tab="matrix" aria-current="${ORG.tab === 'matrix'}">Permissions</button></div>`;
+  const tabs = `<div class="org-tabs"><button data-org-tab="access" aria-current="${ORG.tab === 'access'}">People & access</button>${ORG_TABS.map(([id, l]) => `<button data-org-tab="${id}" aria-current="${ORG.tab === id}">${l}</button>`).join('')}<button data-org-tab="projects" aria-current="${ORG.tab === 'projects'}">Projects</button><button data-org-tab="matrix" aria-current="${ORG.tab === 'matrix'}">Permissions</button></div>`;
   const banner = L.scopeReady === false ? `<div class="nvi-alert">The database has not been updated for organisation levels yet. Until <b>supabase/021_scope_access.sql</b> is run in Supabase, people are saved with their project list only and leaders are saved as site workers.</div>` : '';
   const head = `<div class="nvr-hero org-hero"><div><span class="nvi-eyebrow">Organisation & access</span><h2>Who sees what, in one place.</h2><p>Corporate sees everything, a division sees its division, a project team sees its project. Pick a level on the left, then give access.</p></div>
    <div class="au-sum"><span>${lv('corporate') + M.filter(m => m.role === 'admin').length}<small>corporate</small></span><span>${lv('platform')}<small>platform</small></span><span>${lv('division') + lv('cluster')}<small>division</small></span><span>${lv('project')}<small>project</small></span></div></div>`;
-  if (ORG.tab === 'projects') return head + tabs + banner + orgBaseAccess();
-  if (ORG.tab === 'matrix') return head + tabs + orgMatrix();
-  return head + tabs + banner + `<div class="org-grid"><div class="panel org-left"><h2>Organisation</h2>${orgTree()}</div><div class="panel org-right">${orgDetail()}</div></div>`;
+  const extra = ORG_PANELS.map(f => { try { return f() || ''; } catch (e) { console.error(e); return ''; } }).join('');
+  const custom = ORG_TABS.find(t => t[0] === ORG.tab);
+  if (custom) return head + tabs + custom[2]() + extra;
+  if (ORG.tab === 'projects') return head + tabs + banner + orgBaseAccess() + extra;
+  if (ORG.tab === 'matrix') return head + tabs + orgMatrix() + extra;
+  return head + tabs + banner + `<div class="org-grid"><div class="panel org-left"><h2>Organisation</h2>${orgTree()}</div><div class="panel org-right">${orgDetail()}</div></div>` + extra;
 };
 
 onAfterRender(function () {if (st.view === 'access' && ORG.tab === 'projects') { // the projects tab keeps the project table only; people are managed in People & access

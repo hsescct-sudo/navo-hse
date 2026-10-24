@@ -49,8 +49,7 @@ function anSettingsPanel() {
    <div class="filters"><button class="btn pri" data-an-save>Save</button>${c.key ? `<button class="btn" data-an-toggle>${c.enabled === false ? 'Turn analytics on' : 'Turn analytics off'}</button>` : ''}<span class="mx-muted">${!c.key ? 'Off: no key yet.' : c.enabled === false ? 'Off for everyone.' : 'On for everyone' + (anOptedOut() ? ' except you (opted out on this device).' : '.')}</span></div>
    <div class="filters"><button class="btn" data-an-optout>${anOptedOut() ? 'Include me again' : 'Opt me out on this device'}</button></div></div>`;
 }
-const anBaseSettings = settings;
-settings = function () { const html = anBaseSettings(); return html + (myRole() === 'admin' ? anSettingsPanel() : `<div class="panel"><h2>Usage analytics</h2><div class="filters"><button class="btn" data-an-optout>${anOptedOut() ? 'Include me again' : 'Opt me out on this device'}</button></div></div>`); };
+addSettingsPanel(function () { return (myRole() === 'admin' ? anSettingsPanel() : `<div class="panel"><h2>Usage analytics</h2><div class="filters"><button class="btn" data-an-optout>${anOptedOut() ? 'Include me again' : 'Opt me out on this device'}</button></div></div>`); });
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-an-save],[data-an-toggle],[data-an-optout]'); if (!t) return; e.preventDefault();
   if (t.hasAttribute('data-an-save')) {

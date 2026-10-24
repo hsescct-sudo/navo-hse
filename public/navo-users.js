@@ -113,16 +113,7 @@ function accountsPage() {
 }
 
 /* ---------- hook into Organisation & access ---------- */
-const accBaseAccess = access;
-access = function () {
-  const html = accBaseAccess();
-  if (myRole() !== 'admin') return html;
-  const btn = `<button data-org-tab="accounts" aria-current="${ORG.tab === 'accounts'}">Accounts & passwords</button>`;
-  const withTab = html.replace('<button data-org-tab="projects"', btn + '<button data-org-tab="projects"');
-  if (ORG.tab !== 'accounts') return withTab;
-  const cut = withTab.indexOf('</div>', withTab.indexOf('class="org-tabs"')) + 6;
-  return withTab.slice(0, cut) + accountsPage();
-};
+addOrgTab('accounts', 'Accounts & passwords', () => accountsPage());
 
 function accOpen(uid) {
   const u = (ACC.users || []).find(x => x.id === uid) || { id: uid, email: '', name: '' }, m = L.members[uid];

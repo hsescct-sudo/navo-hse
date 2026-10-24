@@ -25,8 +25,7 @@ function hbSettings() {
    <div class="rg-tw"><table class="rg-t"><thead><tr><th>From score</th><th>Colour</th><th>Word</th><th>Preview</th></tr></thead><tbody>${B.map((b, i) => `<tr><td><input class="mx-in" type="number" min="0" max="100" data-hb="${i}|min" value="${b.min}" style="max-width:90px"></td><td><input type="color" data-hb="${i}|color" value="${b.color}"></td><td><input class="mx-in" data-hb="${i}|label" value="${rgEsc(b.label)}"></td><td><span class="hb-cell" style="background:${b.color};color:${hbInk(b.color)}">${b.min}+ · ${rgEsc(b.label)}</span></td></tr>`).join('')}</tbody></table></div>
    <div class="filters" style="margin-top:10px"><button class="btn pri" data-hb-save>Save colour code</button><button class="btn" data-hb-reset>Use default</button></div></div>`;
 }
-const hbBaseSettings = settings;
-settings = function () { const h = hbBaseSettings(); return myRole() === 'admin' ? h + hbSettings() : h; };
+addSettingsPanel(function () { return myRole() === 'admin' ? hbSettings() : ''; });
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-hb-save],[data-hb-reset]'); if (!t) return; e.preventDefault();
   let bands = HB_DEF;

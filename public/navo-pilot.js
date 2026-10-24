@@ -78,7 +78,7 @@ async function pqPoster(id) {
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NAVO QR posters</title><style>@page{size:A4;margin:14mm}body{font-family:system-ui,Segoe UI,Arial,sans-serif;margin:0;color:#0f1b2d}section{page-break-after:always;text-align:center;padding:10mm 0;border:6px solid #F7941D;border-radius:18px;margin-bottom:8mm}h1{font-size:44px;margin:0;color:#ED1C24;letter-spacing:.04em}h2{font-size:30px;margin:4px 0 14px}.q svg{width:300px;height:300px}.p{font-size:26px;font-weight:800;margin:10px 0}p{font-size:17px;margin:6px 18px}.s{color:#555}.e{margin-top:16px;background:#ED1C24;color:#fff;padding:10px;border-radius:10px;font-weight:700}</style></head><body>${P.map(page).join('')}<script>setTimeout(()=>print(),400)<\/script></body></html>`);
   w.document.close();
 }
-if (typeof access === 'function') { const pqBase = access; access = function () { const html = pqBase.apply(this, arguments); if (myRole() !== 'admin') return html; const btn = `<button data-org-tab="qr" aria-current="${ORG.tab === 'qr'}">QR reporting</button>`; const withTab = html.replace('<button data-org-tab="projects"', btn + '<button data-org-tab="projects"'); if (ORG.tab !== 'qr') return withTab; const cut = withTab.indexOf('</div>', withTab.indexOf('class="org-tabs"')) + 6; return withTab.slice(0, cut) + pqQrPage(); }; }
+addOrgTab('qr', 'QR reporting', () => pqQrPage());
 
 /* ================= 3. serious-event alerts: acknowledge and escalate ================= */
 const AL_SEV = ['Fatality', 'Serious Injury', 'Lost Time (> 7 days)', 'Lost Time', 'Restricted Work', 'Medical Treatment'];

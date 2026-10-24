@@ -242,8 +242,7 @@ SOON.ceo = ['CEO bi-monthly report', '', []]; SOON.env = ['Environmental perform
 Object.assign(TITLES, { ceo: 'CEO bi-monthly report', env: 'Environmental performance' });
 const ceoBaseSoon = soon;
 soon = function () { if (st.view === 'ceo') return ceoPage(); if (st.view === 'env') return envPage(); return ceoBaseSoon(); };
-const ceoBaseSettings = settings;
-settings = function () { const html = ceoBaseSettings(); return myRole() === 'admin' ? html + ceoSettingsPanel() : html; };
+addSettingsPanel(function () { return myRole() === 'admin' ? ceoSettingsPanel() : ''; });
 const ceoGroup = ['reporting', 'CEO & environment', 'ceo', 'dash', [['ceo', 'CEO bi-monthly report'], ['env', 'Environmental performance']]];
 function ceoNavSync() {
   if (typeof NV_IC !== 'undefined' && !NV_IC.reporting) NV_IC.reporting = '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'; const i = NX_GROUPS.findIndex(g => g[0] === 'reporting'); if (CEO_ON() && i < 0) NX_GROUPS.splice(1, 0, ceoGroup); if (!CEO_ON() && i >= 0) NX_GROUPS.splice(i, 1); }
