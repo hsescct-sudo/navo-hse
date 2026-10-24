@@ -48,3 +48,35 @@ td.hsc{font-weight:800}
 .ta-div .ta-l1 th{padding-left:18px!important;font-weight:700}
 .ta-div .ta-l2 th{padding-left:34px!important;font-weight:600;opacity:.9}
 .ta-div .ta-l3 th{padding-left:50px!important;font-weight:400;opacity:.8;font-size:12px}
+/* one-screen board */
+.ta-board{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-auto-rows:calc((100vh - 330px)/2);gap:10px!important;min-height:440px}
+.ta-board>*{grid-column:auto!important;min-height:0;overflow:hidden;display:flex;flex-direction:column;margin:0!important;padding:8px 10px!important}
+.ta-board>* h3,.ta-board>* h2{font-size:12px!important;margin:0 0 4px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ta-board svg{flex:1 1 auto;min-height:0;width:100%;height:100%;max-height:100%}
+.ta-board .rg-note{font-size:10px!important;margin:2px 0 0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ta-board .cd-legend,.ta-board [class*=legend]{font-size:10px!important}
+.ta-board .ta-lagc{flex:1;min-height:0;display:flex}
+.ta-board .ta-chips{margin-top:3px;gap:3px;font-size:10px}
+.ta-board .ta-chip{padding:1px 6px;font-size:10px}
+.ta-board .ta-chips>span{display:none}
+.ta-board .ta-mon{display:none}
+.ta-filters{margin-bottom:6px!important}
+.rg-kpis:has(+.ta-board){margin-bottom:8px!important}
+.ta-more{margin:10px 0}
+.ta-ov{position:fixed;inset:0;background:rgba(3,8,18,.72);backdrop-filter:blur(4px);z-index:900;display:flex;align-items:flex-start;justify-content:center;padding:4vh 3vw;overflow:auto}
+.ta-ov .ta-drill{width:min(1200px,100%);margin:0!important;background:#0c1626!important}
+.ta-ov .ta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:1100px){.ta-board{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:300px}}
+@media (max-width:640px){.ta-board{grid-template-columns:1fr!important}.ta-ov .ta-grid{grid-template-columns:1fr}}
+.view:has(.ta-board) .nvr-hero,main:has(.ta-board) .nvr-hero,body:has(.ta-board) .nvr-hero{display:none!important}
+body:has(.ta-board) .rg-kpis{display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;gap:8px!important}
+body:has(.ta-board) .rg-kpi{padding:6px 10px!important;min-height:0!important}
+body:has(.ta-board) .rg-kpi *{font-size:inherit}
+body:has(.ta-board) .rg-kpi b,body:has(.ta-board) .rg-kpi strong{font-size:20px!important}
+body:has(.ta-board) .rg-kpi span,body:has(.ta-board) .rg-kpi small{font-size:11px!important}
+.ta-filters label{font-size:10px!important}
+.ta-filters select{padding:4px 8px!important;height:30px!important}
+.ta-board{grid-auto-rows:calc((100vh - 290px)/2)!important}
+.ta-board .ta-lagc{flex-direction:column}
+@media (max-width:1100px){body:has(.ta-board) .rg-kpis{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+.ta-board{grid-auto-rows:calc((100vh - 300px)/2)!important}
