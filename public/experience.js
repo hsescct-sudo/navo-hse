@@ -19,8 +19,13 @@ function nxNav(){
  sub.innerHTML=current[4].length>1?current[4].map(([route,label])=>`<button data-go="${route}" aria-current="${st.view===route}">${label}</button>`).join(''):'';
 }
 nav=nxNav;
-const nxOriginalRender=render;
-render=function(){nxOriginalRender();document.body.classList.remove('hs-full');document.body.classList.add('nx-app');document.body.classList.toggle('nx-executive',st.view==='exec');document.getElementById('crumb').textContent=nxGroup()[1]+' / '+(st.country||'All countries');const exports=document.querySelector('#view .xexp');if(exports){const disclosure=document.createElement('details');disclosure.className='nx-exports';const summary=document.createElement('summary');summary.textContent='Executive summary exports';disclosure.append(summary);exports.before(disclosure);disclosure.append(exports);}};
+
+onAfterRender(function () {document.body.classList.remove('hs-full');
+document.body.classList.add('nx-app');
+document.body.classList.toggle('nx-executive',st.view==='exec');
+document.getElementById('crumb').textContent=nxGroup()[1]+' / '+(st.country||'All countries');
+const exports=document.querySelector('#view .xexp');
+if(exports){const disclosure=document.createElement('details');disclosure.className='nx-exports';const summary=document.createElement('summary');summary.textContent='Executive summary exports';disclosure.append(summary);exports.before(disclosure);disclosure.append(exports);}});
 
 function nxHero(eyebrow,title,description,graphic,action='',className=''){
  return `<div class="nx-hero ${className}"><div><span class="nx-eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2><p>${esc(description)}</p>${action}</div><div class="nx-hero-art" aria-hidden="true">${graphic}</div></div>`;

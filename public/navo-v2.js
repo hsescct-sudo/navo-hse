@@ -165,7 +165,7 @@ function v2InvShow() {
   const main = document.querySelector('main .cx-case, main .cx-edit, main') ; if (!main) return;
   main.insertAdjacentHTML('beforeend', `<div class="panel" id="v2-inv-show"><h3>Involved persons</h3><table class="rg-t"><thead><tr><th>Name</th><th>ID</th><th>Company</th><th>Role</th></tr></thead><tbody>${inv.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(x.id || '')}</td><td>${esc(x.company || '')}</td><td>${esc(x.role || '')}</td></tr>`).join('')}</tbody></table></div>`);
 }
-if (typeof render === 'function') { const v2R = render; render = function () { const o = v2R.apply(this, arguments); try { v2InvInject(); v2InvShow(); } catch (e) { } return o; }; }
+onAfterRender(function () { v2InvInject(); v2InvShow(); });
 document.addEventListener('input', e => { const t = e.target; if (!t.dataset || !t.dataset.v2inv) return; const [i, k] = t.dataset.v2inv.split('|'); st.w.involved = st.w.involved || []; st.w.involved[+i] = { ...(st.w.involved[+i] || { role: V2_ROLES[0] }), [k]: t.value }; });
 document.addEventListener('change', e => { const t = e.target; if (!t.dataset || !t.dataset.v2inv) return; const [i, k] = t.dataset.v2inv.split('|'); st.w.involved = st.w.involved || []; st.w.involved[+i] = { ...(st.w.involved[+i] || {}), [k]: t.value }; });
 document.addEventListener('click', e => { const a = e.target.closest('[data-v2invadd],[data-v2invdel]'); if (!a) return; e.preventDefault(); st.w.involved = st.w.involved || []; if (a.dataset.v2invdel != null) st.w.involved.splice(+a.dataset.v2invdel, 1); else { if (!st.w.involved.length) st.w.involved.push({ role: V2_ROLES[0] }); st.w.involved.push({ role: V2_ROLES[0] }); } const b = document.getElementById('v2-inv'); if (b) b.outerHTML = v2InvBlock(); });

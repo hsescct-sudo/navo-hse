@@ -116,14 +116,11 @@ access = function () {
   if (ORG.tab === 'matrix') return head + tabs + orgMatrix();
   return head + tabs + banner + `<div class="org-grid"><div class="panel org-left"><h2>Organisation</h2>${orgTree()}</div><div class="panel org-right">${orgDetail()}</div></div>`;
 };
-const orgBaseRender = render;
-render = function () {
-  orgBaseRender();
-  if (st.view === 'access' && ORG.tab === 'projects') { // the projects tab keeps the project table only; people are managed in People & access
+
+onAfterRender(function () {if (st.view === 'access' && ORG.tab === 'projects') { // the projects tab keeps the project table only; people are managed in People & access
     document.querySelectorAll('#view .panel').forEach(p => { if (p.querySelector('#acc-hits') || /People with access/.test(p.querySelector('h2')?.textContent || '')) p.remove(); });
   }
-  if (st.view === 'access') { try { fillNames(); } catch (e) {} }
-};
+if (st.view === 'access') { try { fillNames(); } catch (e) {} }});
 
 async function orgSave() {
   const f = ORG.form, uid = f.uid || ORG.pick; if (!uid) return;

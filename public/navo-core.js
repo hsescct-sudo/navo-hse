@@ -66,8 +66,8 @@ function navSectionLabels() {
 try { ['plat', 'div', 'clu', 'proj'].forEach(k => { TA[k] = ''; V2A.acc[k] = ''; V2A.aud[k] = ''; }); } catch (e) { }
 
 /* ================= 3. after every render ================= */
-const coreBase = render;
-render = function () { const o = coreBase.apply(this, arguments); try { nfMount(); } catch (e) { console.error(e); } try { navSectionLabels(); } catch (e) { } return o; };
+onAfterRender(nfMount);
+onAfterRender(navSectionLabels);
 
 /* one period control on Trend analysis: the period buttons also set how many months the monthly charts show */
 document.addEventListener('click', e => { const b = e.target.closest('[data-v2per]'); if (!b) return; try { TA.months = { week: 6, month: 6, bimonth: 6, quarter: 12, year: 12, all: 24 }[b.dataset.v2per] || 12; } catch (x) { } }, true);

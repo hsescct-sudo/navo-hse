@@ -136,7 +136,7 @@ document.addEventListener('click', async e => {
   }
 });
 setInterval(() => { try { alScan(); } catch (e) { } }, 20000);
-if (typeof render === 'function') { const alR = render; render = function () { const o = alR.apply(this, arguments); try { alScan(); } catch (e) { } return o; }; }
+onAfterRender(function () { alScan(); });
 /* unacknowledged serious events also show in the bell */
 if (typeof auAlerts === 'function') { const alAu = auAlerts; auAlerts = function () { const out = alAu.apply(this, arguments) || []; try { const ids = new Set(myProjects().map(p => p.id)); (L.reports || []).filter(r => ids.has(r.project) && alLevel(r) && !alAcked(r) && Date.now() - r.ts < 7 * DAY_MS).forEach(r => { const [txt, lv] = alEsc(r); out.unshift({ rule: 'serious', sev: lv >= 2 || alLevel(r) === 'critical' ? 'critical' : 'high', title: 'Not acknowledged: ' + (r.kind || r.rt) + ' · ' + projName(r.project), detail: txt, project: r.project, go: { view: 'incm' } }); }); } catch (e) { } return out; }; }
 

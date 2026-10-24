@@ -83,6 +83,9 @@ function moLive() {
   const items = al.slice(0, 14).map((a, i) => `<button class="au-tick s-${a.sev}" data-au-goi="${i}"><i></i>${esc(a.title)}</button>`).join('');
   v.insertAdjacentHTML('afterbegin', `<div class="mo-live" role="region" aria-label="Live alerts"><span class="au-ticker-l"><i class="au-live"></i>LIVE</span><div class="au-ticker-w"><div class="au-ticker-t">${items}${items}</div></div><button class="au-tick" data-go="auto">All ${al.length} alerts →</button></div>`);
 }
-const moBaseRender = render;
-render = function () { moBaseRender(); moApply(); moPicker(); try { moLive(); } catch (e) {} moEnter(false); };
+
+onAfterRender(function () {moApply();
+moPicker();
+try { moLive(); } catch (e) {}
+moEnter(false);});
 moApply(); try { moPicker(); } catch (e) {}

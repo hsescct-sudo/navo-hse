@@ -247,8 +247,9 @@ settings = function () { const html = ceoBaseSettings(); return myRole() === 'ad
 const ceoGroup = ['reporting', 'CEO & environment', 'ceo', 'dash', [['ceo', 'CEO bi-monthly report'], ['env', 'Environmental performance']]];
 function ceoNavSync() {
   if (typeof NV_IC !== 'undefined' && !NV_IC.reporting) NV_IC.reporting = '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'; const i = NX_GROUPS.findIndex(g => g[0] === 'reporting'); if (CEO_ON() && i < 0) NX_GROUPS.splice(1, 0, ceoGroup); if (!CEO_ON() && i >= 0) NX_GROUPS.splice(i, 1); }
-const ceoBaseRender = render;
-render = function () { ceoNavSync(); if (!CEO_ON() && ['ceo', 'env'].includes(st.view)) st.view = 'exec'; return ceoBaseRender(); };
+
+onBeforeRender(function () {ceoNavSync();
+if (!CEO_ON() && ['ceo', 'env'].includes(st.view)) st.view = 'exec';});
 
 document.addEventListener('change', e => {
   const t = e.target;

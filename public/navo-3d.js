@@ -103,13 +103,12 @@ function nvChrome() {
 function nvSetDrawer(open) { NV.drawer = open; document.body.classList.toggle('nv-drawer', open); }
 
 nav = nvRender;
-const nvBaseRender = render;
-render = function () {
-  const changed = NV.animView !== st.view; NV.animView = st.view;
-  nvBaseRender(); nvRender(); nvTilt();
-  if (changed) { document.body.classList.add('nv-enter'); clearTimeout(NV.enterT); NV.enterT = setTimeout(() => document.body.classList.remove('nv-enter'), 700); }
+onBeforeRender(function () { NV.changed = NV.animView !== st.view; NV.animView = st.view; });
+onAfterRender(function () {
+  nvRender(); nvTilt();
+  if (NV.changed) { document.body.classList.add('nv-enter'); clearTimeout(NV.enterT); NV.enterT = setTimeout(() => document.body.classList.remove('nv-enter'), 700); }
   if (NV.drawer) nvSetDrawer(false);
-};
+});
 
 document.addEventListener('click', e => {
   const grp = e.target.closest('[data-nv-group]');

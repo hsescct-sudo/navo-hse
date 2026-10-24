@@ -35,12 +35,8 @@ document.addEventListener('click', async e => {
   if (await liveSave(() => L.db.doc('admin/structure').set(s), 'Colour code saved') !== false) { L.structure = s; hbApply(); render(); }
 });
 /* status pills in the score card: whole cell coloured like the score */
-const hbBaseRender = render;
-render = function () {
-  const r = hbBaseRender.apply(this, arguments);
-  try { if (!L._hbApplied && L.structure) { L._hbApplied = 1; hbApply(); } const labels = Object.keys(HSTAT); document.querySelectorAll('.hs-health td, .hs table td').forEach(td => { if (td.dataset.hb) return; const t = td.textContent.trim().replace(/^[^A-Za-z]+/, ''); if (!labels.includes(t)) return; const c = HSTAT[t][1]; td.dataset.hb = '1'; td.innerHTML = `<span class="hb-cell" style="background:${c};color:${hbInk(c)}">${rgEsc(t)}</span>`; }); } catch (e) {}
-  return r;
-};
+
+onAfterRender(function () {try { if (!L._hbApplied && L.structure) { L._hbApplied = 1; hbApply(); } const labels = Object.keys(HSTAT); document.querySelectorAll('.hs-health td, .hs table td').forEach(td => { if (td.dataset.hb) return; const t = td.textContent.trim().replace(/^[^A-Za-z]+/, ''); if (!labels.includes(t)) return; const c = HSTAT[t][1]; td.dataset.hb = '1'; td.innerHTML = `<span class="hb-cell" style="background:${c};color:${hbInk(c)}">${rgEsc(t)}</span>`; }); } catch (e) {}});
 
 /* ---------- 3. one exposure box ---------- */
 function coExposure(P) {

@@ -199,8 +199,9 @@ async function auSave(patch, msg) {
 SOON.auto = ['Automations', '', []]; TITLES.auto = 'Automations';
 const auBaseSoon = soon; soon = function () { return st.view === 'auto' ? autoPage() : auBaseSoon(); };
 function auNav() { const g = NX_GROUPS.find(x => x[0] === 'admin'); if (g && !g[4].some(i => i[0] === 'auto')) g[4].splice(1, 0, ['auto', 'Automations']); }
-const auBaseRender = render;
-render = function () { auNav(); auBaseRender(); try { auBell(); } catch (e) {} setTimeout(auRunAutomatic, 0); };
+
+onBeforeRender(function () {auNav();});onAfterRender(function () {try { auBell(); } catch (e) {}
+setTimeout(auRunAutomatic, 0);});
 
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-au-toggle],[data-au-go],[data-au-goi],[data-au-plan],[data-au-sys],[data-au-mailsave],[data-au-test]');

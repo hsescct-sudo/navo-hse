@@ -191,11 +191,9 @@ ${coScopeTabs()}${coExposure(P)}<div class="co-kpis">${[
     gmMountFit();
   });
 };
-const coRenderBase = render;
-render = function () {
-  CO.cache = new Map();
+onBeforeRender(function () { CO.cache = new Map(); });
+onAfterRender(function () {
   try {
-    coRenderBase();
     document.body.classList.toggle(
       "co-active",
       !!document.querySelector(".co-dashboard, .hs-main-wrap, .cd-dashboard"),
@@ -205,7 +203,7 @@ render = function () {
   } finally {
     CO.cache = null;
   }
-};
+});
 document.addEventListener("change", (e) => {
   if (e.target.matches("[data-co-history-mode]")) {
     CO.demoHistory = e.target.value === "demo";

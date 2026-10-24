@@ -36,8 +36,8 @@ function anPage() {
 }
 /* a few named moments that answer the pilot's questions */
 window.navoTrack = (event, props) => { try { if (AN.on && window.posthog) posthog.capture(event, Object.fromEntries(Object.entries(props || {}).filter(([, v]) => typeof v !== 'string' || v.length < 40))); } catch (e) {} };
-const anBaseRender = render;
-render = function () { const r = anBaseRender.apply(this, arguments); try { anStart().then(anPage); } catch (e) {} return r; };
+
+onAfterRender(function () {try { anStart().then(anPage); } catch (e) {}});
 
 /* Settings → Usage analytics (System admin) */
 function anSettingsPanel() {

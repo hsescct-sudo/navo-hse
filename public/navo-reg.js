@@ -328,15 +328,11 @@ function rgPage(m) {
 }
 const rgBaseSoon = soon;
 soon = function () { if (st.view && st.view.startsWith('m-') && REG.mods[st.view.slice(2)]) { const g = typeof liveGate === 'function' && liveGate(); return g || rgPage(REG.mods[st.view.slice(2)]); } return rgBaseSoon(); };
-const rgBaseRender = render;
-render = function () {
-  document.querySelectorAll('body > .rg-modal').forEach(n => { try { if (n.parentNode) n.parentNode.removeChild(n); } catch (e) {} });
-  const r = rgBaseRender.apply(this, arguments);
-  const m = document.querySelector('#view .rg-modal'); if (m) document.body.appendChild(m);
-  rgFillQr();
-  document.querySelectorAll('[data-rg-img]').forEach(async img => { if (img.dataset.done) return; img.dataset.done = '1'; try { img.src = await L.photoUrl(img.dataset.rgImg); } catch (e) {} });
-  return r;
-};
+
+onBeforeRender(function () {document.querySelectorAll('body > .rg-modal').forEach(n => { try { if (n.parentNode) n.parentNode.removeChild(n); } catch (e) {} });});onAfterRender(function () {const m = document.querySelector('#view .rg-modal');
+if (m) document.body.appendChild(m);
+rgFillQr();
+document.querySelectorAll('[data-rg-img]').forEach(async img => { if (img.dataset.done) return; img.dataset.done = '1'; try { img.src = await L.photoUrl(img.dataset.rgImg); } catch (e) {} });});
 
 /* ---------- events ---------- */
 document.addEventListener('click', async e => {

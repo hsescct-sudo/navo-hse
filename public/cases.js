@@ -190,7 +190,7 @@ document.addEventListener('click',async e=>{
 window.addEventListener('beforeunload',e=>{if(CX.dirty){e.preventDefault();e.returnValue='';}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('cx-modal')?.remove();document.getElementById('cx-catalog')?.remove();}});
 // Keep existing render calls (including realtime updates) from destroying active inputs.
-const cxOriginalRender=render;
-render=function(){if(st.view==='caseedit'&&CX.editing&&document.activeElement?.matches('[data-cx-field],[data-cx-question-note]'))return;cxOriginalRender();if(st.view==='caseedit')cxBindFiles();};
+
+onBeforeRender(function () {if(st.view==='caseedit'&&CX.editing&&document.activeElement?.matches('[data-cx-field],[data-cx-question-note]'))return false;});onAfterRender(function () {if(st.view==='caseedit')cxBindFiles();});
 NAV_M.splice(1,0,['casehome','Case workspace'],['casesearch','Case search']);NAV_W.push(['casehome','Cases']);
 Object.assign(TITLES,{casehome:'Case workspace',casesearch:'Case search',caseedit:'Case'});Object.assign(PARENT,{caseedit:'casehome'});
