@@ -115,7 +115,7 @@ function v2Tree(P0, which) {
    ${which === 'acc' ? `<div class="v2-top v2-top2">${rgCard('Injury severity · selection', cdHbars(sevC.map(([l, v]) => ({ l, v, c: /Fatal|Serious|Lost/.test(l) ? '#ED1C24' : /Restricted|Medical/.test(l) ? '#F7941D' : '#8a96a8' })), { w: 420, lw: 150 }))}${rgCard('Top activities · selection', v2Cyl((() => { const o = {}; cur.forEach(r => { const t = v2Topic(r); if (t !== 'Other') o[t] = (o[t] || 0) + 1; }); return Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, 5); })()))}</div>` : ''}
    <div class="panel"><h3>Records in this selection <small>${cur.length}${cur.length > 60 ? ' · latest 60 shown' : ''}</small></h3><div class="rg-tw">${listH}</div></div></div>`;
 }
-if (typeof hsTree === 'function') { hsTree = function (P, which) { return v2Tree(P, which === 'aud' ? 'aud' : 'acc'); }; }
+function hsTree(P, which) { return v2Tree(P, which === 'aud' ? 'aud' : 'acc'); }
 document.addEventListener('change', e => { const t = e.target; if (!t.dataset || !t.dataset.v2a) return; const [w, k] = t.dataset.v2a.split('|'), S = V2A[w]; S[k] = t.value; if (k === 'plat') S.div = S.clu = S.proj = ''; if (k === 'div') S.clu = S.proj = ''; if (k === 'clu') S.proj = ''; render(); });
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-v2aper],[data-v2t],[data-v2tv],[data-v2tx],[data-v2td],[data-v2treset]'); if (!t) return; e.preventDefault(); e.stopPropagation(); const D = t.dataset;

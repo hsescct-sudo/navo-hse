@@ -18,7 +18,7 @@ function nvRing(pct, label) {
   return `<div class="nvi-ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="${r}" stroke="#e5ebf3" stroke-width="9" fill="none"/><circle cx="42" cy="42" r="${r}" stroke="${col}" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="${(c * v / 100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 42 42)"/></svg><b>${pct == null ? '—' : pct + '%'}</b><small>${label}</small></div>`;
 }
 
-inspForm = function () {
+function inspForm() {
   const d = MX.i.draft; const P = myProjects(); const p = L.projects.find(x => x.id === d.project) || P[0]; if (!d.project && p) d.project = p.id;
   const lib = clLib().filter(c => c.active !== false && (!p || !c.platforms || c.platforms.includes(p.platform || 'Construction')) && (!c.divisions || !c.divisions.length || !p || c.divisions.includes(p.division)));
   if (!lib.find(c => c.id === d.cl)) d.cl = lib[0]?.id;
@@ -57,9 +57,9 @@ inspForm = function () {
    ${sections.map(([s, qs]) => `<section class="nvi-sec"><div class="nvi-sec-h"><h3>${esc(s)}</h3><span>${qs.filter(([, k]) => d.ans[k]).length}/${qs.length}</span><button class="nvi-secna" data-nvsecna="${qs.map(([, k]) => k).join(',')}">Section not applicable</button></div>${qs.map(row).join('')}</section>`).join('')}
    <div class="nvi-foot"><div><b>${C.risk}</b> action${C.risk === 1 ? '' : 's'} will be created and assigned when you submit.</div><button class="btn pri" data-isave>Submit inspection</button></div>
   </div>`;
-};
+}
 
-saveInspection = async function () {
+async function saveInspection() {
   const d = MX.i.draft; d.project = gv('in-proj') || d.project; const cl = clById(gv('in-cl') || d.cl); if (!cl) { toast('Choose a checklist.'); return; }
   d.area = gv('in-area'); d.contractor = gv('in-con'); d.date = gv('in-date'); d.googleMapUrl = gv('in-map');
   const ts = new Date(d.date || Date.now()).getTime() || Date.now();
@@ -95,9 +95,9 @@ saveInspection = async function () {
     }
   }, `Inspection submitted · score ${scoreTxt}${C.risk ? ` · ${C.risk} action${C.risk > 1 ? 's' : ''} assigned` : ''}`);
   if (ok !== false) { MX.i.draft = null; render(); }
-};
+}
 
-inspDetail = function (i) {
+function inspDetail(i) {
   const s = iScore(i), st = iStatus(i); const A = L.actions.filter(a => a.sourceId === i.id); const ans = i.answers && i.answers.a ? Object.values(i.answers.a) : null;
   const btns = []; if (st === 'Scheduled' && isStaff()) btns.push(`<button class="btn pri" data-iconduct="${i.id}">Conduct now</button>`); if (st === 'Awaiting verification' && canVerify()) btns.push(`<button class="btn pri" data-iverify="${i.id}">Verify & close</button>`);
   const n = v => (ans || []).filter(x => x.v === v).length;
@@ -110,7 +110,7 @@ inspDetail = function (i) {
    ${A.length && !risks.length ? `<h3>Actions</h3><div class="tbl"><table><tbody>${A.map(a => `<tr class="hot" data-aopen="${a.id}" data-go2="lactions"><td class="id">${ref('ACT', a)}</td><td>${esc(a.title)}</td><td>${esc(a.owner || '')}</td><td><span class="pill ${a.closedAt ? 'p-ok' : aOver(a) ? 'p-crit' : 'p-info'}">${aStatus(a)}</span></td></tr>`).join('')}</tbody></table></div>` : ''}
    <h3>Completed checklist</h3>${ans ? Object.entries(groups).map(([g, xs]) => `<div class="nvi-sec"><div class="nvi-sec-h"><h3>${esc(g)}</h3></div><div class="tbl"><table><thead><tr><th>Question</th><th>Answer</th><th>Finding</th><th>Recommendation</th></tr></thead><tbody>${xs.map(x => `<tr><td>${esc(x.q)}${x.c ? ' <span class="nvi-tag crit">Critical</span>' : ''}</td><td>${pill(x.v)}</td><td>${esc(x.n || '')}</td><td>${esc(x.r || '')}</td></tr>`).join('')}</tbody></table></div></div>`).join('') : `<p class="mx-muted">${st === 'Scheduled' ? 'Not conducted yet.' : 'Recorded as a summary: ' + (i.items || 0) + ' items checked, ' + (i.fails || 0) + ' at risk.'}</p>`}
    <h3>History</h3>${histList(i.history)}</div>`;
-};
+}
 
 /* Interaction: answers, notes, section N/A, fill rest. Inputs write straight into the draft so nothing is lost on re-render. */
 document.addEventListener('click', e => {

@@ -103,13 +103,7 @@ function envValues(ids, months) {
   return { wasteGen: diverted + disposed, wasteDiverted: diverted, wasteDisposed: disposed, diversion: diverted + disposed ? diverted / (diverted + disposed) * 100 : null,
     water, waterPotable: se('waterPotable'), waterNonPotable: se('waterNonPotable'), electricity, renewable, diesel: dieselL, scope1, scope2, ghg: scope1 + scope2, offset: se('offset'), hours: sm('empHours') + sm('conHours') };
 }
-function ceoManual(ids, month, half) {
-  const C = (L.records || []).filter(r => r.kind === 'ceo' && ids.has(r.project) && r.data && r.data.month === month && (!half || r.data.half === half));
-  const out = {}; CEO_MANUAL.forEach(k => { const vals = C.map(r => (r.data.v || {})[k]).filter(v => v !== '' && v != null); if (vals.length) out[k] = vals.reduce((a, b) => a + +b, 0); });
-  if (out.campIdxInt != null) out.campIdxInt = Math.round(out.campIdxInt / C.filter(r => (r.data.v || {}).campIdxInt !== '' && (r.data.v || {}).campIdxInt != null).length);
-  if (out.campIdxExt != null) out.campIdxExt = Math.round(out.campIdxExt / C.filter(r => (r.data.v || {}).campIdxExt !== '' && (r.data.v || {}).campIdxExt != null).length);
-  return out;
-}
+
 function ceoColumns(scope, month) {
   const ids = new Set(ceoProjects(scope).map(p => p.id));
   const months = ceoMonthsTo(month);

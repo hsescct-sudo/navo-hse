@@ -358,45 +358,7 @@ function coScopeTabs() {
     )
     .join("")}</nav>`;
 }
-function coExposure(P) {
-  const rows = coWorkforce(P),
-    table = (headers, fields, values = rows) =>
-      `<table><thead><tr>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${values.map((r) => `<tr><th>${esc(coPlatformLabel(r.name))}</th>${fields.map((k) => `<td>${k.includes("Hours") ? (r[k] / 1e6).toFixed(2) + "M" : coN(r[k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`,
-    geo = Object.entries(hsGroup(P, "country")).map(([name, ps]) => ({
-      name,
-      ...coWorkRow(ps),
-    }));
-  return `<section class="co-exposure" aria-label="Manpower and exposure overview">${[
-    [
-      "Manpower",
-      table(
-        ["Company", "Employees", "Contractors"],
-        ["employees", "contractors"],
-      ),
-    ],
-    [
-      "Hours worked",
-      table(
-        ["Company", "Employees", "Contractors"],
-        ["employeeHours", "contractorHours"],
-      ),
-    ],
-    [
-      "Safe work hours",
-      table(["Company", "Safe hours", "Safe days"], ["safeHours", "safeDays"]),
-    ],
-    [
-      "Geo-wise",
-      table(
-        ["Country", "Safe hours", "Safe days"],
-        ["safeHours", "safeDays"],
-        geo,
-      ),
-    ],
-  ]
-    .map(([title, html]) => `<section><h3>${title}</h3>${html}</section>`)
-    .join("")}</section>`;
-}
+
 function coDashboards() {
   CO.railOpen = !CO.railOpen; document.body.classList.toggle('co-rail-open',CO.railOpen);
 }
@@ -514,13 +476,13 @@ document.addEventListener("click", (e) => {
     }
   }
 });
-ceoDownloads = function () {
+function ceoDownloads() {
   if (nxLoading()) return;
   cxModal(
     "Download dashboard brief",
     `<p>Current filters: <b>${esc(hsTitle())}</b>. A short summary of the selected dashboard. Source registers are downloaded separately.</p><label>Platform<select id="co-export-scope">${["Corporation", "Construction", "Non-Construction"].map((s) => `<option value="${s}" ${s === (hsInit().plat || "Corporation") ? "selected" : ""}>${coPlatformLabel(s)}</option>`).join("")}</select></label><div class="cx-actions"><button data-co-export="docx">Word · short brief</button><button data-co-export="xlsx">Excel · data & charts</button><button data-co-export="pptx">PowerPoint · 3 slides</button><button data-co-export="pdf">PDF · one-page summary</button></div><p>PowerPoint: cover → selected dashboard on slide 2 → concise summary. No long appendices. Historical demo data stays labelled.</p><div class="cx-actions"><button data-ceo-history>Five-year performance</button><button data-ceo-register>Record register CSV</button></div>`,
   );
-};
+}
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-co-export]");
   if (b)

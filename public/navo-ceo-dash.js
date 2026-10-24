@@ -18,13 +18,13 @@ const CD_TARGET = new Set(['ioshWSTarget', 'ioshMSTarget', 'envAuditsTarget', 'e
 
 /* ---------- values: any field can be reported; the opening year-to-date from the workbook is respected ---------- */
 const cdRecs = ids => (L.records || []).filter(r => r.kind === 'ceo' && ids.has(r.project) && r.data);
-ceoManual = function (ids, month, half) {
+function ceoManual(ids, month, half) {
   const C = cdRecs(ids).filter(r => !r.data.opening && !r.data.tables && r.data.month === month && (!half || r.data.half === half));
   const out = {}, cnt = {};
   C.forEach(r => Object.entries(r.data.v || {}).forEach(([k, v]) => { if (v === '' || v == null || isNaN(+v)) return; out[k] = (out[k] || 0) + +v; cnt[k] = (cnt[k] || 0) + 1; }));
   Object.keys(out).forEach(k => { if (CD_AVG.has(k) || CD_TARGET.has(k)) out[k] = Math.round(out[k] / cnt[k] * 100) / 100; });
   return out;
-};
+}
 /* For each figure, the latest workbook year-to-date total that reports it (same year, not after the month shown) */
 function cdOpening(ids, month) {
   const y = month.slice(0, 4), O = cdRecs(ids).filter(r => r.data.opening && r.data.month.slice(0, 4) === y && r.data.month <= month).sort((a, b) => a.data.month < b.data.month ? 1 : -1);

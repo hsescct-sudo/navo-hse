@@ -165,7 +165,7 @@ function hsCards(P){const m=hsMonthKey();const[y,mo]=m.split("-").map(Number);co
  return P.map(p=>{const c=monthCard(p.id,m),pc=monthCard(p.id,pm);const has=L.reports.some(r=>r.project===p.id&&inMonth(r.ts,m))||L.inspections.some(i=>i.project===p.id&&inMonth(i.ts,m));
   return{p,c,score:has?c.total:null,prev:has?pc.total:null,status:has?statusFor(c.total,pc.total):null}}).sort((a,b)=>(b.score??-1)-(a.score??-1))}
 const HSTAT={Improving:["✔",HC.green],Monitor:["▲","#E6B800"],Review:["!","#E08A00"],Intervention:["✖",HC.red]};
-function hsBand(s){return s==null?"#ddd":s>=80?HC.green:s>=60?"#F2D600":s>=40?"#F2A900":HC.red}
+
 function hsDivCards(P){const C=hsCards(P);const g={};C.forEach(x=>{const d=x.p.division||"Unassigned";(g[d]=g[d]||[]).push(x)});const av=a=>{const v=a.filter(x=>x!=null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:null};
  return Object.entries(g).map(([d,xs])=>{const ok=xs.filter(x=>x.score!=null);const score=av(ok.map(x=>x.score)),prev=av(ok.map(x=>x.prev));
   const rows=SHQ.map(([sec,inds],a)=>({sec,st:av(ok.map(x=>x.c.rows[a].st))||0,ir:inds.map(([n,u,t,mx,hi],b)=>{const A=av(ok.map(x=>x.c.rows[a].ir[b].a));return{a:A==null?null:+A.toFixed(1),sc:av(ok.map(x=>x.c.rows[a].ir[b].sc))||0,ok:A==null?true:hi?A>=t:A<=t}})}));
@@ -258,15 +258,7 @@ function hsColBars(rows,o={}){if(!rows.length)return hEmpty();const h=130,n=rows
  if(o.target)g+=`<line x1="0" x2="${W}" y1="${y(o.target)}" y2="${y(o.target)}" stroke="${HC.red}" stroke-dasharray="5 4"/>`;return`<div class="hsvg"><svg viewBox="0 0 ${W} ${pad+h+40}" style="max-height:${Math.round((pad+h+40)*1.5)}px">${g}</svg></div>`}
 
 /* ---------- 6. Accident & audit analysis (decomposition tree) ---------- */
-function hsTree(P,which){const h=hsInit();const key=which;const path=h.dt[key]||(h.dt[key]=[]);
- const items=which==="acc"?hsR(P).filter(r=>r.rt==="Incident"):hsRec(P,"finding");const pr=id=>L.projects.find(p=>p.id===id)||{};
- const levels=which==="acc"?[["Country",r=>pr(r.project).country],["Platform",r=>pr(r.project).platform||"Construction"],["Division",r=>pr(r.project).division||"Unassigned"],["Category",r=>incCat(r)],["Cause / high-energy",r=>r.cat||"Not classified"]]
-  :[["Country",r=>pr(r.project).country],["Platform",r=>pr(r.project).platform||"Construction"],["Division",r=>pr(r.project).division||"Unassigned"],["Audit",r=>r.data.audit],["Element",r=>r.data.element],["Severity",r=>r.data.sev]];
- let cur=items;const cols=[`<div class="dt-col"><div class="dt-h">${which==="acc"?"Total incidents":"Total findings"}</div><div class="dt-n on"><i style="width:100%"></i><span>All</span><b>${items.length}</b></div></div>`];
- for(let i=0;i<levels.length;i++){const[name,f]=levels[i];const g={};cur.forEach(r=>{const k=f(r)||"—";g[k]=(g[k]||0)+1});const ent=Object.entries(g).sort((a,b)=>b[1]-a[1]);const tot=cur.length||1;
-  cols.push(`<div class="dt-col"><div class="dt-h">${name}${path[i]!=null?` <button class="dt-x" data-dtx="${key}" data-i="${i}">×</button>`:""}</div>${ent.map(([k,v])=>`<div class="dt-n hot ${path[i]===k?"on":""}" data-dt="${key}" data-i="${i}" data-v="${esc(k)}"><i style="width:${v/tot*100}%"></i><span>${esc(k)}</span><b>${v} · ${(v/tot*100).toFixed(1)}%</b></div>`).join("")}</div>`);
-  if(path[i]==null)break;cur=cur.filter(r=>(f(r)||"—")===path[i])}
- return hCard(which==="acc"?"Accident analysis":"Audit analysis",`<p class="hs-note">Click a value to break it down by the next level. Click × to go back.</p><div class="dt">${cols.join("")}</div>`)}
+
 
 /* ---------- 7. Annual KPI ---------- */
 function hsKpi(P,tab){if(tab!=="all")P=P.filter(p=>(p.platform||"Construction")===tab);const h=hsInit(),y=h.y;const byC=hsGroup(P,"country"),cs=Object.keys(byC).sort();const cc=c=>HPAL[cs.indexOf(c)%HPAL.length];const now=new Date();const nM=y===now.getFullYear()?now.getMonth()+1:12;const mons=HMON.slice(0,nM);

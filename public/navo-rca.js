@@ -203,7 +203,7 @@ function rcaPayload(r) {
   const S = rcaState(r), R = rcaResult(S), name = RCA_METHODS_UI.find(m => m[0] === S.method)[1];
   return { studio: JSON.parse(JSON.stringify(S)), rca: name, root: R.root.join('\n'), contributing: R.contrib.join('\n') };
 }
-incDetail = function (r) {
+function incDetail(r) {
   const s = nStage(r), cl = nClass(r), inv = r.investigation || {}, A = L.actions.filter(a => a.sourceId === r.id || a.report === r.id), canMed = canVerify(), edit = isStaff() && s !== 'Closed';
   const next = { Notification: 'Registration', Registration: 'Classification', Classification: 'Investigation', Investigation: 'Management review', 'Management review': 'Approval', Approval: 'Corrective actions', 'Corrective actions': 'Verification', Verification: 'Closed' }[s];
   const needV = ['Approval', 'Verification', 'Closed'].includes(next);
@@ -225,7 +225,7 @@ incDetail = function (r) {
    <div class="rca-card"><h4>History</h4>${histList(r.history)}</div>
    ${edit ? `<div class="nvi-foot"><div>Stage: <b>${esc(s)}</b>${next ? ` → next: <b>${esc(next)}</b>` : ''}</div><div class="filters"><button class="btn" data-nsave="${r.id}">Save</button>${next && (!needV || canVerify()) ? `<button class="btn pri" data-nnext="${r.id}" data-to="${next}">Move to ${next}</button>` : ''}${next && needV && !canVerify() ? `<span class="mx-muted">${next} needs an HSE Engineer or Admin.</span>` : ''}</div></div>` : ''}
   </div>`;
-};
+}
 /* Saving the incident always carries the investigation studio with it, so neither overwrites the other. */
 const rcaBaseIncSave = incSave;
 incSave = async function (id, to) { const r = L.reports.find(x => x.id === id); if (r && RCA.by[id]) r.investigation = { ...(r.investigation || {}), ...rcaPayload(r) }; return rcaBaseIncSave(id, to); };

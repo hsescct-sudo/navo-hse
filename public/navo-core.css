@@ -12,3 +12,4 @@ label:has(> select[data-ta=plat]),label:has(> select[data-ta=div]),label:has(> s
 label:has(> select[data-v2a$="|plat"]),label:has(> select[data-v2a$="|div"]),label:has(> select[data-v2a$="|clu"]),label:has(> select[data-v2a$="|proj"]){display:none!important}
 #nf-host{margin:0 0 4px}
 label:has(> select[data-ta=months]){display:none!important}
+label:has(> select[data-hf=plat]),label:has(> select[data-hf=biz]),label:has(> select[data-hf=proj]),label:has(> select[data-hf=clu]){display:none!important}

@@ -56,7 +56,7 @@ const CL_DEF=[
   ["Work at height: fall protection verified",1,1],["Lifting: lift plan and exclusion zone verified",1,1],["Energy isolation: LOTO verified",1,1],["Confined space: gas test and standby verified",1,1],["Moving equipment: separation verified",1,1],
   ["Excavation: support and edge protection verified",1,1],["Hazardous substances: controls verified",1,0],["Hot work: permit and fire watch verified",1,0]]}];
 function clLib(){const c=L.checklists&&Array.isArray(L.checklists.list)?L.checklists.list:null;return c||CL_DEF.map(x=>({...x,rev:1,active:true,divisions:[],q:x.q.map(([t,c,e])=>({t,c:!!c,e:!!e,on:true}))}))}
-function clById(id){return clLib().find(c=>c.id===id)}
+
 
 /* Synergi-style lookup lists */
 const CAUSES={Immediate:{"Substandard acts":["01 Operating equipment without authority","02 Failure to inform / warn","03 Failure to secure / isolate","04 Operating at improper speed","05 Making critical HSEQ devices inoperative","06 Using defective tool / equipment","07 Improper operation of tool / equipment","08 Servicing equipment in operation","09 Using incorrect material","10 Failing to use PPE properly","11 Improper loading","12 Improper placement","13 Improper lifting","14 Improper position for task","15 Improper behaviour","16 Under the influence of medicine / alcohol / drugs","17 Failure to follow procedure / instruction","18 Failure to identify hazard","19 Substandard act by external party"],

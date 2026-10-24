@@ -12,7 +12,7 @@ const HB_DEF = [{ min: 80, color: '#00A651', label: 'Good' }, { min: 60, color: 
 const hbBands = () => { const b = L.structure && L.structure.health && L.structure.health.bands; return (Array.isArray(b) && b.length ? b : HB_DEF).slice().sort((a, b2) => b2.min - a.min); };
 const hbFor = s => s == null ? null : hbBands().find(b => s >= b.min) || hbBands()[hbBands().length - 1];
 const hbInk = c => { const n = parseInt(String(c).slice(1), 16); return ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000 > 150 ? '#111' : '#fff'; };
-hsBand = function (s) { const b = hbFor(s); return b ? b.color : '#ddd'; };
+function hsBand(s) { const b = hbFor(s); return b ? b.color : '#ddd'; }
 try { hcol = function (s) { const b = hbFor(s); return b ? b.color : 'var(--muted)'; }; } catch (e) { /* older pages keep their own colours */ }
 /* status words are the band words, so the colour and the word always agree */
 statusFor = function (cur) { const b = hbFor(cur); return b ? b.label : null; };
@@ -43,7 +43,7 @@ render = function () {
 };
 
 /* ---------- 3. one exposure box ---------- */
-if (typeof coExposure === 'function') coExposure = function (P) {
+function coExposure(P) {
   const rows = coWorkforce(P), geo = Object.entries(hsGroup(P, 'country')).map(([name, ps]) => ({ name, ...coWorkRow(ps) }));
   const m = v => v >= 1e6 ? (v / 1e6).toFixed(2) + 'M' : v >= 1e4 ? (v / 1e3).toFixed(0) + 'K' : Math.round(v || 0).toLocaleString('en-GB');
   const cols = [['Employees', r => m(r.employees)], ['Contractors', r => m(r.contractors)], ['Total manpower', r => m((r.employees || 0) + (r.contractors || 0))], ['Employee man-hours', r => m(r.employeeHours)], ['Contractor man-hours', r => m(r.contractorHours)], ['Total man-hours', r => m((r.employeeHours || 0) + (r.contractorHours || 0))], ['Safe man-hours', r => m(r.safeHours)], ['Safe days', r => m(r.safeDays)]];
