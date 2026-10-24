@@ -222,7 +222,7 @@ document.addEventListener('click', async e => {
 /* the edit panel sits above everything, so it lives on <body> rather than inside the animated page */
 const accBaseRender = render;
 render = function () {
-  document.querySelectorAll('body > .acc-modal').forEach(n => n.remove());
+  document.querySelectorAll('body > .acc-modal').forEach(n => { try { if (n.parentNode) n.parentNode.removeChild(n); } catch (e) {} });
   accBaseRender();
   const m = document.querySelector('#view .acc-modal'); if (m) document.body.appendChild(m);
 };

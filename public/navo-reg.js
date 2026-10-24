@@ -50,7 +50,7 @@ async function rgNextNo(e) {
 
 /* ---------- saving with history ---------- */
 async function rgSave(kind, project, data, prev, what) {
-  const e = REG.ents[kind], now = Date.now(), who = (L.me && (L.me.name || L.me.email)) || '';
+  const isNew = !prev, e = REG.ents[kind], now = Date.now(), who = (L.me && (L.me.name || L.me.email)) || '';
   const hist = [...((prev && prev.data.hist) || [])];
   if (prev) {
     const ch = e.fields.filter(f => f.type !== 'files' && JSON.stringify(prev.data[f.k] ?? '') !== JSON.stringify(data[f.k] ?? '')).map(f => f.l);
@@ -67,12 +67,13 @@ async function rgSave(kind, project, data, prev, what) {
   if (ok === false) return null;
   const local = (L.records || []).find(x => x.id === prev.id);
   if (local) { local.data = data; local.project = project; local.ts = now; } else (L.records = L.records || []).push({ id: prev.id, project, kind: 'r:' + kind, ts: now, data });
-  if (e.afterSave) try { await e.afterSave((L.records || []).find(x => x.id === prev.id), !!local); } catch (err) { console.error(err); }
+  if (e.afterSave) try { await e.afterSave((L.records || []).find(x => x.id === prev.id), !isNew); } catch (err) { console.error(err); }
   return prev.id;
 }
 async function rgAction(project, title, owner, dueDays, priority, note) {
   const due = Date.now() + (dueDays || 7) * DAY_MS;
-  return liveSave(() => L.db.collection('actions').add({ title, project, owner: owner || '', due, priority: priority || 'Normal', ts: Date.now(), by: L.me && L.me.id, source: note || 'Register', status: 'Open' }), null);
+  if (typeof newAction === 'function') return liveSave(() => newAction({ title, project, owner: owner || '', due, priority: priority || 'Normal', source: note || 'Register' }), null);
+  return liveSave(() => L.db.collection('actions').add({ title, project, owner: owner || '', due, priority: priority || 'Normal', ts: Date.now(), by: L.me && L.me.id, source: note || 'Register', status: 'Assigned', closedAt: null }), null);
 }
 
 /* ---------- files ---------- */
@@ -329,7 +330,7 @@ const rgBaseSoon = soon;
 soon = function () { if (st.view && st.view.startsWith('m-') && REG.mods[st.view.slice(2)]) { const g = typeof liveGate === 'function' && liveGate(); return g || rgPage(REG.mods[st.view.slice(2)]); } return rgBaseSoon(); };
 const rgBaseRender = render;
 render = function () {
-  document.querySelectorAll('body > .rg-modal').forEach(n => n.remove());
+  document.querySelectorAll('body > .rg-modal').forEach(n => { try { if (n.parentNode) n.parentNode.removeChild(n); } catch (e) {} });
   const r = rgBaseRender.apply(this, arguments);
   const m = document.querySelector('#view .rg-modal'); if (m) document.body.appendChild(m);
   rgFillQr();
@@ -344,7 +345,7 @@ document.addEventListener('click', async e => {
   if (t.tagName === 'SUMMARY') return;
   e.preventDefault(); const D = t.dataset;
   if (D.rgTab) { const [m, tb] = D.rgTab.split('|'); REG.tab[m] = tb; REG.open = null; REG.doc = null; }
-  else if (D.rgGo) { const [v, tb] = D.rgGo.split('|'); if (tb) REG.tab[v.slice(2)] = tb; REG.open = null; go(v); return; }
+  else if (D.rgGo) { if (D.rgKf) { const [k, id] = D.rgKf.split('|'); REG.f[k] = { ...(REG.f[k] || {}), _kpi: id || '' }; } const [v, tb] = D.rgGo.split('|'); if (tb) REG.tab[v.slice(2)] = tb; REG.open = null; go(v); return; }
   else if (D.rgOpen) { const r = rgGet(D.rgOpen); if (!r) return; const en = REG.ents[r.kind.slice(2)]; REG.open = r.id; REG.doc = null; if (st.view !== 'm-' + en.mod) { go('m-' + en.mod); return; } window.scrollTo(0, 0); }
   else if (t.hasAttribute('data-rg-back')) { REG.open = null; REG.doc = null; }
   else if (D.rgNew) { const en = REG.ents[D.rgNew], pre = D.rgPre ? JSON.parse(D.rgPre) : {}; REG.form = { kind: D.rgNew, id: null, project: D.rgProj || (REG.f[D.rgNew] || {}).project || (myProjects()[0] || {}).id, d: { ...(en.defaults ? en.defaults() : {}), ...pre }, files: {} }; if (st.view !== 'm-' + en.mod) { go('m-' + en.mod); return; } }
@@ -408,7 +409,7 @@ document.addEventListener('change', async e => {
   if (t.dataset && t.dataset.rgf && REG.form) {
     if (t.dataset.rgf === '_project') REG.form.project = t.value;
     else REG.form.d[t.dataset.rgf] = t.type === 'checkbox' ? t.checked : t.value;
-    const e2 = REG.ents[REG.form.kind]; if (e2.fields.some(f => f.show) || t.tagName === 'SELECT' || t.type === 'checkbox') { const y = document.querySelector('.rg-sheet') && document.querySelector('.rg-sheet').scrollTop; render(); const s = document.querySelector('.rg-sheet'); if (s && y) s.scrollTop = y; }
+    const e2 = REG.ents[REG.form.kind], fd = e2.fields.find(f => f.k === t.dataset.rgf); if (t.tagName === 'SELECT' || t.type === 'checkbox' || (fd && fd.live)) { const y = document.querySelector('.rg-sheet') && document.querySelector('.rg-sheet').scrollTop; render(); const s = document.querySelector('.rg-sheet'); if (s && y) s.scrollTop = y; }
   }
 });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches && e.target.matches('tr[data-rg-open]')) e.target.click(); });

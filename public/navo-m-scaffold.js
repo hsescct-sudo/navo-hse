@@ -1,0 +1,63 @@
+/* NAVO Scaffolds: scaffold register with QR tag status (green = safe to use, yellow = restricted, red = do not use),
+   erector and inspector competency register, inspections before first use, every 7 days and after bad weather,
+   alterations, handover and dismantling. Separate from equipment. */
+'use strict';
+const SC_TAG = { Green: ['ok', 'Safe to use'], Yellow: ['warn', 'Restricted use'], Red: ['bad', 'Do not use'] };
+const scInsp = id => rgRecs('si').filter(x => x.data.sc === id).sort((a, b) => (b.data.date || '') > (a.data.date || '') ? 1 : -1);
+function scState(d, r) {
+  if (d.stage === 'Dismantled') return { label: 'Dismantled', tone: 'mute', k: 'gone', rank: 9 };
+  if (d.stage === 'Under erection' || d.stage === 'Under alteration') return { label: d.stage + ' · do not use', tone: 'bad', k: 'red', rank: 0 };
+  const I = r ? scInsp(r.id) : [], last = I[0];
+  if (!last) return { label: 'Not inspected · do not use', tone: 'bad', k: 'red', rank: 0 };
+  const age = -rgDays(last.data.date);
+  if (age > 7) return { label: `Inspection overdue (${age} d) · do not use`, tone: 'bad', k: 'overdue', rank: 1 };
+  const t = last.data.tag || 'Red'; return { label: `${t} tag · ${SC_TAG[t][1]}`, tone: SC_TAG[t][0], k: t.toLowerCase(), rank: t === 'Green' ? 5 : t === 'Yellow' ? 3 : 0 };
+}
+regModule({ id: 'scaffold', title: 'Scaffolds', eyebrow: 'Scaffold management', headline: 'Every scaffold tagged, inspected and handed over', desc: 'Scaffold register with QR tags, competent erectors and inspectors, checks before first use, every 7 days and after bad weather, and handover to users.',
+  ents: [
+    { kind: 'sc', name: 'Scaffold', plural: 'Scaffolds', prefix: 'SCF', qr: true, cols: ['loc', 'type', 'height', 'stage'], filters: ['type', 'stage'], unique: ['tagNo'],
+      title: d => (d.tagNo ? d.tagNo + ' · ' : '') + (d.loc || 'Scaffold'), sub: d => [d.type, d.height ? d.height + ' m' : '', d.duty].filter(Boolean).join(' · '),
+      fields: [{ k: 'tagNo', l: 'Scaffold tag no.', type: 'text', req: true, sec: 'Scaffold' }, { k: 'loc', l: 'Location / area', type: 'text', req: true }, { k: 'type', l: 'Type', type: 'select', opts: ['Independent tied', 'Mobile tower', 'Birdcage', 'Cantilever', 'Suspended', 'System scaffold', 'Tube & fitting'], req: true },
+        { k: 'height', l: 'Height', type: 'num', unit: 'm' }, { k: 'lifts', l: 'Working platforms', type: 'num' }, { k: 'duty', l: 'Load class', type: 'select', opts: ['Very light (0.75 kN/m²)', 'Light (1.5 kN/m²)', 'General (2.0 kN/m²)', 'Heavy (3.0 kN/m²)', 'Special design'] },
+        { k: 'design', l: 'Design / drawing ref.', type: 'text', show: d => d.duty === 'Special design' || +d.height > 20 }, { k: 'contractor', l: 'Scaffolding contractor', type: 'text' }, { k: 'requester', l: 'Requested by / user', type: 'text' },
+        { k: 'erector', l: 'Erected by (supervisor)', type: 'ref', ref: 'se', req: true, sec: 'Erection & handover' }, { k: 'erected', l: 'Erection completed', type: 'date' }, { k: 'handover', l: 'Handed over to user', type: 'date' }, { k: 'removeBy', l: 'Planned dismantling', type: 'date' },
+        { k: 'stage', l: 'Stage', type: 'select', opts: ['Under erection', 'In use', 'Under alteration', 'Dismantled'], req: true }, { k: 'photo', l: 'Photo', type: 'photo', noImport: true }, { k: 'notes', l: 'Notes', type: 'textarea' }],
+      defaults: () => ({ stage: 'Under erection' }),
+      validate: d => { const e = d.erector && rgGet(d.erector); return e && e.data.cert && rgDays(e.data.certExp) < 0 ? 'The erector’s certificate has expired' : null; },
+      status: (d, r) => scState(d, r),
+      chips: (d, r) => { const I = scInsp(r.id); return I[0] ? [['Last inspected ' + rgDate(I[0].data.date) + ' by ' + (I[0].data.by || ''), 'mute']] : []; },
+      panel: (d, r) => { const s = scState(d, r), col = { ok: '#16a34a', warn: '#f59e0b', bad: '#dc2626', mute: '#6b7280' }[s.tone]; return `<div class="panel" style="display:flex;gap:16px;align-items:center;border-left:6px solid ${col}"><div style="width:70px;height:96px;border-radius:10px;background:${col};display:grid;place-items:center;color:#fff;font:800 13px sans-serif;text-align:center;box-shadow:0 10px 24px -10px ${col}">${rgEsc((s.label.split(' ')[0] || '').toUpperCase())}<br>TAG</div><div><h3 style="margin:0">${rgEsc(s.label)}</h3><p class="mx-muted" style="margin:4px 0 0">Scan the QR on the scaffold tag to see this status live. A scaffold must be inspected before first use, at least every 7 days, and after high wind, rain or alteration.</p></div></div>`; },
+      related: [{ kind: 'si', l: 'Inspections', addLabel: 'Record inspection', match: (x, r) => x.data.sc === r.id, pre: r => ({ sc: r.id }) }],
+      actions: [{ l: 'Mark dismantled', show: d => d.stage !== 'Dismantled', run: async r => { await rgSave('sc', r.project, { ...r.data, stage: 'Dismantled', removed: new Date().toISOString().slice(0, 10) }, r, 'Dismantled'); } },
+        { l: 'Start alteration', show: d => d.stage === 'In use', run: async r => { await rgSave('sc', r.project, { ...r.data, stage: 'Under alteration' }, r, 'Alteration started · red tag'); } }],
+      alerts: (d, r) => { const s = scState(d, r); if (s.k === 'gone' || d.stage === 'Under erection') return []; return s.k === 'overdue' ? [{ sev: 'high', title: `Scaffold ${d.tagNo} inspection overdue`, detail: d.loc + ' · ' + projName(r.project) }] : s.k === 'red' && d.stage === 'In use' ? [{ sev: 'high', title: `Scaffold ${d.tagNo} red tagged`, detail: d.loc }] : []; },
+      kpis: R => { const S = R.map(r => [r, scState(r.data, r)]); return [{ id: 'act', l: 'Scaffolds standing', v: S.filter(x => x[1].k !== 'gone').length, tone: 'info', test: r => r.data.stage !== 'Dismantled' }, { id: 'g', l: 'Green tag', v: S.filter(x => x[1].k === 'green').length, tone: 'ok', test: r => scState(r.data, r).k === 'green' }, { id: 'y', l: 'Yellow tag', v: S.filter(x => x[1].k === 'yellow').length, tone: 'warn', test: r => scState(r.data, r).k === 'yellow' }, { id: 'r', l: 'Red / not inspected', v: S.filter(x => x[1].k === 'red').length, tone: 'bad', test: r => scState(r.data, r).k === 'red' }, { id: 'o', l: 'Inspection overdue', v: S.filter(x => x[1].k === 'overdue').length, tone: 'bad', test: r => scState(r.data, r).k === 'overdue' }]; } },
+    { kind: 'si', name: 'Scaffold inspection', plural: 'Scaffold inspections', prefix: 'SCI', cols: ['sc', 'reason', 'date', 'tag'], filters: ['reason', 'tag'], noImport: true,
+      title: d => { const s = rgGet(d.sc); return (d.reason || 'Inspection') + ' · ' + (s ? s.data.tagNo : ''); }, sub: d => rgDate(d.date) + ' · ' + (d.tag || '') + ' tag',
+      fields: [{ k: 'sc', l: 'Scaffold', type: 'ref', ref: 'sc', req: true, sec: 'Inspection' }, { k: 'reason', l: 'Reason', type: 'select', opts: ['Before first use', '7-day inspection', 'After bad weather', 'After alteration', 'After incident'], req: true }, { k: 'date', l: 'Date', type: 'date', req: true },
+        { k: 'by', l: 'Inspector', type: 'text', req: true }, { k: 'inspector', l: 'Inspector (competency record)', type: 'ref', ref: 'se' },
+        { k: 'base', l: 'Base plates, sole boards, ground', type: 'select', opts: ['OK', 'Defect', 'N/A'], sec: 'Checklist' }, { k: 'ties', l: 'Ties and bracing', type: 'select', opts: ['OK', 'Defect', 'N/A'] }, { k: 'platform', l: 'Boards fully planked and secured', type: 'select', opts: ['OK', 'Defect', 'N/A'] },
+        { k: 'guard', l: 'Guardrails, mid-rails, toe boards', type: 'select', opts: ['OK', 'Defect', 'N/A'] }, { k: 'access', l: 'Access ladders / stairs', type: 'select', opts: ['OK', 'Defect', 'N/A'] }, { k: 'load', l: 'Not overloaded, load sign posted', type: 'select', opts: ['OK', 'Defect', 'N/A'] },
+        { k: 'tag', l: 'Tag after inspection', type: 'select', opts: ['Green', 'Yellow', 'Red'], req: true, sec: 'Result' }, { k: 'limits', l: 'Restrictions (yellow tag)', type: 'text', show: d => d.tag === 'Yellow' }, { k: 'defects', l: 'Defects found', type: 'textarea' },
+        { k: 'owner', l: 'Action owner', type: 'text', show: d => d.tag !== 'Green' }, { k: 'files', l: 'Photos', type: 'files' }],
+      defaults: () => ({ date: new Date().toISOString().slice(0, 10), reason: '7-day inspection', by: (L.me && L.me.name) || '', tag: 'Green' }),
+      validate: d => { const bad = ['base', 'ties', 'platform', 'guard', 'access', 'load'].some(k => d[k] === 'Defect'); if (bad && d.tag === 'Green') return 'A defect was ticked: the tag cannot be green'; if (d.tag !== 'Green' && !d.defects) return 'Describe the defects for a yellow or red tag'; return null; },
+      status: d => ({ label: (d.tag || '') + ' tag', tone: (SC_TAG[d.tag] || ['mute'])[0] }),
+      afterSave: async (x, wasEdit) => { if (wasEdit) return; const s = rgGet(x.data.sc); if (!s) return; if (x.data.tag !== 'Green' && x.data.defects) await rgAction(s.project, `Scaffold ${s.data.tagNo}: ${x.data.defects.slice(0, 120)}`, x.data.owner, x.data.tag === 'Red' ? 1 : 3, x.data.tag === 'Red' ? 'High' : 'Normal', 'Scaffold inspection');
+        if (s.data.stage === 'Under erection' && x.data.tag !== 'Red') await rgSave('sc', s.project, { ...s.data, stage: 'In use', handover: s.data.handover || x.data.date }, s, 'Handed over after inspection ' + x.data._no);
+        else if (s.data.stage === 'Under alteration' && x.data.tag !== 'Red') await rgSave('sc', s.project, { ...s.data, stage: 'In use' }, s, 'Back in use after inspection ' + x.data._no); } },
+    { kind: 'se', name: 'Scaffolder', plural: 'Erectors & inspectors', prefix: 'SCE', cols: ['name', 'role', 'level', 'certExp'], filters: ['role', 'level'], unique: ['certNo'],
+      title: d => d.name || (rgGet(d.person) ? rgGet(d.person).data.name : 'Scaffolder'), sub: d => [d.role, d.level].filter(Boolean).join(' · '),
+      fields: [{ k: 'person', l: 'Person (from training register)', type: 'ref', ref: 'tp' }, { k: 'name', l: 'Name', type: 'text', req: true }, { k: 'role', l: 'Role', type: 'select', opts: ['Scaffolder', 'Scaffold supervisor', 'Scaffold inspector'], req: true },
+        { k: 'level', l: 'Competency level', type: 'select', opts: ['Basic', 'Advanced', 'Inspector'], req: true }, { k: 'cert', l: 'Certifying body', type: 'text', ph: 'e.g. CISRS, TÜV, third party' }, { k: 'certNo', l: 'Card / certificate no.', type: 'text' }, { k: 'certExp', l: 'Certificate expiry', type: 'date', req: true }, { k: 'files', l: 'Card copy', type: 'files' }],
+      status: d => (e => e.k === 'expired' ? { label: 'Expired', tone: 'bad' } : e.k === 'due' ? { label: `Expires in ${e.d} d`, tone: 'warn' } : { label: 'Valid', tone: 'ok' })(rgExpiry(d.certExp, 30)),
+      alerts: d => { const dd = rgDays(d.certExp); return dd != null && dd <= 30 ? [{ sev: dd < 0 ? 'high' : 'info', title: `${d.name}: scaffold card ${dd < 0 ? 'expired' : 'expires in ' + dd + ' d'}` }] : []; } }],
+  tabs: [['dash', 'Dashboard', () => scDash()], ['reg', 'Scaffold register', () => rgList(REG.ents.sc)], ['insp', 'Inspections', () => rgList(REG.ents.si)], ['people', 'Erectors & inspectors', () => rgList(REG.ents.se)]] });
+function scDash() {
+  const R = rgMine('sc'), st = R.filter(r => r.data.stage !== 'Dismantled'), I = rgMine('si'), M = rgMonths(6);
+  return `<div class="rg-kpis">${REG.ents.sc.kpis(R).map(k => rgKpi(k.l, k.v, k.tone, 'sc|' + k.id).replace('data-rg-kf', 'data-rg-go="m-scaffold|reg" data-rg-kf')).join('')}</div>
+   <div class="rg-dash">${rgCard('Tag status (standing scaffolds)', st.length ? cdDonut([['Green', 'green', '#16a34a'], ['Yellow', 'yellow', '#f59e0b'], ['Red / not inspected', 'red', '#dc2626'], ['Overdue', 'overdue', '#7f1d1d']].map(([l, k, c]) => ({ l, v: st.filter(r => scState(r.data, r).k === k).length, c }))) : '<p class="cd-none">No scaffolds yet</p>')}
+   ${rgCard('Inspections per month', cdBars(M.map(rgMonLbl), [{ name: 'Green', vals: M.map(m => I.filter(x => (x.data.date || '').startsWith(m) && x.data.tag === 'Green').length), color: '#16a34a' }, { name: 'Yellow', vals: M.map(m => I.filter(x => (x.data.date || '').startsWith(m) && x.data.tag === 'Yellow').length), color: '#f59e0b' }, { name: 'Red', vals: M.map(m => I.filter(x => (x.data.date || '').startsWith(m) && x.data.tag === 'Red').length), color: '#dc2626' }], { flat: 1, w: 520 }), 'cd-wide')}
+   ${rgCard('Defects found by item', rgBarsFrom(rgCount(I, x => ['base', 'ties', 'platform', 'guard', 'access', 'load'].filter(k => x.data[k] === 'Defect').map(k => ({ base: 'Base / ground', ties: 'Ties & bracing', platform: 'Boards', guard: 'Guardrails', access: 'Access', load: 'Overloading' })[k])), '#dc2626'))}
+   ${rgCard('By project', rgBarsFrom(rgCount(st, r => projName(r.project)), '#2f73c9'))}</div>`;
+}
