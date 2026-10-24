@@ -104,10 +104,7 @@ function orgMatrix() {
 }
 
 /* ---------- Page ---------- */
-/* Other features add tabs (addOrgTab) and admin panels (addOrgPanel) here instead of wrapping access(). */
-const ORG_TABS = [], ORG_PANELS = [];
-function addOrgTab(id, label, page) { ORG_TABS.push([id, label, page]); }
-function addOrgPanel(f) { ORG_PANELS.push(f); }
+/* Tabs and admin panels come from addOrgTab / addOrgPanel (defined with the core render hooks in index.html). */
 const orgBaseAccess = access;
 access = function () {
   if (myRole() !== 'admin') return orgBaseAccess();
