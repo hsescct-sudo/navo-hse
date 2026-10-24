@@ -1,0 +1,14 @@
+.nf-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;padding:10px 12px;margin:0 0 14px;border:1px solid var(--line,#d5dce5);border-radius:12px;background:var(--surface,#fff)}
+.nf-bar label{display:flex;flex-direction:column;gap:3px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.85;min-width:150px;flex:1 1 150px;max-width:260px}
+.nf-bar select{font:inherit;font-size:13px;text-transform:none;letter-spacing:0;font-weight:500;padding:6px 8px;border-radius:8px;border:1px solid var(--line,#d5dce5);background:var(--surface,#fff);color:inherit}
+.nf-reset{border:1px solid #ED1C24;color:#ED1C24;background:transparent;border-radius:8px;padding:7px 10px;font-weight:600;cursor:pointer}
+.nf-scope{margin-left:auto;font-size:12px;opacity:.75;align-self:center}
+html[data-style=cinema] .nf-bar{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)}
+html[data-style=cinema] .nf-bar select{background:rgba(0,0,0,.25);border-color:rgba(255,255,255,.18);color:#e6edf6}
+html[data-style=report] .nf-bar{border-radius:4px}
+.nv-section{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.55;padding:14px 14px 4px;color:inherit}
+/* one organisation filter: hide the per-page copies */
+label:has(> select[data-ta=plat]),label:has(> select[data-ta=div]),label:has(> select[data-ta=clu]),label:has(> select[data-ta=proj]){display:none!important}
+label:has(> select[data-v2a$="|plat"]),label:has(> select[data-v2a$="|div"]),label:has(> select[data-v2a$="|clu"]),label:has(> select[data-v2a$="|proj"]){display:none!important}
+#nf-host{margin:0 0 4px}
+label:has(> select[data-ta=months]){display:none!important}
