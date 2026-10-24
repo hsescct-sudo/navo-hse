@@ -177,8 +177,8 @@ if (typeof cdHbars === 'function') { const v2Hb = cdHbars; cdHbars = function (i
 try { const g = NX_GROUPS.find(x => x[0] === 'records'); if (g) { g[1] = 'Observations & records'; g[4] = g[4].map(([v, l]) => [v, v === 'casehome' ? 'Search all records' : v === 'live' ? 'Observations (field reports)' : l]); const lv = g[4].findIndex(x => x[0] === 'live'); if (lv > 0) g[4].unshift(g[4].splice(lv, 1)[0]); g[2] = g[4][0][0]; } if (typeof TITLES !== 'undefined') TITLES.casehome = 'Search all records'; } catch (e) { }
 
 /* ---------- background darkness (dark style) and readable text on dark surfaces ---------- */
-const V2_BG = [['normal', 'Animated', '#1b2b44'], ['navy', 'Navy', '#14213a'], ['charcoal', 'Charcoal', '#22252b'], ['slate', 'Slate', '#2a3442'], ['graphite', 'Graphite', '#2b2b2e'], ['forest', 'Forest', '#16302a'], ['plum', 'Plum', '#2b1f3a'], ['petrol', 'Petrol', '#0f3340'], ['black', 'Soft black', '#16181c']];
-const v2Bg = () => { try { return localStorage.getItem('navo-bg') || 'normal'; } catch (e) { return 'normal'; } };
+const V2_BG = [['nass', 'NASS marina', 'url(brand/nass-bg.jpg) center/cover'], ['normal', 'Animated', '#1b2b44'], ['navy', 'Navy', '#14213a'], ['charcoal', 'Charcoal', '#22252b'], ['slate', 'Slate', '#2a3442'], ['graphite', 'Graphite', '#2b2b2e'], ['forest', 'Forest', '#16302a'], ['plum', 'Plum', '#2b1f3a'], ['petrol', 'Petrol', '#0f3340'], ['black', 'Soft black', '#16181c']];
+const v2Bg = () => { try { return localStorage.getItem('navo-bg') || 'nass'; } catch (e) { return 'nass'; } };
 function v2BgSet(v) { document.documentElement.dataset.bg = v; try { localStorage.setItem('navo-bg', v); } catch (e) { } }
 v2BgSet(v2Bg());
 if (typeof moPicker === 'function') { const v2Pk = moPicker; moPicker = function () { v2Pk.apply(this, arguments); const pop = document.querySelector('#mo-pick .mo-pop'); if (!pop || pop.querySelector('[data-v2bg]')) return; pop.insertAdjacentHTML('beforeend', `<b>Background colour (dark style)</b><div class="mo-sw">${V2_BG.map(([v, l, c]) => `<button role="menuitemradio" aria-checked="${v2Bg() === v}" data-v2bg="${v}" title="${l}"><i style="background:${c};border:1px solid #556"></i><small>${l}</small></button>`).join('')}</div>`); }; }
@@ -203,3 +203,10 @@ function orgList(level) {
 function orgRank(name, level) { const lv = level ? [level] : ['plat', 'div', 'clu']; for (const l of lv) { const i = orgList(l).indexOf(name); if (i >= 0) return i + (l === 'div' ? 100 : l === 'clu' ? 200 : 0); } return 999; }
 const orgSort = (a, b) => (orgRank(a) - orgRank(b)) || String(a).localeCompare(String(b));
 const orgSortAt = level => (a, b) => (orgRank(a, level) - orgRank(b, level)) || String(a).localeCompare(String(b));
+
+/* run after every page draw (works with or without the render hooks) */
+function v2After(f) { if (typeof onAfterRender === 'function') return onAfterRender(f); const b = render; render = function () { const o = b.apply(this, arguments); try { f(); } catch (e) { } return o; }; }
+
+/* ---------- NASS Corporation brand: logo everywhere, NASS name (an older "VJ" setting is replaced) ---------- */
+brand = function () { const b = (L.structure && L.structure.brand) || {}; const custom = b.name && !/^\s*VJ\s*$/i.test(b.name) && !/^NAVO$/i.test(b.name); return { name: custom ? b.name : 'NASS', tag: custom ? (b.tag ?? 'HSE Platform') : 'Corporation · HSE Platform', logo: custom && b.logo ? b.logo : 'brand/nass-logo.png', hide: !!b.hide }; };
+v2After(function () { try { applyBrand(); const a = document.querySelector('.app>aside .logo'); if (a) a.classList.add('nass-logo'); } catch (e) { } });

@@ -60,3 +60,11 @@ html[data-style] body .app>aside .sb-search input{background:transparent!importa
 html[data-style=report] body .app>aside .nv-new,html[data-style=cinema] body .app>aside .nv-new{background:var(--sb-accent)!important}
 html[data-style=report] body .app>aside .nv-sub button[aria-current=true]{background:var(--sb-accent-soft)!important;color:#fff!important}
 html body .app>aside .sb-badge{color:#fff!important}html[data-style] body .app>aside{background:rgba(22,22,26,.96)!important}
+/* NASS logo in the sidebar: white card behind the logo, no 3D cube */
+html body .app>aside .logo.nass-logo .nv-cube{display:none!important}
+html body .app>aside .logo.nass-logo .logo-mark{display:flex!important;align-items:center;justify-content:center;background:#fff!important;border-radius:14px!important;padding:6px 10px!important;width:auto!important;height:52px!important;box-shadow:0 6px 18px rgba(0,0,0,.35)!important;border:0!important}
+html body .app>aside .logo.nass-logo .logo-mark img{height:40px!important;width:auto!important;display:block}
+html body .app>aside .logo.nass-logo{flex-direction:column!important;align-items:flex-start!important}
+html body .app>aside .logo.nass-logo .brand-name{font-size:15px!important;letter-spacing:.14em!important}
+html.sb-mini body .app>aside .logo.nass-logo .logo-mark{height:40px!important;padding:4px!important}
+html.sb-mini body .app>aside .logo.nass-logo .logo-mark img{height:30px!important}
