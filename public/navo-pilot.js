@@ -58,11 +58,11 @@ document.addEventListener('click', async e => {
 async function pqTokens() {
   if (PQ.tokens || PQ.tokLoading) return; PQ.tokLoading = true;
   try { PQ.tokens = (await accApi({ op: 'qr_tokens', projects: (L.projects || []).map(p => p.id) })).tokens; PQ.tokErr = ''; } catch (e) { PQ.tokErr = e.message; }
-  PQ.tokLoading = false; if (st.view === 'access') render();
+  PQ.tokLoading = false; if (st.view === 'access' || st.view === 'm-qr') render();
 }
 const pqLink = id => PQ.tokens && PQ.tokens[id] ? `${location.origin}/report?p=${encodeURIComponent(id)}&t=${PQ.tokens[id]}` : '';
 function pqQrPage() {
-  pqTokens(); if (typeof rgQrLib === 'function' && typeof qrcode !== 'function') rgQrLib().then(() => { if (st.view === 'access') render(); });
+  pqTokens(); if (typeof rgQrLib === 'function' && typeof qrcode !== 'function') rgQrLib().then(() => { if (st.view === 'access' || st.view === 'm-qr') render(); });
   const P = (L.projects || []).slice().sort((a, b) => a.name.localeCompare(b.name));
   const qr = id => typeof qrcode === 'function' && pqLink(id) ? rgQrSvg(pqLink(id), 110) : '<div class="pq-qr-wait"></div>';
   return `<div class="panel"><div class="rg-bar"><h2>QR reporting · workers without email</h2><span class="rg-sp"></span><button class="btn pri" data-pq-print="*">Print posters for all projects</button></div>
@@ -161,3 +161,6 @@ function dgPage() {
 }
 try { regModule({ id: 'dguide', title: 'How the dashboards work', eyebrow: 'Dashboard guide', headline: 'Where every number comes from', desc: 'Data source, calculation and update frequency for every dashboard.', ents: [], tabs: [['all', 'Guide', () => dgPage()]] }); } catch (e) { console.error(e); }
 try { if (typeof NX_GROUPS !== 'undefined') { const g = NX_GROUPS.find(x => x[0] === 'overview' || /dashboard/i.test(x[1])); if (g && !g[4].some(v => v[0] === 'm-dguide')) g[4].push(['m-dguide', 'How the dashboards work']); } } catch (e) { }
+
+try { regModule({ id: 'qr', title: 'QR reporting', eyebrow: 'Workers without email', headline: 'Scan, report, done', desc: 'Print a QR poster for each project. Workers report from their phone without an account, in English or Arabic.', ents: [], tabs: [['all', 'QR posters', () => myRole() === 'admin' ? pqQrPage() : '<div class="panel"><p class="mx-muted">Only administrators can print QR posters.</p></div>']] }); } catch (e) { console.error(e); }
+try { const hz = NX_GROUPS.find(g => /hazard/i.test(g[1])); if (hz && !hz[4].some(v => v[0] === 'm-qr')) hz[4].push(['m-qr', 'QR reporting (workers)']); } catch (e) { }
