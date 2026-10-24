@@ -21,25 +21,49 @@
   // Fetch now, then refetch whenever the table changes (Row Level Security still applies to what is returned).
   let chan = 0;
   function watch(table, filter, onRows, onErr) {
-    let alive = true, t;
-    const fetch = async () => {
-      // Page through results: the API returns at most 1,000 rows per request.
-      const all = [];
-      for (let from = 0; ; from += 1000) {
-        let q = sb.from(table).select("*").order(table === "members" ? "user_id" : "id").range(from, from + 999);
+    let alive = true, t, running = false, again = false;
+    const page = async (from) => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        let q = sb.from(table).select("*", from === 0 ? { count: "exact" } : undefined).order(table === "members" ? "user_id" : "id").range(from, from + 999);
         if (filter) q = q.eq(filter[0], filter[1]);
-        const { data, error } = await q;
-        if (!alive) return;
-        if (error) { onErr && onErr({ code: "unavailable", message: error.message }); return; }
-        all.push(...data);
-        if (data.length < 1000) break;
+        const r = await q;
+        if (!r.error) return r;
+        if (attempt === 2) return r;
+        await new Promise(ok => setTimeout(ok, 600 * (attempt + 1)));   // statement timeout or network blip: try again
       }
-      onRows(all);
+    };
+    const fetch = async () => {
+      if (running) { again = true; return; }
+      running = true;
+      try {
+        // First page tells us how many rows there are; the rest are fetched four at a time instead of one by one.
+        const first = await page(0);
+        if (!alive) return;
+        if (first.error) { onErr && onErr({ code: "unavailable", message: first.error.message }); return; }
+        const all = [...first.data], total = first.count == null ? null : first.count;
+        if (first.data.length === 1000) {
+          if (total != null) {
+            const starts = []; for (let f = 1000; f < total; f += 1000) starts.push(f);
+            for (let i = 0; i < starts.length; i += 4) {
+              const res = await Promise.all(starts.slice(i, i + 4).map(page));
+              if (!alive) return;
+              const bad = res.find(r => r.error); if (bad) { onErr && onErr({ code: "unavailable", message: bad.error.message }); return; }
+              res.forEach(r => all.push(...r.data));
+            }
+          } else {
+            for (let from = 1000; ; from += 1000) { const r = await page(from); if (!alive) return; if (r.error) { onErr && onErr({ code: "unavailable", message: r.error.message }); return; } all.push(...r.data); if (r.data.length < 1000) break; }
+          }
+        }
+        onRows(all);
+      } finally {
+        running = false;
+        if (again && alive) { again = false; clearTimeout(t); t = setTimeout(fetch, 800); }
+      }
     };
     fetch();
     const ch = sb.channel("navo-" + table + "-" + (++chan))
       .on("postgres_changes", { event: "*", schema: "public", table, ...(filter ? { filter: filter[0] + "=eq." + filter[1] } : {}) },
-        () => { clearTimeout(t); t = setTimeout(fetch, 150); })
+        () => { clearTimeout(t); t = setTimeout(fetch, 1200); })   // many changes at once (e.g. a bulk load) cause one refresh, not one per row
       .subscribe();
     return () => { alive = false; sb.removeChannel(ch); };
   }
