@@ -349,8 +349,8 @@ table.mx tr.sec td:first-child{background:var(--surface2)}
 <nav class="tabbar" id="tabbar"></nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script>
-<script src="supabase-config.js?v=20261022b"></script>
-<script src="navo-supabase.js?v=20261022b"></script><script src="navo-ops.js?v=20261022b"></script>
+<script src="supabase-config.js?v=20261025e"></script>
+<script src="navo-supabase.js?v=20261025e"></script><script src="navo-ops.js?v=20261025e"></script>
 <script>
 const IC={
 dash:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',
@@ -1160,8 +1160,8 @@ async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;
  const DC=["KSA","UAE","Bahrain"],SL=[];slots.forEach(s=>{const n=s[0]==="Construction"&&s[1]!=="Plant"?4:1;for(let k=0;k<n;k++)SL.push([...s,k])});SL.forEach(([pl,b,c,k],i)=>{const PC=[0,1,2].map(q=>CPOOL[(i*3+q)%CPOOL.length]);const id="demo-p"+String(i+1).padStart(2,"0");const country=DC[i%DC.length];const hc=pick([90,140,220,310,460,650]);const pi=pick([4,6,8,10]);const pw=pick([2,3,4,6]);
   projects.push({id,name:b==="Plant"&&c?`${c} · ${country}`:pl==="Construction"?`${c?b+" "+c:b} Project #${k+1} · ${country}`:`${b} · ${country}`,country,platform:pl,division:b,cluster:c||"",headcount:hc,planInsp:pi,planWalk:pw});
   const q=.45+R()*.55;
-  const dmax=Math.round((now-new Date(new Date().getFullYear()-1,0,1).getTime())/day);for(let d=dmax;d>=0;d--){const t=now-d*day-Math.floor(R()*8)*3600e3;
-   if(R()<Math.min(.95,hc/380*(.6+q*.6))*.62){const r=R();const rt=r<.06?"Incident":r<.82?"Hazard":"Good practice";const kind=rt==="Incident"?pick(["Near Miss","Near Miss","Near Miss","Dangerous Occurrence","Injury","Injury","Injury","Property Damage","Property Damage","Road Traffic Accident","Heat Related Illness","Occupational Disease","Injury to Member of Public","Environmental","Fire"]):rt==="Hazard"?(R()<.07?"Near Miss":pick(["Unsafe Condition","Unsafe Act","Equipment defect"])):"Safe behaviour";
+  const dmax=365;for(let d=dmax;d>=0;d--){const t=now-d*day-Math.floor(R()*8)*3600e3;
+   if(R()<Math.min(.95,hc/380*(.6+q*.6))*.42){const r=R();const rt=r<.06?"Incident":r<.82?"Hazard":"Good practice";const kind=rt==="Incident"?pick(["Near Miss","Near Miss","Near Miss","Dangerous Occurrence","Injury","Injury","Injury","Property Damage","Property Damage","Road Traffic Accident","Heat Related Illness","Occupational Disease","Injury to Member of Public","Environmental","Fire"]):rt==="Hazard"?(R()<.07?"Near Miss":pick(["Unsafe Condition","Unsafe Act","Equipment defect"])):"Safe behaviour";
     const late=R()>q*.95;const cat=rt!=="Good practice"&&R()<.55?pick(WHEEL):"";const old=d>14;const status=(old&&R()<q+.15)||(!old&&R()<q*.6)?"Closed":"Open";
     reports.push({rt:kind==="Near Miss"&&rt==="Hazard"?"Incident":rt,kind,cat,project:id,dept:pick(DEPTS),loc:"",desc:pick(rt==="Good practice"?["Good housekeeping in laydown area","Spotter used for reversing","Correct LOTO applied"]:["Unsecured materials at height","Missing barricade at open edge","Damaged sling in use","Blocked fire exit","Dropped object near walkway","Forklift reversing without spotter"]),safe:"Yes",by:null,ts:t,eventTs:t-(late?(30+R()*40):(1+R()*9))*3600e3,status});
     {const rr=reports[reports.length-1];rr.contractor=R()<.75?pick(PC):null;if(rr.rt==="Incident"){const D={Injury:["Hand caught between pipe and support","Worker slipped on wet stairs","Cut from sharp sheet edge","Heat stress during afternoon shift","Struck by falling object","Twisted ankle on uneven ground"],"Property Damage":["Excavator struck parked vehicle","Crane boom contacted structure","Forklift damaged rack","Dump truck body collapse while offloading"],Environmental:["Hydraulic oil leak to ground","Diesel spill at refuelling point","Sewage tank overflow"],Fire:["Small fire at hot work area","Generator fire, extinguished","Electrical panel smoke"],"Process Safety":["Loss of containment at flange","Pressure relief valve lifted","Gas detector alarm in process area"],"Dangerous Occurrence":["Crane outrigger sank during lift","Scaffold partially collapsed, no injuries","Trench wall collapse, area was barricaded"],"Road Traffic Accident":["Pickup collided with water tanker at site gate","Bus rear-ended on highway to camp","Light vehicle rollover on access road"],"Heat Related Illness":["Worker fainted from heat exhaustion","Heat cramps during concrete pour"],"Occupational Disease":["Noise-induced hearing loss confirmed","Contact dermatitis from cement"],"Injury to Member of Public":["Pedestrian hit by falling debris outside hoarding","Passer-by tripped over site cable"],"Near Miss":["Load swung close to worker","Unsecured scaffold board fell","Vehicle reversed without banksman"]};if(D[rr.kind])rr.desc=pick(D[rr.kind]);
@@ -1277,53 +1277,53 @@ document.addEventListener("click",async e=>{const t=e.target.closest("#br-defaul
  const ok=await liveSave(()=>L.db.doc("admin/structure").set(s),"Name & logo saved");if(ok!==false){L.structure=s;L.bdraft=null;applyBrand();render()}});
 applyBrand();
 </script>
-<script src="release-core.js?v=20261022b"></script>
-<link rel="stylesheet" href="client-review.css?v=20261022b">
-<script src="hsse.js?v=20261022b"></script>
-<script src="checklists.js?v=20261022b"></script>
-<script src="modules.js?v=20261022b"></script>
-<link rel="stylesheet" href="cases.css?v=20261022b">
-<script src="cases-core.js?v=20261022b"></script>
-<script src="case-lookups.js?v=20261022b"></script>
-<script src="cases.js?v=20261022b"></script>
-<script src="client-review.js?v=20261022b"></script>
-<link rel="stylesheet" href="experience.css?v=20261022b">
-<script src="experience.js?v=20261022b"></script>
-<link rel="stylesheet" href="field-review.css?v=20261022b">
-<script src="field-review-core.js?v=20261022b"></script>
-<script src="field-review.js?v=20261022b"></script>
-<script src="evidence-mobile.js?v=20261022b"></script>
-<link rel="stylesheet" href="command-dashboard.css?v=20261022b">
-<script src="command-dashboard.js?v=20261022b"></script>
+<script src="release-core.js?v=20261025e"></script>
+<link rel="stylesheet" href="client-review.css?v=20261025e">
+<script src="hsse.js?v=20261025e"></script>
+<script src="checklists.js?v=20261025e"></script>
+<script src="modules.js?v=20261025e"></script>
+<link rel="stylesheet" href="cases.css?v=20261025e">
+<script src="cases-core.js?v=20261025e"></script>
+<script src="case-lookups.js?v=20261025e"></script>
+<script src="cases.js?v=20261025e"></script>
+<script src="client-review.js?v=20261025e"></script>
+<link rel="stylesheet" href="experience.css?v=20261025e">
+<script src="experience.js?v=20261025e"></script>
+<link rel="stylesheet" href="field-review.css?v=20261025e">
+<script src="field-review-core.js?v=20261025e"></script>
+<script src="field-review.js?v=20261025e"></script>
+<script src="evidence-mobile.js?v=20261025e"></script>
+<link rel="stylesheet" href="command-dashboard.css?v=20261025e">
+<script src="command-dashboard.js?v=20261025e"></script>
 <link rel="stylesheet" href="vendor/leaflet-1.9.4.css">
 <link rel="stylesheet" href="vendor/markercluster-1.5.3.css">
 <script src="vendor/leaflet-1.9.4.js"></script>
 <script src="vendor/leaflet.markercluster-1.5.3.js"></script>
-<script src="portfolio-map-core.js?v=20261022b"></script>
-<link rel="stylesheet" href="portfolio-map.css?v=20261025a">
-<script src="portfolio-map.js?v=20261025a"></script>
-<script src="client-assurance-core.js?v=20261022b"></script>
-<link rel="stylesheet" href="client-assurance.css?v=20261022b">
-<script src="client-assurance.js?v=20261022b"></script>
-<script src="ceo-reporting.js?v=20261022b"></script>
-<link rel="stylesheet" href="leadership-cockpit.css?v=20261022b">
-<script src="leadership-cockpit.js?v=20261022b"></script>
-<script src="navo-checklists.js?v=20261022b"></script>
-<script src="navo-inspect.js?v=20261022b"></script>
-<script src="navo-rca.js?v=20261022b"></script>
-<script src="navo-report.js?v=20261022b"></script>
-<script src="navo-ceo.js?v=20261022b"></script><script src="navo-ceo-dash.js?v=20261022b"></script><script src="navo-analytics.js?v=20261023h"></script><script src="navo-wfstudio.js?v=20261024a"></script>
-<script src="navo-auto.js?v=20261022b"></script>
-<script src="navo-import.js?v=20261022b"></script>
-<script src="navo-access.js?v=20261022b"></script><script src="navo-users.js?v=20261022b"></script>
-<link rel="stylesheet" href="navo-auto.css?v=20261022b">
-<link rel="stylesheet" href="navo-ceo.css?v=20261022b"><link rel="stylesheet" href="navo-ceo-dash.css?v=20261022b">
-<link rel="stylesheet" href="navo-theme.css?v=20261022b">
-<link rel="stylesheet" href="navo-pro.css?v=20261022b">
-<link rel="stylesheet" href="navo-3d.css?v=20261022b">
-<script src="navo-3d.js?v=20261022b"></script>
-<link rel="stylesheet" href="navo-motion.css?v=20261022b"><link rel="stylesheet" href="navo-wfstudio.css?v=20261024a"><link rel="stylesheet" href="navo-reg.css?v=20261024c"><link rel="stylesheet" href="navo-trends.css?v=20261025a"><link rel="stylesheet" href="navo-report-style.css?v=1"><link rel="stylesheet" href="navo-v2.css?v=11"><link rel="stylesheet" href="navo-sidebar.css?v=5"><link rel="stylesheet" href="navo-hse360.css?v=2"><link rel="stylesheet" href="navo-cinema.css?v=20261025a">
-<script src="navo-motion.js?v=20261022b"></script><script src="navo-cinema.js?v=20261025a"></script><script src="navo-reg.js?v=20261024c"></script><script src="navo-m-training.js?v=20261024c"></script><script src="navo-m-equipment.js?v=20261024c"></script><script src="navo-m-scaffold.js?v=20261024c"></script><script src="navo-m-food.js?v=20261024c"></script><script src="navo-m-connected.js?v=20261024c"></script><script src="navo-m-leadership.js?v=20261024c"></script><script src="navo-m-nav.js?v=20261024c"></script><script src="navo-trends.js?v=20261025b"></script><script src="navo-m-demo.js?v=20261025a"></script><script src="navo-pilot.js?v=20261025a"></script><script src="navo-v2.js?v=14"></script><script src="navo-sidebar.js?v=2"></script><script src="navo-hse360.js?v=1"></script>
+<script src="portfolio-map-core.js?v=20261025e"></script>
+<link rel="stylesheet" href="portfolio-map.css?v=20261025e">
+<script src="portfolio-map.js?v=20261025e"></script>
+<script src="client-assurance-core.js?v=20261025e"></script>
+<link rel="stylesheet" href="client-assurance.css?v=20261025e">
+<script src="client-assurance.js?v=20261025e"></script>
+<script src="ceo-reporting.js?v=20261025e"></script>
+<link rel="stylesheet" href="leadership-cockpit.css?v=20261025e">
+<script src="leadership-cockpit.js?v=20261025e"></script>
+<script src="navo-checklists.js?v=20261025e"></script>
+<script src="navo-inspect.js?v=20261025e"></script>
+<script src="navo-rca.js?v=20261025e"></script>
+<script src="navo-report.js?v=20261025e"></script>
+<script src="navo-ceo.js?v=20261025e"></script><script src="navo-ceo-dash.js?v=20261025e"></script><script src="navo-analytics.js?v=20261023h"></script><script src="navo-wfstudio.js?v=20261024a"></script>
+<script src="navo-auto.js?v=20261025e"></script>
+<script src="navo-import.js?v=20261025e"></script>
+<script src="navo-access.js?v=20261025e"></script><script src="navo-users.js?v=20261025e"></script>
+<link rel="stylesheet" href="navo-auto.css?v=20261025e">
+<link rel="stylesheet" href="navo-ceo.css?v=20261025e"><link rel="stylesheet" href="navo-ceo-dash.css?v=20261025e">
+<link rel="stylesheet" href="navo-theme.css?v=20261025e">
+<link rel="stylesheet" href="navo-pro.css?v=20261025e">
+<link rel="stylesheet" href="navo-3d.css?v=20261025e">
+<script src="navo-3d.js?v=20261025e"></script>
+<link rel="stylesheet" href="navo-motion.css?v=20261025e"><link rel="stylesheet" href="navo-wfstudio.css?v=20261024a"><link rel="stylesheet" href="navo-reg.css?v=20261024c"><link rel="stylesheet" href="navo-trends.css?v=20261025e"><link rel="stylesheet" href="navo-report-style.css?v=1"><link rel="stylesheet" href="navo-v2.css?v=11"><link rel="stylesheet" href="navo-sidebar.css?v=5"><link rel="stylesheet" href="navo-hse360.css?v=2"><link rel="stylesheet" href="navo-cinema.css?v=20261025e">
+<script src="navo-motion.js?v=20261025e"></script><script src="navo-cinema.js?v=20261025e"></script><script src="navo-reg.js?v=20261024c"></script><script src="navo-m-training.js?v=20261024c"></script><script src="navo-m-equipment.js?v=20261024c"></script><script src="navo-m-scaffold.js?v=20261024c"></script><script src="navo-m-food.js?v=20261024c"></script><script src="navo-m-connected.js?v=20261024c"></script><script src="navo-m-leadership.js?v=20261024c"></script><script src="navo-m-nav.js?v=20261024c"></script><script src="navo-trends.js?v=20261025e"></script><script src="navo-m-demo.js?v=20261025e"></script><script src="navo-pilot.js?v=20261025e"></script><script src="navo-v2.js?v=14"></script><script src="navo-sidebar.js?v=2"></script><script src="navo-hse360.js?v=1"></script>
 
 </body></html>
 
