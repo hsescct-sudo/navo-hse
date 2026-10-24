@@ -1,0 +1,62 @@
+/* NAVO sidebar: dark glass, Inter, violet accent (client design) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+:root{--sb-bg:rgba(22,22,26,.92);--sb-border:rgba(255,255,255,.08);--sb-text:#e7e7ea;--sb-muted:#8b8b95;--sb-hover:rgba(255,255,255,.05);--sb-accent:#8b5cf6;--sb-accent-soft:rgba(139,92,246,.18)}
+html body .app>aside{background:var(--sb-bg)!important;background-image:none!important;border:1px solid var(--sb-border)!important;border-radius:26px!important;margin:10px!important;height:calc(100vh - 20px)!important;backdrop-filter:blur(20px)!important;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05)!important;color:var(--sb-text)!important;font-family:"Inter",system-ui,sans-serif!important;padding:18px 14px!important;position:sticky!important;top:10px!important;overflow:hidden auto!important}
+html body .app>aside::before,html body .app>aside::after{display:none!important}
+html body .app>aside *{font-family:"Inter",system-ui,sans-serif!important;text-shadow:none!important}
+/* brand */
+html body .app>aside .logo{margin:8px 6px 18px!important;gap:12px!important}
+html body .app>aside .nv-cube{background:#fff!important;border-radius:50%!important;box-shadow:none!important;width:38px!important;height:38px!important}
+html body .app>aside .nv-cube i::after{border-color:#111!important}
+html body .app>aside .brand-name{color:#fff!important;font-size:18px!important;font-weight:700!important;letter-spacing:.06em!important}
+html body .app>aside .brand-tag{color:var(--sb-muted)!important}
+/* new report */
+html body .app>aside .nv-new{background:var(--sb-accent)!important;background-image:none!important;border:0!important;border-radius:12px!important;box-shadow:0 8px 24px rgba(139,92,246,.35)!important;color:#fff!important;font-weight:600!important;padding:11px 14px!important;margin:0 0 12px!important}
+/* search */
+.sb-search{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:0 0 6px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--sb-border);color:var(--sb-muted)}
+.sb-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--sb-text);font:inherit;font-size:13px}
+.sb-search svg{flex:none}
+/* section labels */
+html body .app>aside .nv-section,html body .app>aside .nv-sub-label{margin:18px 8px 8px!important;padding:0!important;font-size:12px!important;font-weight:500!important;letter-spacing:0!important;text-transform:none!important;color:var(--sb-muted)!important;opacity:1!important}
+/* items */
+html body .app>aside .nv-group{margin:0 0 2px!important;background:none!important;border:0!important;box-shadow:none!important}
+html body .app>aside .nv-group>button{position:relative!important;display:flex!important;align-items:center!important;gap:14px!important;width:100%!important;padding:11px 14px!important;border:0!important;border-radius:12px!important;background:none!important;box-shadow:none!important;color:var(--sb-muted)!important;font-size:13.5px!important;font-weight:500!important;text-align:left!important;white-space:nowrap!important;transition:color .2s,background .2s!important}
+html body .app>aside .nv-group>button:hover{color:var(--sb-text)!important;background:var(--sb-hover)!important}
+html body .app>aside .nv-group.is-current>button{color:#fff!important;font-weight:600!important;background:linear-gradient(90deg,var(--sb-accent-soft),rgba(139,92,246,.04))!important}
+html body .app>aside .nv-group.is-current>button::before{content:"";position:absolute;left:-14px;top:50%;translate:0 -50%;width:4px;height:22px;border-radius:4px;background:var(--sb-accent);box-shadow:0 0 12px var(--sb-accent)}
+html body .app>aside .nv-ic{min-width:18px!important;width:18px!important;height:18px!important;background:none!important;border:0!important;box-shadow:none!important;color:inherit!important;display:grid!important;place-items:center!important}
+html body .app>aside .nv-ic svg{width:18px!important;height:18px!important}
+html body .app>aside .nv-chev{margin-left:auto!important;color:var(--sb-muted)!important}
+/* sub items */
+html body .app>aside .nv-sub{border-left:1px solid var(--sb-border)!important;margin:2px 0 6px 22px!important;padding-left:10px!important}
+html body .app>aside .nv-sub button{display:block!important;width:100%!important;text-align:left!important;padding:8px 12px!important;border:0!important;border-radius:10px!important;background:none!important;box-shadow:none!important;color:var(--sb-muted)!important;font-size:13px!important;font-weight:500!important}
+html body .app>aside .nv-sub button:hover{color:var(--sb-text)!important;background:var(--sb-hover)!important}
+html body .app>aside .nv-sub button[aria-current=true]{color:#fff!important;background:var(--sb-accent-soft)!important;font-weight:600!important}
+html body .app>aside .nv-sub button[aria-current=true]::before{display:none!important}
+/* badges */
+.sb-badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--sb-accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;margin-left:auto}
+html body .app>aside .nv-group>button .sb-badge+.nv-chev{margin-left:6px!important}
+/* footer user */
+html body .app>aside .nv-user{margin-top:auto!important;border:0!important;border-top:1px solid var(--sb-border)!important;border-radius:0!important;background:none!important;box-shadow:none!important;padding:14px 6px 2px!important}
+html body .app>aside .nv-avatar{background:#fff!important;color:#111!important;box-shadow:none!important}
+html body .app>aside .nv-user b{color:#fff!important}html body .app>aside .nv-user small{color:var(--sb-muted)!important}
+/* collapse */
+.sb-toggle{position:absolute;top:22px;right:10px;width:26px;height:26px;border-radius:50%;border:1px solid var(--sb-border);background:#1c1c21;color:var(--sb-text);display:grid;place-items:center;cursor:pointer;z-index:3}
+.sb-toggle:hover{background:#26262c}
+html.sb-mini body .app>aside{width:84px!important;min-width:84px!important}
+html.sb-mini body .app{grid-template-columns:104px 1fr!important}
+html.sb-mini body .app>aside .brand-name,html.sb-mini body .app>aside .brand-tag,html.sb-mini body .app>aside .nv-group>button>span:not(.nv-ic):not(.sb-badge),html.sb-mini body .app>aside .nv-chev,html.sb-mini body .app>aside .nv-sub,html.sb-mini body .app>aside .nv-section,html.sb-mini body .app>aside .sb-search,html.sb-mini body .app>aside .nv-user span:not(.nv-avatar),html.sb-mini body .app>aside .nv-new span~*{display:none!important}
+html.sb-mini body .app>aside .nv-new{font-size:0!important}html.sb-mini body .app>aside .nv-new span{font-size:18px!important}
+html.sb-mini body .app>aside .sb-badge{position:absolute;top:4px;right:6px;min-width:16px;height:16px;font-size:9px}
+html.sb-mini .sb-toggle{right:28px;top:70px}
+@media (max-width:900px){.sb-toggle{display:none}html body .app>aside{border-radius:0!important;margin:0!important;height:auto!important}}
+html body .app>aside .sb-search input,html body .app>aside .sb-search input:focus{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;height:auto!important;color:var(--sb-text)!important;border-radius:0!important}
+html body .app>aside #sidenav .nv-group.is-current>button[data-nv-group]{background:linear-gradient(90deg,var(--sb-accent-soft),rgba(139,92,246,.04))!important;color:#fff!important}
+html body .app>aside #sidenav .nv-sub button[aria-current=true]{background:var(--sb-accent-soft)!important;color:#fff!important;box-shadow:none!important;border:0!important}
+html body .app>aside #sidenav .nv-sub button[aria-current=true] *{color:#fff!important}
+html[data-style] body .app>aside{background:var(--sb-bg)!important;background-image:none!important}
+html[data-style] body .app>aside *{color:inherit}
+html[data-style] body .app>aside .sb-search input{background:transparent!important;border:0!important;color:var(--sb-text)!important}
+html[data-style=report] body .app>aside .nv-new,html[data-style=cinema] body .app>aside .nv-new{background:var(--sb-accent)!important}
+html[data-style=report] body .app>aside .nv-sub button[aria-current=true]{background:var(--sb-accent-soft)!important;color:#fff!important}
+html body .app>aside .sb-badge{color:#fff!important}html[data-style] body .app>aside{background:rgba(22,22,26,.96)!important}
