@@ -2,7 +2,7 @@
 -- Construction platform: Contracting (Construction / Infrastructure / Asphalt), MEP, Asphalt,
 -- Plant (Central Garage / Quarry / Yard), Industrial Service, Landscapes.
 -- Non-Construction platform: Precast & Readymix, Food, Logistics, Sand plant, Ice plant, Scafform,
--- Commercial (heavy equipment). Safe to run more than once.
+-- Commercial (Heavy equipment dealer/showroom). Safe to run more than once.
 update public.settings set data = jsonb_set(data, '{platforms}', '[
   {"name": "Construction", "businesses": [
     {"name": "Contracting", "clusters": ["Construction", "Infrastructure", "Asphalt"]},
@@ -12,6 +12,6 @@ update public.settings set data = jsonb_set(data, '{platforms}', '[
   {"name": "Non-Construction", "businesses": [
     {"name": "Precast & Readymix", "clusters": []}, {"name": "Food", "clusters": []}, {"name": "Logistics", "clusters": []},
     {"name": "Sand plant", "clusters": []}, {"name": "Ice plant", "clusters": []}, {"name": "Scafform", "clusters": []},
-    {"name": "Commercial (heavy equipment)", "clusters": []}]}
+    {"name": "Commercial (Heavy equipment dealer/showroom)", "clusters": []}]}
 ]'::jsonb) where id = 'structure';
 update public.projects set division = 'Industrial Service' where division = 'NIS';

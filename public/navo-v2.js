@@ -79,7 +79,7 @@ function v2Tree(P0, which) {
   const ids = new Set(P.map(p => p.id));
   let items = which === 'acc' ? (L.reports || []).filter(r => r.rt === 'Incident' && ids.has(r.project) && (r.eventTs || r.ts) >= from) : (L.records || []).filter(r => r.kind === 'finding' && ids.has(r.project) && r.ts >= from && !(r.data && r.data._deleted));
   if (S.type) items = items.filter(r => which === 'acc' ? (S.type === 'Injury' ? r.kind === 'Injury' || (typeof sevOf === 'function' && sevOf(r)) : S.type === 'PFPI' ? v2Pfpi(r) : r.kind === S.type) : r.data.ftype === S.type);
-  const all0 = myProjects(), uq = a => [...new Set(a)].filter(Boolean).sort();
+  const all0 = myProjects(), uq = a => [...new Set(a)].filter(Boolean).sort(orgSort);
   const sel = (k, lab, opts, allL) => `<label>${lab}<select class="mx-in" data-v2a="${which}|${k}"><option value="">${allL}</option>${opts.map(o => { const [v, t] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(v)}" ${S[k] === v ? 'selected' : ''}>${esc(t)}</option>`; }).join('')}</select></label>`;
   const fP = all0.filter(p => (!S.plat || (p.platform || 'Construction') === S.plat) && (!S.div || (p.division || 'Unassigned') === S.div) && (!S.clu || (p.cluster || '') === S.clu));
   const types = which === 'acc' ? ['Injury', 'PFPI', 'Near Miss', 'Property Damage', 'Environmental', 'Fire', 'Road Traffic Accident', 'Dangerous Occurrence'] : ['Non-compliance', 'Observation', 'Opportunity for improvement'];
@@ -137,7 +137,7 @@ function v2GroupSelect(sel) {
   const cur = sel.value, head = opts.filter(o => !pm.has(o.value));
   const key = p => `${p.platform || 'Construction'} › ${p.division || 'Unassigned'}${p.cluster ? ' › ' + p.cluster : ''}`;
   const g = {}; proj.forEach(o => { const k = key(pm.get(o.value)); (g[k] = g[k] || []).push(o); });
-  const order = Object.keys(g).sort((a, b) => a.localeCompare(b));
+  const order = Object.keys(g).sort((a, b) => { const [pa, da, ca] = a.split(' › '), [pb, db, cb] = b.split(' › '); return orgSortAt('plat')(pa, pb) || orgSortAt('div')(da, db) || orgSortAt('clu')(ca || '', cb || ''); });
   sel.innerHTML = ''; head.forEach(o => sel.appendChild(o));
   order.forEach(k => { const og = document.createElement('optgroup'); og.label = k; g[k].sort((a, b) => a.text.localeCompare(b.text)).forEach(o => og.appendChild(o)); sel.appendChild(og); });
   sel.value = cur; sel.dataset.v2g = '1';
@@ -195,3 +195,11 @@ let v2lT = null;
 try { new MutationObserver(() => { clearTimeout(v2lT); v2lT = setTimeout(v2Lift, 120); }).observe(document.body, { childList: true, subtree: true }); } catch (e) { }
 /* switching style repaints the page so every surface takes the new colours at once */
 if (typeof cmSet === 'function') { const v2Cm = cmSet; cmSet = function () { const o = v2Cm.apply(this, arguments); try { document.querySelectorAll('[data-v2l]').forEach(e => { e.style.removeProperty('color'); e.style.removeProperty('fill'); delete e.dataset.v2l; }); document.querySelectorAll('.cm-dk,.cm-lt').forEach(e => e.classList.remove('cm-dk', 'cm-lt')); render(); } catch (e) { } return o; }; }
+
+/* ---------- organisation order: platforms, divisions and sub-divisions listed in the company's own order ---------- */
+function orgList(level) {
+  const out = []; try { Object.entries(HIER).forEach(([pl, divs]) => { if (level === 'plat') out.push(pl, pl + ' platform'); Object.entries(divs).forEach(([d, cl]) => { if (level === 'div') out.push(d); if (level === 'clu') (cl || []).forEach(c => out.push(c)); }); }); } catch (e) { } return out;
+}
+function orgRank(name, level) { const lv = level ? [level] : ['plat', 'div', 'clu']; for (const l of lv) { const i = orgList(l).indexOf(name); if (i >= 0) return i + (l === 'div' ? 100 : l === 'clu' ? 200 : 0); } return 999; }
+const orgSort = (a, b) => (orgRank(a) - orgRank(b)) || String(a).localeCompare(String(b));
+const orgSortAt = level => (a, b) => (orgRank(a, level) - orgRank(b, level)) || String(a).localeCompare(String(b));
