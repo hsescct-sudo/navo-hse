@@ -72,8 +72,9 @@ html[data-style=cinema] body.nv3d svg :is(text.cd-dl){fill:#fff}
 /* ---------- tables ---------- */
 html[data-style=cinema] body.nv3d table{color:#e8eef8;background:transparent!important}
 html[data-style=cinema] body.nv3d :is(th){background:rgba(255,255,255,.03)!important;color:#9fb0c8!important;border-color:rgba(148,178,220,.14)!important}
-html[data-style=cinema] body.nv3d td{border-color:rgba(148,178,220,.08)!important;background:transparent!important}
-html[data-style=cinema] body.nv3d tbody tr:hover td{background:rgba(var(--ac-rgb),.08)!important}
+html[data-style=cinema] body.nv3d td{border-color:rgba(148,178,220,.08)!important}
+html[data-style=cinema] body.nv3d td:not(.hsc):not(.ta-hot):not([style*="background"]){background:transparent!important}
+html[data-style=cinema] body.nv3d tbody tr:hover td:not(.hsc):not(.ta-hot){background:rgba(var(--ac-rgb),.08)!important}
 html[data-style=cinema] body.nv3d .tbl,html[data-style=cinema] body.nv3d .cx-table{background:transparent!important;border-color:rgba(148,178,220,.12)!important}
 
 /* ---------- controls ---------- */

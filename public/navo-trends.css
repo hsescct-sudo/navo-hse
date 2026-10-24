@@ -1,0 +1,36 @@
+/* client review changes */
+.hb-cell{display:inline-block;min-width:96px;text-align:center;border-radius:6px;padding:4px 10px;font-weight:800;font-size:12px;letter-spacing:.02em;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
+td.hsc{font-weight:800}
+.co-one{display:block!important;grid-template-columns:none!important}
+.co-one>section{width:100%}
+.co-one-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.co-one-geo{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
+.co-one-w{overflow-x:auto;display:grid;gap:10px}
+.co-one-t{width:100%;border-collapse:collapse;font-size:12.5px;min-width:760px}
+.co-one-t th,.co-one-t td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.co-one-t thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.co-one-t tbody th,.co-one-t thead th:first-child{text-align:left;font-weight:800}
+.co-one-t td{font-variant-numeric:tabular-nums;font-weight:600}
+.co-one-t tbody tr:first-child th,.co-one-t tbody tr:first-child td{font-weight:800}
+.ta-filters{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}
+.ta-filters label{display:grid;gap:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.ta-filters select{min-width:180px}
+.ta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.ta-grid .cd-card{border:1px solid var(--line);border-radius:16px}
+.ta-grid .ta-full{grid-column:1/-1}
+.ta-div th,.ta-div td{text-align:center}.ta-div tbody th{text-align:left}
+@media(max-width:900px){.ta-grid{grid-template-columns:1fr}}
+.gm-tip{font-size:12px;line-height:1.5}
+.co-exposure.co-one .co-one-t th,.co-exposure.co-one .co-one-t td{font-size:12.5px!important;padding:8px 12px!important;line-height:1.3!important;height:auto!important}
+.co-exposure.co-one .co-one-t thead th{font-size:10.5px!important;white-space:normal!important;min-width:84px;vertical-align:bottom}
+.co-exposure.co-one .co-one-t thead th:first-child{min-width:190px}
+.co-exposure.co-one .co-one-t td{font-size:13.5px!important}
+.co-exposure.co-one h3{font-size:14px!important;margin:0!important}
+.co-exposure.co-one{max-height:none!important;height:auto!important;overflow:visible!important}
+.co-exposure.co-one>section{max-height:none!important;height:auto!important}
+.co-dashboard:has(.co-one){grid-template-rows:auto 28px auto 42px minmax(420px,1fr) 16px!important;height:auto!important;min-height:100vh}
+.co-exposure.co-one table.co-one-t{table-layout:fixed!important;width:100%!important;border-collapse:separate!important;border-spacing:0!important}
+.co-exposure.co-one table.co-one-t th:first-child{width:24%!important}
+.co-exposure.co-one table.co-one-t thead th{letter-spacing:0!important;text-transform:none!important;font-size:11.5px!important;padding:6px 10px!important;text-align:right!important;word-break:normal!important;overflow-wrap:normal!important}
+.co-exposure.co-one table.co-one-t thead th:first-child{text-align:left!important}
+.co-exposure.co-one table.co-one-t td{padding:8px 10px!important;text-align:right!important;white-space:nowrap}
