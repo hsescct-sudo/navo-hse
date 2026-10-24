@@ -123,7 +123,7 @@ function trDash() {
    <div class="rg-dash">
     ${rgCard('Compliance by project', Object.keys(byProj).length ? cdHbars(Object.entries(byProj).map(([k, v]) => ({ l: k, v: v[1] ? Math.round(v[0] / v[1] * 100) : 100, c: v[1] && v[0] / v[1] < .7 ? '#d23b3f' : v[1] && v[0] / v[1] < .9 ? '#e0a106' : '#1f9d63' })), { lw: 150 }) : '<p class="cd-none">Add people to see compliance</p>')}
     ${rgCard('Top training needs (TNA)', tna.length ? cdHbars(tna.map(x => ({ l: x.t, v: x.score, c: '#2f73c9' })), { lw: 150 }) : '<p class="cd-none">No needs found yet</p>')}
-    ${rgCard('Trained per month', cdBars(rgMonths(12).map(rgMonLbl), [{ name: 'Trained', vals: rgMonths(12).map(m2 => R.filter(r => (r.data.date || '').startsWith(m2)).length), color: '#2f73c9' }], { flat: 1, w: 520 }), 'cd-wide')}
+    ${rgCard('Trained per month', cdBars(rgMonths(12).map(rgMonLbl), [{ name: 'Trained', vals: rgMonths(12).map(m2 => R.filter(r => (r.data.date || '').startsWith(m2)).length), color: '#2f73c9' }], { flat: 1, w: 520 }), '')}
     ${rgCard('Expiring in the next 60 days', soon.length ? `<div class="rg-tw"><table class="rg-t"><tbody>${soon.slice(0, 12).map(r => `<tr data-rg-open="${rgEsc(r.data.person)}" tabindex="0"><td>${rgEsc((trPerson(r.data.person) || { data: {} }).data.name || '')}</td><td>${rgEsc((trCourse(r.data.course) || { data: {} }).data.name || '')}</td><td>${rgExpPill(r.data.expiry, 30)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="cd-none">Nothing expiring</p>', 'cd-wide')}
    </div>`;
 }

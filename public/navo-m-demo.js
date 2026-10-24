@@ -68,6 +68,12 @@ async function modDemoLoad(force) {
   });
 
   rows.forEach(r => { r.data.ccp && r.kind === 'r:ft' && (r.data.out = (() => { const c = rows.find(x => x.id === r.data.ccp); if (!c) return false; return r.data.value < +c.data.min || r.data.value > +c.data.max; })()); });
+  /* stop-work authority events and unsafe acts with clear topics */
+  const SW = [['Hot work', 'Stop work: hot work without fire watch'], ['Work at height', 'Stop work: worker at height without tie-off'], ['Traffic', 'Stop work: reversing truck without banksman'], ['Electrical', 'Stop work: damaged extension cable in use'], ['Lifting', 'Stop work: lift over people without exclusion zone'], ['Excavation', 'Stop work: unshored trench over 1.2 m']];
+  const VI = [['Work at height', 'Unsafe act: harness not anchored at height'], ['Hot work', 'Unsafe act: grinding without permit or screen'], ['Traffic', 'Unsafe act: over-speeding inside site'], ['Electrical', 'Unsafe act: working on live board without LOTO'], ['PPE', 'Unsafe act: no safety glasses while cutting']];
+  const rep = []; P.forEach(p => { for (let i = 0; i < 6; i++) { const t = now - int(0, 330) * MD_DAY - int(0, 20) * 36e5; const [, d] = R() < .5 ? pick(SW) : pick(SW.slice(0, 3)); rep.push({ id: uid(), rt: 'Hazard', kind: 'Stop Work', cat: '', project: p.id, desc: d, loc: '', ts: t, eventTs: t, status: R() < .8 ? 'Closed' : 'Open', safe: 'No', history: [] }); }
+    for (let i = 0; i < 8; i++) { const t = now - int(0, 330) * MD_DAY; const [, d] = R() < .6 ? pick(VI.slice(0, 3)) : pick(VI); rep.push({ id: uid(), rt: 'Hazard', kind: 'Unsafe Act', cat: '', project: p.id, desc: d, loc: '', ts: t, eventTs: t, status: R() < .8 ? 'Closed' : 'Open', safe: 'No', history: [] }); } });
+  try { await L.db.bulkInsert('reports', rep); (L.reports = L.reports || []).push(...rep); } catch (e) { console.error(e); }
   await L.db.bulkInsert('hsse_records', rows.map(r => ({ id: r.id, project: r.project, kind: r.kind, ts: r.ts, data: r.data, by: r.by })));
   (L.records = L.records || []).push(...rows);
   return rows.length;
