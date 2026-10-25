@@ -1222,7 +1222,7 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,tr"
   else if(k==="platforms")L.sdraft.platforms.push({name:"New platform",businesses:[],_o:null});else if(k.endsWith(".businesses"))getP(L.sdraft,k).push({name:"New business",clusters:[],_o:null});else getP(L.sdraft,k).push({name:"New cluster",_o:null});render();return}
  if(t.id==="st-save"){await saveStructure();return}
  if(t.id==="st-reset"){L.sdraft=null;render();return}
- if(t.id==="demo-load"){t.disabled=true;t.textContent="Loading…";await loadDemo();return}
+ if(t.id==="demo-load"){t.disabled=true;t.textContent="Loading…";if(L.db.releaseDemoIdentity)await L.db.releaseDemoIdentity();await loadDemo();return}
  if(t.id==="demo-remove"){if(t.dataset.confirm!=="1"){t.dataset.confirm="1";t.textContent="Confirm: remove all sample projects and their records";return}await liveSave(()=>L.db.removeDemo(),"Sample data removed");return}
  if(t.dataset.lvl){st.lvl=JSON.parse(t.dataset.lvl);st.drill=null;render();window.scrollTo(0,0);return}
  if(t.dataset.scd2){go("sc");st.scd=t.dataset.scd2;render();return}

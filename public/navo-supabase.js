@@ -195,7 +195,8 @@
       const norm = r => { const o = { id: r.id || crypto.randomUUID(), ...toRow(r) }; keys.forEach(k => { if (o[k] === undefined) o[k] = k in fill ? fill[k] : null; }); return o; };
       for (let i = 0; i < rows.length; i += 200) await run(sb.from(table).insert(rows.slice(i, i + 200).map(norm)));
     },
-    removeDemo: async () => run(sb.from("projects").delete().like("id", "demo-%")),
+    removeDemo: async () => { await run(sb.from("projects").delete().like("id", "demo-%")); try { await sb.rpc("navo_release_demo_identity"); } catch (e) { /* needs SQL 028 */ } },
+    releaseDemoIdentity: async () => { try { await sb.rpc("navo_release_demo_identity"); } catch (e) {} },
     token: async () => { try { const r = await sb.auth.getSession(); return (r && r.data && r.data.session && r.data.session.access_token) || (session && session.access_token) || null; } catch (e) { return session && session.access_token || null; } },
     ai: async (action, payload) => {
       const r = await fetch("/api/ai", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + (session && session.access_token) }, body: JSON.stringify({ action, ...payload }) });
