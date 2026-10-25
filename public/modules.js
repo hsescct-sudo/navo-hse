@@ -239,7 +239,7 @@ let mxT;document.addEventListener("input",e=>{const t=e.target;const map={"af-q"
 
 /* ================= sample data for the modules ================= */
 function mxSample(projects,reports,actions,insp,R){const pick=a=>a[Math.floor(R()*a.length)];const now=Date.now(),day=864e5;const recs=[];const lib=CL_DEF;
- const uid=()=>"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.floor(R()*16);return(c==="x"?r:(r&3|8)).toString(16)});const OWN=["Site Supervisor","HSE Engineer","Area Engineer","Foreman"];
+ const uid=()=>crypto.randomUUID(); /* unique on every load: ids are permanent references in the database */const OWN=["Site Supervisor","HSE Engineer","Area Engineer","Foreman"];
  const link=(o)=>{const closed=o.closed;const ts=o.ts;const due=ts+(o.hi?3:7)*day;const ca=closed?Math.min(now-day,due+Math.floor(R()*6-2)*day):null;actions.push({title:o.title,project:o.project,owner:pick(OWN),contractor:o.contractor||null,due,priority:o.hi?"High":"Normal",report:o.report||null,ts,by:null,closedAt:ca,source:o.source,sourceId:o.sid})};
  const ACT_ST=["Assigned","In progress","Evidence submitted","Verification"];
 
