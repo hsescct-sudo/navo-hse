@@ -934,7 +934,7 @@ class handler(BaseHTTPRequestHandler):
             from urllib.parse import urlparse, parse_qs
             fmt = parse_qs(urlparse(self.path).query).get("fmt", ["xlsx"])[0]
             n = int(self.headers.get("content-length") or 0)
-            if n > 2_000_000:
+            if n > 4_200_000:
                 raise ValueError("Request too large")
             data = json.loads(self.rfile.read(n) or b"{}")
             if probe:  # health check: fixed empty report, ignores the request body

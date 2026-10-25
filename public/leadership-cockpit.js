@@ -194,10 +194,10 @@ ${coScopeTabs()}${coExposure(P)}<div class="co-kpis">${[
 };
 /* The report server accepts up to 2 MB, so the dashboard picture is scaled and compressed to stay well under it. */
 function coShrinkShot(src) {
-  const k = Math.min(1, 1500 / src.width), c = document.createElement("canvas");
+  const k = Math.min(1, 1300 / src.width), c = document.createElement("canvas");
   c.width = Math.round(src.width * k); c.height = Math.round(src.height * k);
   c.getContext("2d").drawImage(src, 0, 0, c.width, c.height);
-  for (const q of [0.78, 0.65, 0.5, 0.4]) { const d = c.toDataURL("image/jpeg", q); if (d.length < 1.5e6) return d; }
+  for (const q of [0.72, 0.6, 0.5, 0.4, 0.3]) { const d = c.toDataURL("image/jpeg", q); if (d.length < 1.0e6) return d; }
   return null;
 }
 const coRenderBase = render;
