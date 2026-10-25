@@ -5,6 +5,8 @@ Returns a native Office file with real charts. The page only sends data the
 signed-in person can already see (Supabase row level security applies first).
 """
 import io
+import os
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/mpl")
 import json
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler

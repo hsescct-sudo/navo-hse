@@ -35,5 +35,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/report*.py": {
+      "maxDuration": 60
+    }
+  }
 }
