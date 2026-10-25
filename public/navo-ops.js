@@ -12,7 +12,7 @@
       if (own) {
         init = { ...(init || {}) };
         const h = new Headers(init.headers || (typeof input !== 'string' && input.headers) || {});
-        if (!h.has('Authorization') && window.L && L.db && L.db.token) { const t = await L.db.token(); if (t) h.set('Authorization', 'Bearer ' + t); }
+        if (!h.has('Authorization') && typeof L !== 'undefined' && L && L.db && L.db.token) { const t = await L.db.token(); if (t) h.set('Authorization', 'Bearer ' + t); }
         init.headers = h;
       }
     } catch (e) { /* never block a request because of the helper */ }
