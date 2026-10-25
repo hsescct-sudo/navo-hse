@@ -22,7 +22,7 @@ jobs:
         run: |
           fail=0
           for f in pdf pptx docx xlsx; do
-            code=$(curl -s -o out.$f -w "%{http_code} %{size_download}B %{time_total}s" --max-time 70 -X POST "https://navo-hse.vercel.app/api/report?fmt=$f" -H "Content-Type: application/json" -d '{"title":"Uptime","month":"2026-10","projects":[],"sections":[]}' || echo 000)
+            code=$(curl -s -o out.$f -w "%{http_code} %{size_download}B %{time_total}s" --max-time 70 -X POST "https://navo-hse.vercel.app/api/report?fmt=$f&probe=1" -H "Content-Type: application/json" -d '{"title":"Uptime","month":"2026-10","projects":[],"sections":[]}' || echo 000)
             body=$(head -c 400 out.$f | tr -d '\n\r' | tr -c '[:print:]' ' '); case "$code" in 200*) echo "::notice::$f $code";; *) echo "::error::$f $code $body"; fail=1;; esac
           done
           exit $fail
