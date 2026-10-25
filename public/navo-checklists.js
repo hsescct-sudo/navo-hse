@@ -1,4 +1,4 @@
-/* NAVO professional inspection library.
+/* NASS Safe Link professional inspection library.
    Each checklist: id, name, category, platforms, sections. Each question: [text, critical, evidence].
    critical = a failed answer is a critical control gap (high priority, 3-day action).
    evidence = photo or note expected when the answer is At risk.

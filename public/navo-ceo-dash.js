@@ -1,6 +1,6 @@
-/* NAVO CEO bi-monthly HSSE dashboard — the same panels as the corporate Excel dashboard:
+/* NASS Safe Link CEO bi-monthly HSSE dashboard — the same panels as the corporate Excel dashboard:
    Safety · Environment · Health & medical · Camp · Training · Security · CCTV observations · Lifting.
-   Figures come from NAVO records, the fortnight entry form, or the client's own workbook uploaded as is. */
+   Figures come from NASS Safe Link records, the fortnight entry form, or the client's own workbook uploaded as is. */
 'use strict';
 
 /* ---------- extra fields from the workbook ---------- */

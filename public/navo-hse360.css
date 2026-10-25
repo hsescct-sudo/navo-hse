@@ -3,13 +3,13 @@ body:has(.h3) .nvr-hero,body:has(.h3) .rg-tabs,body:has(.h3) #nf-host{display:no
 .h3{--g:#F2B705;--gr:#3ECF5A;--pn:#0E1B2E;--ln:rgba(120,160,210,.2);--tx:#E6EEF8;--mu:#8FA3BC;background:linear-gradient(180deg,#081221,#0B1626);color:var(--tx);border:1px solid var(--ln);border-radius:14px;padding:14px;font-family:"Barlow Condensed","Segoe UI",system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.45)}
 .h3 *{box-sizing:border-box}
 .h3-head{display:grid;grid-template-columns:auto 1fr auto auto;gap:18px;align-items:center;padding:14px 18px;border:1px solid var(--ln);border-bottom:3px solid var(--g);border-radius:12px;margin-bottom:12px;position:relative;overflow:hidden;background:linear-gradient(100deg,#0B1A2E 0%,#0B1A2E 42%,rgba(11,26,46,.55) 70%,rgba(11,26,46,.2) 100%),url(brand/nass-bg.jpg) right center/45% auto no-repeat,#0B1A2E}
-.h3-head::after{content:"";position:absolute;left:300px;top:0;bottom:0;width:4px;background:var(--g);transform:skewX(-18deg);box-shadow:0 0 14px var(--g)}
-.h3-logo{display:flex;align-items:center;gap:12px;padding-right:26px}
+.h3-head::after{display:none;content:"";position:absolute;left:300px;top:0;bottom:0;width:4px;background:var(--g);transform:skewX(-18deg);box-shadow:0 0 14px var(--g)}
+.h3-logo{display:flex;align-items:center;gap:14px;padding-right:22px;border-right:3px solid var(--g)}
 .h3-logo svg{width:74px;height:74px}.h3-logo text{fill:#fff;font:700 15px "Barlow Condensed",sans-serif}
 .h3-logo b{display:block;font-size:34px;line-height:1;color:#fff;font-weight:700;letter-spacing:.02em}
 .h3-logo span{display:block;font-size:20px;color:var(--g);font-weight:700;letter-spacing:.06em}
 .h3-logo small{display:block;font-size:11px;color:var(--mu);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
-.h3-title h1{margin:0;font-size:30px;letter-spacing:.03em;font-weight:700;color:#fff;line-height:1.1}
+.h3-title h1{margin:0;font-size:28px;text-transform:uppercase;letter-spacing:.03em;font-weight:700;color:#fff;line-height:1.1}
 .h3-title p{margin:8px 0 0;color:#C8D4E4;font-size:16px;font-family:"Segoe UI",system-ui,sans-serif}.h3-title i{color:var(--g);font-style:normal;margin:0 8px}
 .h3-badges{display:flex;gap:10px}
 .h3-badge{display:flex;flex-direction:column;align-items:center;gap:4px;width:84px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#C8D4E4}
@@ -73,3 +73,8 @@ body:has(.h3) .nvr-hero,body:has(.h3) .rg-tabs,body:has(.h3) #nf-host{display:no
 .h3-card .h3-spark{margin-top:auto;height:44px}
 .h3-r1{align-items:stretch}
 .h3-radar{overflow:visible}
+
+.h3 .h3-head .h3-org{background:#fff;border-radius:10px;padding:6px 10px;display:flex}.h3 .h3-org img{filter:none;mix-blend-mode:normal;opacity:1;height:56px;width:auto;display:block}
+.h3-go{cursor:pointer;transition:transform .15s,box-shadow .15s}.h3-go:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--g),0 8px 22px rgba(0,0,0,.35)}.h3-hb .h3-go:hover{transform:none;box-shadow:none;background:rgba(242,183,5,.08)}
+.h3-empty{border:1px dashed var(--g);border-radius:12px;padding:12px 16px;margin-bottom:12px;color:#E6EEF8;background:rgba(242,183,5,.07)}
+.h3-head>*{position:relative;z-index:2}

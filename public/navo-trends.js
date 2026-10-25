@@ -57,7 +57,7 @@ const TA = { tables: false, months: 12, plat: '', div: '', clu: '', proj: '', la
 const taPl = p => p.platform || 'Construction', taDv = p => p.division || 'Unassigned', taCl = p => p.cluster || '';
 function taProjects() { let P = myProjects(); if (TA.plat) P = P.filter(p => taPl(p) === TA.plat); if (TA.div) P = P.filter(p => taDv(p) === TA.div); if (TA.clu) P = P.filter(p => taCl(p) === TA.clu); if (TA.proj) P = P.filter(p => p.id === TA.proj); return P; }
 const TA_CLS = { rec: ['All recordable', ['Fatality', 'Serious Injury', 'Lost Time (> 7 days)', 'Lost Time', 'Restricted Work', 'Medical Treatment']], lti: ['LTI (incl. fatality, SI)', ['Fatality', 'Serious Injury', 'Lost Time (> 7 days)', 'Lost Time']], rwc: ['Restricted work', ['Restricted Work']], mtc: ['Medical treatment', ['Medical Treatment']], fac: ['First aid', ['First Aid']] };
-/* NCRs come from NAVO's own audit and inspection findings: every non-compliance finding is an NCR.
+/* NCRs come from NASS Safe Link's own audit and inspection findings: every non-compliance finding is an NCR.
    Major = Major / Significant severity, the rest Minor. Closed = finding status Closed. */
 const taIsNcr = f => f.data && !f.data._deleted && (f.data.ftype === 'Non-compliance' || /^(major|minor|moderate|significant)$/i.test(f.data.sev || '') && !/observation|opportunity/i.test(f.data.ftype || ''));
 const taMajor = f => /major|significant|critical/i.test(f.data.sev || '');
@@ -109,7 +109,7 @@ function taPage() {
   const ptwI = I.filter(i => /permit|ptw|hot work|confined|excavat|isolation|loto/i.test(i.tpl || ''));
   const ptwDone = M.map(m => ptwI.filter(i => inM(i.ts, m)).length), ptwFail = M.map(m => ptwI.filter(i => inM(i.ts, m)).reduce((n, i) => n + (+i.fails || 0), 0));
   const ptwRev = M.map(m => sumM(m, 'ptwReviewed')), ptwNC = M.map(m => sumM(m, 'ptwNC'));
-  /* NCRs from NAVO's own findings register */
+  /* NCRs from NASS Safe Link's own findings register */
   const F = (L.records || []).filter(r => r.kind === 'finding' && ids.has(r.project) && taIsNcr(r));
   const fM = (m, f) => F.filter(r => inM(r.ts, m) && f(r)).length;
   const ncrMaj = M.map(m => fM(m, taMajor)), ncrMin = M.map(m => fM(m, r => !taMajor(r))), ncrCl = M.map(m => F.filter(r => r.data.status === 'Closed' && inM(r.data.closedAt || r.data.closed || r.ts, m)).length);

@@ -1,4 +1,4 @@
-/* NAVO on Supabase: provides the claude.use("db") / claude.use("user") interface the app is written against,
+/* NASS Safe Link on Supabase: provides the claude.use("db") / claude.use("user") interface the app is written against,
    backed by Supabase Auth and Postgres. Access is enforced by Row Level Security (supabase/schema.sql). */
 (function () {
   const cfg = window.NAVO_SUPABASE_CONFIG || {};
@@ -251,7 +251,7 @@
     mode = mode === "in" ? "up" : "in";
     nameWrap.hidden = mode === "in";
     document.getElementById("lg-submit").textContent = mode === "in" ? "Sign in" : "Create account";
-    document.getElementById("lg-toggle").textContent = mode === "in" ? "New to NAVO? Create an account" : "Already have an account? Sign in";
+    document.getElementById("lg-toggle").textContent = mode === "in" ? "New to NASS Safe Link? Create an account" : "Already have an account? Sign in";
     msg("");
   };
   async function start(s) {

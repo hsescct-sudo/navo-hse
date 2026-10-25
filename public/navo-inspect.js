@@ -1,4 +1,4 @@
-/* NAVO inspection flow.
+/* NASS Safe Link inspection flow.
    Four answers per question: Safe, At risk, Not applicable, Not evaluated.
    Finding and recommendation are optional for every answer and required only for At risk.
    Every At risk answer becomes an action assigned to its owner the moment the inspection is submitted. */

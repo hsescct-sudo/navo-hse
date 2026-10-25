@@ -1,4 +1,4 @@
-/* NAVO motion: three levels the viewer chooses from the header (saved on this device).
+/* NASS Safe Link motion: three levels the viewer chooses from the header (saved on this device).
    Cinematic · 3D page transitions, staggered reveals, numbers that count up, charts that grow, hero parallax, button ripples.
    Subtle · a soft fade and rise only.
    Off · no animation. */

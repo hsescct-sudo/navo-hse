@@ -1,5 +1,5 @@
 'use strict';
-/* NAVO sidebar: search the menu, collapse to icons, live badges. Styling in navo-sidebar.css. */
+/* NASS Safe Link sidebar: search the menu, collapse to icons, live badges. Styling in navo-sidebar.css. */
 const SB = { q: '' };
 try { if (localStorage.getItem('navo-sb-mini') === '1') document.documentElement.classList.add('sb-mini'); } catch (e) { }
 function sbBadges() {

@@ -1,4 +1,4 @@
-/* NAVO Equipment management: register by category, documents with verification and expiry, QR per item,
+/* NASS Safe Link Equipment management: register by category, documents with verification and expiry, QR per item,
    onboarding approval, inspections with hold / return to service, maintenance by date or hours,
    project transfers that keep the same ID and QR, reminders and dashboards. */
 'use strict';
@@ -59,7 +59,7 @@ function eqPrint(r) {
   <h2>Details</h2><table>${e.fields.filter(f => rgFieldOn(f, d) && !['files', 'photo'].includes(f.type) && d[f.k] != null && d[f.k] !== '').map(f => `<tr><td class="k">${rgEsc(f.l)}</td><td>${rgVal(e, f, d).replace(/<[^>]+>/g, '')}</td></tr>`).join('')}</table>
   <h2>Documents</h2><table><tr><th>Type</th><th>No.</th><th>Expiry</th><th>Status</th></tr>${Object.values(s.latest).map(x => `<tr><td>${rgEsc(x.type)}</td><td>${rgEsc(x.no || '')}</td><td>${x.noExpiry ? 'No expiry' : rgDate(x.expiry)}</td><td>${rgEsc(rgDocState(x, e.warn).label)}</td></tr>`).join('')}${s.missing.map(t => `<tr><td>${rgEsc(t)}</td><td></td><td></td><td><b>Missing</b></td></tr>`).join('')}</table>
   <h2>Recent inspections</h2><table><tr><th>Date</th><th>Type</th><th>Result</th><th>Inspector</th><th>Next due</th></tr>${I.map(x => `<tr><td>${rgDate(x.data.date)}</td><td>${rgEsc(x.data.type)}</td><td>${rgEsc(x.data.result)}</td><td>${rgEsc(x.data.inspector || '')}</td><td>${rgDate(x.data.next)}</td></tr>`).join('') || '<tr><td colspan="5">None</td></tr>'}</table>
-  <p style="font-size:8pt;color:#5f6f84;margin-top:8mm">Printed ${new Date().toLocaleString('en-GB')} from NAVO</p><script>setTimeout(()=>print(),400)<\/script>`);
+  <p style="font-size:8pt;color:#5f6f84;margin-top:8mm">Printed ${new Date().toLocaleString('en-GB')} from NASS Safe Link</p><script>setTimeout(()=>print(),400)<\/script>`);
   w.document.close();
 }
 
@@ -166,7 +166,7 @@ function eqDash() {
 function eqSettings() {
   if (myRole() !== 'admin') return '<div class="panel"><p class="mx-muted">Settings are managed by the System admin.</p></div>';
   const c = eqCfg();
-  return `<div class="panel"><h2>Required documents by category</h2><p class="mx-muted">Add document types your company requires, per category. One per line. These add to the NAVO defaults.</p>
+  return `<div class="panel"><h2>Required documents by category</h2><p class="mx-muted">Add document types your company requires, per category. One per line. These add to the NASS Safe Link defaults.</p>
    <div class="rg-grid">${EQ_CAT.map(cat => `<div class="fld"><label>${rgEsc(cat)}</label><small class="mx-muted">Defaults: ${rgEsc((EQ_REQ[cat] || []).join(', '))}</small><textarea class="mx-in" rows="3" data-eqset="${rgEsc(cat)}">${rgEsc(((c.extraReq || {})[cat] || []).join('\n'))}</textarea></div>`).join('')}</div>
    <div class="filters" style="margin-top:12px"><button class="btn pri" data-eqset-save>Save</button></div></div>`;
 }

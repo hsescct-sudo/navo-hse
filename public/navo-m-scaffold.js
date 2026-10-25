@@ -1,4 +1,4 @@
-/* NAVO Scaffolds: scaffold register with QR tag status (green = safe to use, yellow = restricted, red = do not use),
+/* NASS Safe Link Scaffolds: scaffold register with QR tag status (green = safe to use, yellow = restricted, red = do not use),
    erector and inspector competency register, inspections before first use, every 7 days and after bad weather,
    alterations, handover and dismantling. Separate from equipment. */
 'use strict';

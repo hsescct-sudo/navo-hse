@@ -1,5 +1,5 @@
 'use strict';
-/* NAVO v2 refinements (loaded last). */
+/* NASS Safe Link v2 refinements (loaded last). */
 
 /* ---------- anatomical body map: front and back, heat markers by body part ---------- */
 const V2_HALF = 'M0 34L6.5 34C7.5 39 9 42 13 44C22 46 30 47.5 33.5 54C36.5 60 37.5 68 37.5 78C38.5 92 40.5 104 42.5 116C43.5 124 45.5 130 44.5 137C44.5 143 41 147 38 145C36 141 35.2 133 35 127C33.2 115 31 103 29.3 91C28.3 83 27.4 75 26.5 70C25.4 82 25.3 92 24.6 100C23.6 108 26 116 27.2 124C28.4 140 26.6 160 25.5 176C24.6 184 25.2 190 24.4 200C23.4 214 22.4 226 22.2 236C23.8 241 26.4 246 22.4 248.5L7 248.5C6.4 244 7.2 240 7.2 236C6.4 222 5.6 208 6.2 198C6 186 5.2 172 3.4 156C2.6 147 1.4 141 0 138Z';
@@ -128,7 +128,7 @@ document.addEventListener('click', e => {
   render();
 }, true);
 
-/* ---------- every project picker in NAVO grouped by the organisation: platform › division › sub-division ---------- */
+/* ---------- every project picker in NASS Safe Link grouped by the organisation: platform › division › sub-division ---------- */
 function v2GroupSelect(sel) {
   if (sel.dataset.v2g || sel.multiple || !L.projects || !L.projects.length) return;
   const pm = new Map(L.projects.map(p => [String(p.id), p])), opts = [...sel.options];
@@ -208,5 +208,5 @@ const orgSortAt = level => (a, b) => (orgRank(a, level) - orgRank(b, level)) || 
 function v2After(f) { if (typeof onAfterRender === 'function') return onAfterRender(f); const b = render; render = function () { const o = b.apply(this, arguments); try { f(); } catch (e) { } return o; }; }
 
 /* ---------- NASS Corporation brand: logo everywhere, NASS name (an older "VJ" setting is replaced) ---------- */
-brand = function () { const b = (L.structure && L.structure.brand) || {}; const custom = b.name && !/^\s*VJ\s*$/i.test(b.name) && !/^NAVO$/i.test(b.name); return { name: custom ? b.name : 'NASS', tag: custom ? (b.tag ?? 'HSE Platform') : 'Corporation · HSE Platform', logo: custom && b.logo ? b.logo : 'brand/nass-logo.png', hide: !!b.hide }; };
+brand = function () { const b = (L.structure && L.structure.brand) || {}; const custom = b.name && !/^\s*VJ\s*$/i.test(b.name) && !/^(NAVO|NASS Safe Link)$/i.test(b.name); return { name: custom ? b.name : 'NASS Safe Link', tag: custom ? (b.tag ?? 'HSE Platform') : 'HSE Platform', logo: custom && b.logo ? b.logo : 'brand/nass-logo.png', hide: !!b.hide }; };
 v2After(function () { try { applyBrand(); const a = document.querySelector('.app>aside .logo'); if (a) a.classList.add('nass-logo'); } catch (e) { } });

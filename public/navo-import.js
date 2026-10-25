@@ -1,4 +1,4 @@
-/* NAVO Excel import: download a template, fill it, upload, preview, then save.
+/* NASS Safe Link Excel import: download a template, fill it, upload, preview, then save.
    Monthly performance data (man-hours, training, permits, waste, energy) and environmental data in one file.
    Rows are saved through the signed-in person's own permissions; blank cells never erase saved figures. */
 'use strict';

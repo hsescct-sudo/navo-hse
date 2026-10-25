@@ -1,4 +1,4 @@
-/* NAVO style switch: Classic (light) or Cinematic 3D (dark glass, chrome, moving 3D floor). Saved on this device. */
+/* NASS Safe Link style switch: Classic (light) or Cinematic 3D (dark glass, chrome, moving 3D floor). Saved on this device. */
 'use strict';
 const CM_STYLES = [['classic', 'Classic', 'Light, clean, print friendly'], ['cinema', 'Cinematic 3D', 'Dark glass, chrome and depth'], ['report', 'Report (Power BI)', 'Flat, light, executive report look']];
 const cmStyle = () => document.documentElement.dataset.style || 'classic';
@@ -29,7 +29,7 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 
 /* Every page has its own components. In the cinematic style, any light surface becomes dark glass and any dark text becomes light,
    so no page shows a white block or unreadable text. Coloured chips and status pills keep their colours. */
-const CM_KEEP = /(^|\s)(pill|cx-pill|nx-type|p-ok|p-crit|p-warn|p-info|leaflet[\w-]*|cd-tile|cd-bar|cd-hbar|au-item|badge|chip|sev|dot|swatch)(\s|$)/;
+const CM_KEEP = /(^|\s)(cm-keep|pill|cx-pill|nx-type|p-ok|p-crit|p-warn|p-info|leaflet[\w-]*|cd-tile|cd-bar|cd-hbar|au-item|badge|chip|sev|dot|swatch)(\s|$)/;
 function cmLum(c) { const m = c && c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?/); if (!m) return null; return { l: (0.2126 * m[1] + 0.7152 * m[2] + 0.0722 * m[3]) / 255, a: m[4] == null ? 1 : +m[4], s: Math.max(m[1], m[2], m[3]) - Math.min(m[1], m[2], m[3]) }; }
 function cmFix(root) {
   if (cmStyle() !== 'cinema' || !root) return;

@@ -1,4 +1,4 @@
-/* NAVO Food safety (HACCP · ISO 22000): food units, HACCP plan with critical control points and limits,
+/* NASS Safe Link Food safety (HACCP · ISO 22000): food units, HACCP plan with critical control points and limits,
    CCP / temperature monitoring that flags out-of-limit readings and raises corrective actions, approved suppliers,
    receiving and traceability by batch with expiry and recall, hygiene audits, and food handler health cards. */
 'use strict';

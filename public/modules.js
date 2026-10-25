@@ -1,4 +1,4 @@
-/* NAVO · operational modules: Action management, Inspections, Incidents, HSE walkthroughs, Training, Checklist builder, Workflows.
+/* NASS Safe Link · operational modules: Action management, Inspections, Incidents, HSE walkthroughs, Training, Checklist builder, Workflows.
    Loaded after the main app, hsse.js and checklists.js. All figures come from database records. */
 "use strict";
 try{delete SOON.train}catch(e){}

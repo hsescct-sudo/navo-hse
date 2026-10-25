@@ -1,5 +1,5 @@
 'use strict';
-/* NAVO · sample data for the operational modules (training, equipment, scaffolds, food safety).
+/* NASS Safe Link · sample data for the operational modules (training, equipment, scaffolds, food safety).
    Records are attached only to the sample projects (id "demo-…"), so "Remove sample data" removes them too. */
 function mdRand(seed) { let s = seed; return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
 const MD_DAY = 864e5;

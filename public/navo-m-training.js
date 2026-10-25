@@ -1,4 +1,4 @@
-/* NAVO Training & competence: people register with QR, course catalogue, training records with certificates,
+/* NASS Safe Link Training & competence: people register with QR, course catalogue, training records with certificates,
    training matrix by position, plan with target vs actual, and training needs analysis (TNA) built from
    incidents, hazards, inspection findings and matrix gaps. */
 'use strict';

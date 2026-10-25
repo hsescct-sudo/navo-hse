@@ -1,4 +1,4 @@
-/* NAVO registry engine: one consistent way to keep registers (people, equipment, scaffolds, vehicles, products…)
+/* NASS Safe Link registry engine: one consistent way to keep registers (people, equipment, scaffolds, vehicles, products…)
    with forms, documents and expiry dates, QR codes, history, Excel import/export, alerts and dashboards.
    Records live in hsse_records (kind "r:<entity>"), so project access rules and storage rules already apply.
    Each module (training, equipment, scaffolds, food safety, fleet, environment sensors, CCTV) registers itself with regModule(). */
@@ -103,7 +103,7 @@ async function rgFillQr() { const els = document.querySelectorAll('[data-rg-qr]'
 async function rgPrintLabels(ids) {
   await rgQrLib();
   const R = ids.map(rgGet).filter(Boolean); if (!R.length) return;
-  const brand = (L.structure && L.structure.brand && L.structure.brand.name) || 'NAVO';
+  const brand = (L.structure && L.structure.brand && L.structure.brand.name) || 'NASS Safe Link';
   const w = window.open('', '_blank'); if (!w) { toast('Allow pop-ups to print labels'); return; }
   w.document.write(`<!doctype html><title>QR labels</title><style>body{font-family:Arial,sans-serif;margin:10mm}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:6mm}.l{border:1px solid #222;border-radius:3mm;padding:3mm;display:grid;grid-template-columns:32mm 1fr;gap:3mm;align-items:center;break-inside:avoid}.l svg{width:32mm;height:32mm}.b{font:700 9pt Arial;letter-spacing:.1em;color:#14325c}.n{font:700 12pt Arial;margin:1mm 0}.i{font:700 14pt monospace}.s{font:9pt Arial;color:#444}@media print{body{margin:6mm}}</style>
   <div class="g">${R.map(r => { const e = REG.ents[r.kind.slice(2)]; return `<div class="l">${rgQrSvg(rgQrUrl(r))}<div><div class="b">${rgEsc(brand.toUpperCase())} · ${rgEsc(e.name.toUpperCase())}</div><div class="i">${rgEsc(r.data._no || '')}</div><div class="n">${rgEsc(rgTitle(r))}</div><div class="s">${rgEsc(projName(r.project))}</div><div class="s">Scan to check status</div></div></div>`; }).join('')}</div><script>setTimeout(()=>print(),300)<\/script>`);
@@ -116,7 +116,7 @@ async function rgExport(e, rows) {
   const F = e.fields.filter(f => f.type !== 'files');
   const data = [['ID', 'Project', ...F.map(f => f.l), ...(e.status ? ['Status'] : [])]].concat(rows.map(r => [r.data._no || '', projName(r.project), ...F.map(f => { const v = r.data[f.k]; return f.type === 'project' ? projName(v) : f.type === 'ref' ? (rgGet(v) ? rgTitle(rgGet(v)) : '') : Array.isArray(v) ? v.map(x => f.type === 'refs' ? (rgGet(x) ? rgTitle(rgGet(x)) : '') : x).join(', ') : (v ?? ''); }), ...(e.status ? [e.status(r.data, r).label] : [])]));
   const ws = XLSX.utils.aoa_to_sheet(data); ws['!cols'] = data[0].map(h => ({ wch: Math.max(12, String(h).length + 2) }));
-  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, e.plural.slice(0, 30)); XLSX.writeFile(wb, 'NAVO ' + e.plural + '.xlsx');
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, e.plural.slice(0, 30)); XLSX.writeFile(wb, 'NASS Safe Link ' + e.plural + '.xlsx');
 }
 async function rgTemplate(e) {
   await rgXlsxLib();
@@ -125,7 +125,7 @@ async function rgTemplate(e) {
   const ex = [myProjects()[0] ? myProjects()[0].id : 'P-001', ...F.map(f => f.example ?? (f.type === 'select' ? f.opts[0] : f.type === 'date' ? '2026-12-31' : f.type === 'num' ? 1 : ''))];
   const ws = XLSX.utils.aoa_to_sheet([head, ex]); ws['!cols'] = head.map(h => ({ wch: Math.max(14, h.length + 2) }));
   const lists = XLSX.utils.aoa_to_sheet([['Field', 'Allowed values'], ...F.filter(f => f.type === 'select').map(f => [f.l, f.opts.join(' | ')]), ['Project code', myProjects().map(p => p.id + ' = ' + p.name).join(' | ')]]);
-  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Import'); XLSX.utils.book_append_sheet(wb, lists, 'Allowed values'); XLSX.writeFile(wb, 'NAVO ' + e.plural + ' import template.xlsx');
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Import'); XLSX.utils.book_append_sheet(wb, lists, 'Allowed values'); XLSX.writeFile(wb, 'NASS Safe Link ' + e.plural + ' import template.xlsx');
 }
 async function rgReadImport(e, file) {
   await rgXlsxLib();

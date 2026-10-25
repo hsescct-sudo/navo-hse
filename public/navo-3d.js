@@ -1,4 +1,4 @@
-/* NAVO 3D shell: one sidebar with every route, one header, a phone bottom bar.
+/* NASS Safe Link 3D shell: one sidebar with every route, one header, a phone bottom bar.
    Replaces the stacked top nav, sub-nav, dashboard rail and return bar with a single navigation. */
 'use strict';
 const NV = { open: null, drawer: false };

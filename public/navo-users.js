@@ -1,4 +1,4 @@
-/* NAVO accounts: create people in bulk from Excel, and manage every account from one table
+/* NASS Safe Link accounts: create people in bulk from Excel, and manage every account from one table
    (name, email, password, position, level, projects, disable, delete). Admin only.
    Accounts are created on the server (/api/users); access is saved through the admin's own database rights. */
 'use strict';
@@ -102,7 +102,7 @@ function accountsPage() {
   const list = U.filter(u => !q || (u.name + ' ' + u.email + ' ' + (L.members[u.id]?.title || '')).toLowerCase().includes(q)).sort((a, b) => (a.name || a.email).localeCompare(b.name || b.email));
   const noAccess = U.filter(u => !L.members[u.id]).length;
   return `${ACC.err ? `<div class="nvi-alert">${esc(ACC.err)}</div>` : ''}
-  <div class="panel acc-upload"><div><h2>Add people from Excel</h2><p class="mx-muted">1. Download the template · 2. One row per person: name, email, position, level · 3. Upload. NAVO creates the accounts, sets their access and gives you the passwords.</p></div>
+  <div class="panel acc-upload"><div><h2>Add people from Excel</h2><p class="mx-muted">1. Download the template · 2. One row per person: name, email, position, level · 3. Upload. NASS Safe Link creates the accounts, sets their access and gives you the passwords.</p></div>
    <div class="filters"><button class="btn" data-acc-tpl>Download template</button><label class="btn primary acc-file">Upload Excel<input type="file" id="acc-file" accept=".xlsx" hidden></label><button class="btn" data-acc-one>Add one person</button></div></div>
   ${ACC.results ? accResults() : ACC.rows ? accPreview() : ''}
   <div class="panel"><div class="acc-head"><h2>All accounts · ${U.length}</h2>${noAccess ? `<span class="acc-pill">${noAccess} without access</span>` : ''}<input id="acc-q" class="mx-in" placeholder="Search name, email or position" value="${esc(ACC.q)}"><button class="btn" data-acc-refresh>Refresh</button></div>
@@ -191,7 +191,7 @@ document.addEventListener('click', async e => {
   if (!t) { if (e.target.classList?.contains('acc-modal')) { ACC.edit = null; render(); } return; }
   e.preventDefault(); const D = t.dataset;
   if (t.hasAttribute('data-acc-tpl')) {
-    try { const d = await accApi({ op: 'template', positions: POSITIONS.map(p => p[0]), scopes: [...new Set(['platform', 'division', 'cluster'].flatMap(accScopes))], projects: L.projects.map(p => p.id) }); accDownload(d.file, 'NAVO accounts template.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); } catch (err) { toast(err.message); }
+    try { const d = await accApi({ op: 'template', positions: POSITIONS.map(p => p[0]), scopes: [...new Set(['platform', 'division', 'cluster'].flatMap(accScopes))], projects: L.projects.map(p => p.id) }); accDownload(d.file, 'NASS Safe Link accounts template.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); } catch (err) { toast(err.message); }
     return;
   }
   if (t.hasAttribute('data-acc-one')) { const email = prompt('Email of the new person'); if (!email) return; const name = prompt('Full name') || ''; ACC.rows = [{ name, email: email.trim().toLowerCase(), position: 'Site worker / reporter', level: 'project', scope: '', projects: L.projects.slice(0, 1).map(p => p.id), password: '' }]; ACC.results = null; }
@@ -201,7 +201,7 @@ document.addEventListener('click', async e => {
   if (t.hasAttribute('data-acc-cred')) {
     const rows = [['Name', 'Email', 'Password', 'Sign in at']].concat(ACC.results.filter(r => r.password).map(r => [r.name, r.email, r.password, location.origin]));
     const csv = '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
-    accDownload(btoa(unescape(encodeURIComponent(csv))), 'NAVO sign-in list.csv', 'text/csv'); return;
+    accDownload(btoa(unescape(encodeURIComponent(csv))), 'NASS Safe Link sign-in list.csv', 'text/csv'); return;
   }
   if (t.hasAttribute('data-acc-refresh')) { ACC.users = null; accLoad(true); }
   if (D.accOpen) accOpen(D.accOpen);
@@ -214,7 +214,7 @@ document.addEventListener('click', async e => {
     try { await accApi({ op: 'update', id: E.id, disabled: !E.disabled }); E.disabled = !E.disabled; const u = ACC.users.find(x => x.id === E.id); if (u) u.disabled = E.disabled; toast(E.disabled ? 'Account disabled: they can no longer sign in' : 'Account enabled'); } catch (err) { toast(err.message); }
   }
   if (t.hasAttribute('data-acc-del') && ACC.edit) {
-    const E = ACC.edit; if (!confirm('Delete the account of ' + (E.name || E.email) + '? Their reports stay in NAVO. This cannot be undone.')) return;
+    const E = ACC.edit; if (!confirm('Delete the account of ' + (E.name || E.email) + '? Their reports stay in NASS Safe Link. This cannot be undone.')) return;
     try { await accApi({ op: 'delete', id: E.id }); const next = { ...L.members }; delete next[E.id]; if (L.members[E.id]) { await liveSave(() => saveMembers(next), null); L.members = next; } ACC.users = ACC.users.filter(x => x.id !== E.id); ACC.edit = null; toast('Account deleted'); } catch (err) { toast(err.message); }
   }
   render();

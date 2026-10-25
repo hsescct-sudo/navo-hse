@@ -183,6 +183,7 @@ ${coScopeTabs()}${coExposure(P)}<div class="co-kpis">${[
         .join("")}</div>`,
     "co-workforce",
   )}${coCard("Action & leadership assurance", `<div class="co-assurance"><button data-go="lactions"><b>${actions.length ? Math.round((closed / actions.length) * 100) : 0}%</b><span>actions closed</span></button><button data-go="leaders"><b>${coN(programs.reduce((s, p) => s + p.count, 0))}</b><span>leadership engagements</span></button><button data-go="inspm"><b>${coN(e.critical)}</b><span>open critical controls</span></button></div><footer><button data-co-outlook>Predictive · preventive · protective ↗</button><button data-co-esg>ESG / ISO evidence ↗</button></footer>`, "co-control")}</div><div class="co-foot">${hsIsSample() ? "DEMO records / locations included. " : ""}Health colours reflect recorded indicators, not certification. <button data-cl-dashboard="portfolio">Safety cycle & portfolio ↗</button><button data-go="casehome">All source records ↗</button></div>`;
+  try { const g = el.querySelector('.co-grid'); if (g && typeof hsDiamond === 'function') g.insertAdjacentHTML('beforeend', coCard('Lagging & leading indicators · click a row', hsDiamond(P), 'co-diamond')); } catch (err) { console.error(err); }
   gmMount();
   const mountedMap=GM.map;
   requestAnimationFrame(() => {

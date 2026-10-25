@@ -1,4 +1,4 @@
-/* NAVO investigation studio.
+/* NASS Safe Link investigation studio.
    Four root cause methods with the same rhythm: pick on a visual, record evidence, read the result.
    Systems Wheel · 5 Whys · Fishbone · TapRooT®-style analysis.
    The result (root causes, contributing factors, actions) is saved on the incident and actions are created on request. */

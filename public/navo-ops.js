@@ -1,5 +1,5 @@
-/* NAVO operations helpers, loaded right after the database adapter:
-   1. every call to NAVO's own /api/ functions carries the signed-in session, so the server can refuse anonymous use;
+/* NASS Safe Link operations helpers, loaded right after the database adapter:
+   1. every call to NASS Safe Link's own /api/ functions carries the signed-in session, so the server can refuse anonymous use;
    2. browser errors are reported to /api/log (once per message, at most 10 per visit) so problems are seen before users call;
    3. outside production, a strip says which environment you are in. */
 'use strict';

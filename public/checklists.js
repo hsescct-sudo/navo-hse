@@ -1,4 +1,4 @@
-/* NAVO · default inspection checklist library. Each question: [text, critical, evidence required].
+/* NASS Safe Link · default inspection checklist library. Each question: [text, critical, evidence required].
    Administrators edit, add and publish revisions in the Checklist builder; the edited library is stored in the database. */
 "use strict";
 const CL_DEF=[

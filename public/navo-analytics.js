@@ -1,4 +1,4 @@
-/* NAVO usage analytics with PostHog (EU), switched on by a System admin in Settings → Usage analytics.
+/* NASS Safe Link usage analytics with PostHog (EU), switched on by a System admin in Settings → Usage analytics.
    Privacy by design, because HSE records name people and injuries:
    - no session recording, no heatmaps, no surveys;
    - nothing typed is captured: autocapture records clicks only, with element text and form values masked;
@@ -43,7 +43,7 @@ render = function () { const r = anBaseRender.apply(this, arguments); try { anSt
 function anSettingsPanel() {
   const c = anCfg();
   return `<div class="panel" id="an-settings"><h2>Usage analytics <small>PostHog, EU</small></h2>
-   <p class="mx-muted">Shows who uses NAVO and which pages, to measure the pilot. No screen recording, nothing typed, no names or emails: people appear under an anonymous id.</p>
+   <p class="mx-muted">Shows who uses NASS Safe Link and which pages, to measure the pilot. No screen recording, nothing typed, no names or emails: people appear under an anonymous id.</p>
    <div class="ceo-grid"><div class="fld"><label for="an-key">PostHog project API key</label><input class="mx-in" id="an-key" placeholder="phc_…" value="${esc(c.key || '')}" autocomplete="off"></div>
     <div class="fld"><label for="an-host">Region</label><select class="mx-in" id="an-host"><option value="https://eu.i.posthog.com" ${(c.host || AN.host).includes('eu.') ? 'selected' : ''}>EU (recommended)</option><option value="https://us.i.posthog.com" ${(c.host || '').includes('us.') ? 'selected' : ''}>US</option></select></div></div>
    <div class="filters"><button class="btn pri" data-an-save>Save</button>${c.key ? `<button class="btn" data-an-toggle>${c.enabled === false ? 'Turn analytics on' : 'Turn analytics off'}</button>` : ''}<span class="mx-muted">${!c.key ? 'Off: no key yet.' : c.enabled === false ? 'Off for everyone.' : 'On for everyone' + (anOptedOut() ? ' except you (opted out on this device).' : '.')}</span></div>

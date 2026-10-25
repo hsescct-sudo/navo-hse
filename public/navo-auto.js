@@ -1,4 +1,4 @@
-/* NAVO automation.
+/* NASS Safe Link automation.
    Rules run on the records the viewer can see and raise alerts in the bell and on the Automations page.
    Two rules can also create records: the monthly inspection plan and systemic actions for repeat findings.
    Both create records only on a button press, unless an HSE Admin switches them to run automatically.
@@ -82,7 +82,7 @@ async function auCreatePlan(quiet) {
     for (const g of auPlanGaps(ids)) {
       for (let k = g.planned; k < g.plan; k++) {
         const ts = new Date(y, mo - 1, Math.min(days, 1 + Math.floor((k + .5) * days / g.plan)), 9).getTime();
-        await L.db.collection('inspections').add({ project: g.project, tpl: cl.name, area: '', contractor: null, inspector: '', ts, by: L.me.id, items: 0, fails: 0, status: 'Scheduled', answers: { plan: m, checklist: cl.id, rev: cl.rev || 1, a: {} }, history: [{ ts: Date.now(), by: 'NAVO automation', what: `Planned inspection ${k + 1} of ${g.plan} for ${auFmt(m)}` }] });
+        await L.db.collection('inspections').add({ project: g.project, tpl: cl.name, area: '', contractor: null, inspector: '', ts, by: L.me.id, items: 0, fails: 0, status: 'Scheduled', answers: { plan: m, checklist: cl.id, rev: cl.rev || 1, a: {} }, history: [{ ts: Date.now(), by: 'NASS Safe Link automation', what: `Planned inspection ${k + 1} of ${g.plan} for ${auFmt(m)}` }] });
         n++;
       }
     }
@@ -96,7 +96,7 @@ async function auCreateSystemic(quiet) {
     for (const g of auRepeatGroups(ids)) {
       const title = auSystemicTitle(g); if ((L.actions || []).some(a => a.project === g.project && a.title === title)) continue;
       await L.db.collection('actions').add({ title, project: g.project, owner: 'Project HSE lead', contractor: null, due: Date.now() + 14 * DAY, priority: 'High', report: null, ts: Date.now(), by: L.me.id, closedAt: null, status: 'Assigned', source: 'Repeat findings', sourceId: 'repeat:' + g.project,
-        history: [{ ts: Date.now(), by: 'NAVO automation', what: `Created because the same finding was recorded ${g.n} times in 30 days. Find the system cause, not the individual case.` }] });
+        history: [{ ts: Date.now(), by: 'NASS Safe Link automation', what: `Created because the same finding was recorded ${g.n} times in 30 days. Find the system cause, not the individual case.` }] });
       n++;
     }
   });

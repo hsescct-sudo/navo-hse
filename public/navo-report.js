@@ -1,4 +1,4 @@
-/* NAVO report centre: one entry point for every report, inspection and record.
+/* NASS Safe Link report centre: one entry point for every report, inspection and record.
    Each card opens the right form with the right type already chosen. */
 'use strict';
 const NVR_IC = {

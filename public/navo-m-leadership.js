@@ -1,4 +1,4 @@
-/* NAVO Leadership scorecard: every leader's visible safety leadership in one place, linked to the rest of NAVO
+/* NASS Safe Link Leadership scorecard: every leader's visible safety leadership in one place, linked to the rest of NASS Safe Link
    (walkthroughs, inspections, reports, actions raised and owned, approvals in the registers, own training),
    with a monthly target, an appraisal score and an Excel export for performance appraisals. */
 'use strict';
@@ -51,7 +51,7 @@ function ldDetail(r) {
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-ld-p],[data-ld-open],[data-ld-close],[data-ld-xl]'); if (!t) return; e.preventDefault();
   if (t.dataset.ldP) LD.period = t.dataset.ldP; if (t.dataset.ldOpen) LD.open = t.dataset.ldOpen; if (t.hasAttribute('data-ld-close')) LD.open = null;
-  if (t.hasAttribute('data-ld-xl')) { await rgXlsxLib(); const rows = ldLeaders().map(x => { const s = ldStats(x.uid, x.m); return { Leader: (LD.names[x.uid] || {}).name || '', Position: x.m.title || '', Period: { month: 'This month', q: 'This quarter', ytd: 'Year to date' }[LD.period], Walkthroughs: s.walks, 'Walk target': s.target, Inspections: s.insp, Reports: s.reps, 'Toolbox talks': s.tbt, 'Actions raised': s.raised, 'Actions closed': s.raisedClosed, 'Own actions open': s.ownedOpen, 'Own actions overdue': s.ownedOver, Approvals: s.approvals, 'Own training %': s.tr ? s.tr.pct : '', Score: s.score, Rating: ldBand(s.score)[0] }; }); const ws = XLSX.utils.json_to_sheet(rows), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Leadership'); XLSX.writeFile(wb, 'NAVO leadership scorecard.xlsx'); return; }
+  if (t.hasAttribute('data-ld-xl')) { await rgXlsxLib(); const rows = ldLeaders().map(x => { const s = ldStats(x.uid, x.m); return { Leader: (LD.names[x.uid] || {}).name || '', Position: x.m.title || '', Period: { month: 'This month', q: 'This quarter', ytd: 'Year to date' }[LD.period], Walkthroughs: s.walks, 'Walk target': s.target, Inspections: s.insp, Reports: s.reps, 'Toolbox talks': s.tbt, 'Actions raised': s.raised, 'Actions closed': s.raisedClosed, 'Own actions open': s.ownedOpen, 'Own actions overdue': s.ownedOver, Approvals: s.approvals, 'Own training %': s.tr ? s.tr.pct : '', Score: s.score, Rating: ldBand(s.score)[0] }; }); const ws = XLSX.utils.json_to_sheet(rows), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Leadership'); XLSX.writeFile(wb, 'NASS Safe Link leadership scorecard.xlsx'); return; }
   render();
 });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches && e.target.matches('[data-ld-open]')) e.target.click(); });

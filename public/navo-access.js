@@ -1,4 +1,4 @@
-/* NAVO organisation & access.
+/* NASS Safe Link organisation & access.
    One screen to decide who sees what: corporate → platform → division → cluster → project.
    Each person gets a position; the position sets the permission tier and the default level of the organisation they see.
    The database enforces the same scopes (supabase/021_scope_access.sql). */

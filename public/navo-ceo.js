@@ -1,10 +1,10 @@
-/* NAVO · CEO bi-monthly HSSE report and Environmental performance.
+/* NASS Safe Link · CEO bi-monthly HSSE report and Environmental performance.
    Optional module. Turn it off in Settings → Optional modules, or remove it completely by deleting
    navo-ceo.js and navo-ceo.css and their two lines in index.html. No database change is needed:
    manual figures are stored in hsse_records with kind "ceo" (per project, month and fortnight) and "env" (per project and month).
 
    Rules
-   - Figures NAVO already holds are calculated, never typed: man-hours, incidents by class, days lost, inspections, observations.
+   - Figures NASS Safe Link already holds are calculated, never typed: man-hours, incidents by class, days lost, inspections, observations.
    - Blank means not reported; zero means reported zero.
    - Rates use the platform basis (per 1,000,000 man-hours) and the KPI targets in Settings. */
 'use strict';
@@ -12,7 +12,7 @@ const CEO = { scope: 'Corporation', month: null, entry: null, env: { scope: 'Cor
 const CEO_ON = () => !(L.structure && L.structure.modules && L.structure.modules.ceoEnv === false);
 
 /* ---------- Indicators ---------- */
-// [key, label, source] source: auto = from NAVO records per fortnight · month = from monthly data (month level) · env = from environmental data · manual
+// [key, label, source] source: auto = from NASS Safe Link records per fortnight · month = from monthly data (month level) · env = from environmental data · manual
 const CEO_SECTIONS = [
   ['Safety', [
     ['manhours', 'Total man-hours worked', 'month'], ['manpower', 'Average manpower', 'month'],
@@ -135,11 +135,11 @@ function ceoPage() {
   const rm = ceoRates(C.mon), ry = ceoRates(C.ytd);
   const rate = (lbl, k, t) => { const y = ry ? ry[k] : null; const ok = y == null ? '' : y <= t ? 'ok' : 'bad'; return `<div class="ceo-rate ${ok}"><span>${lbl}</span><b>${y == null ? '—' : y.toFixed(2)}</b><small>YTD · target ${t.toFixed(2)}${rm ? ` · month ${rm[k].toFixed(2)}` : ''}</small></div>`; };
   const tiles = [['Man-hours YTD', C.ytd.manhours], ['Fatalities YTD', C.ytd.fat], ['Recordable cases YTD', ry ? ry.rec : null], ['Lost time injuries YTD', ry ? ry.lti : null], ['Days lost YTD', C.ytd.daysLost], ['Road traffic accidents YTD', C.ytd.rtac]];
-  const srcTag = s => s === 'manual' ? '' : `<i class="ceo-src ${s}" title="${s === 'auto' ? 'Calculated from NAVO records' : s === 'month' ? 'From monthly performance data' : 'From environmental data'}">${s === 'auto' ? 'auto' : s === 'month' ? 'monthly' : 'env'}</i>`;
+  const srcTag = s => s === 'manual' ? '' : `<i class="ceo-src ${s}" title="${s === 'auto' ? 'Calculated from NASS Safe Link records' : s === 'month' ? 'From monthly performance data' : 'From environmental data'}">${s === 'auto' ? 'auto' : s === 'month' ? 'monthly' : 'env'}</i>`;
   const cell = (col, k, s) => (s === 'month' || s === 'env') && (col === C.w1 || col === C.w2) ? '<span class="ceo-na">month</span>' : ceoNum(col[k], k);
   const staff = isStaff();
   return `<div class="ceo">
-   <div class="nvr-hero ceo-hero"><div><span class="nvi-eyebrow">CEO bi-monthly HSSE report</span><h2>${esc(scopes.find(s => s[0] === CEO.scope)[1])} · ${fmtMonth(CEO.month)}</h2><p>Safety, environment, health & camp, training, security, lifting and CCTV. Figures NAVO already holds are calculated automatically; the rest is entered per project and fortnight.</p></div>
+   <div class="nvr-hero ceo-hero"><div><span class="nvi-eyebrow">CEO bi-monthly HSSE report</span><h2>${esc(scopes.find(s => s[0] === CEO.scope)[1])} · ${fmtMonth(CEO.month)}</h2><p>Safety, environment, health & camp, training, security, lifting and CCTV. Figures NASS Safe Link already holds are calculated automatically; the rest is entered per project and fortnight.</p></div>
     <div class="ceo-ctrl"><label>Scope<select data-ceo="scope">${scopes.map(([v, l]) => `<option value="${esc(v)}" ${v === CEO.scope ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label>Month<input type="month" data-ceo="month" value="${CEO.month}"></label>
      <div class="ceo-btns">${staff ? '<button class="btn pri" data-ceoentry>Enter fortnight data</button>' : ''}</div></div>
     <div class="ceo-report"><span>Download report</span><button class="btn" data-ceorep="pptx">PowerPoint</button><button class="btn" data-ceorep="docx">Word</button><button class="btn" data-ceorep="xlsx">Excel</button><button class="btn" data-ceocsv>CSV</button><button class="btn" data-ceoprint>Print / PDF</button></div></div>
@@ -156,7 +156,7 @@ function ceoEntryForm() {
   const e = CEO.entry, P = myProjects(); if (!e.project) e.project = (ceoProjects(CEO.scope)[0] || P[0] || {}).id;
   const rec = (L.records || []).find(r => r.kind === 'ceo' && r.project === e.project && r.data && r.data.month === CEO.month && r.data.half === e.half);
   if (!e.loaded || e.key !== e.project + CEO.month + e.half) { e.v = { ...((rec && rec.data.v) || {}) }; e.loaded = true; e.key = e.project + CEO.month + e.half; }
-  return `<div class="panel ceo-entry"><div class="nvi-head"><div><span class="nvi-eyebrow">Fortnight data entry</span><h2>${fmtMonth(CEO.month)} · ${e.half === 1 ? 'weeks 1–2' : 'weeks 3–4'}</h2><p>Only figures NAVO cannot calculate. Leave blank if not reported.</p></div><button class="btn" data-ceoclose>Close</button></div>
+  return `<div class="panel ceo-entry"><div class="nvi-head"><div><span class="nvi-eyebrow">Fortnight data entry</span><h2>${fmtMonth(CEO.month)} · ${e.half === 1 ? 'weeks 1–2' : 'weeks 3–4'}</h2><p>Only figures NASS Safe Link cannot calculate. Leave blank if not reported.</p></div><button class="btn" data-ceoclose>Close</button></div>
    <div class="mx-grid"><div class="fld"><label>Project</label><select data-ceoe="project">${P.map(p => `<option value="${esc(p.id)}" ${p.id === e.project ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></div>
     <div class="fld"><label>Fortnight</label><select data-ceoe="half"><option value="1" ${e.half === 1 ? 'selected' : ''}>Weeks 1–2 (days 1–14)</option><option value="2" ${e.half === 2 ? 'selected' : ''}>Weeks 3–4 (day 15 to end)</option></select></div></div>
    ${CEO_SECTIONS.map(([sec, rows]) => { const m = rows.filter(r => r[2] === 'manual'); return m.length ? `<h3 class="ceo-eh">${sec}</h3><div class="ceo-grid">${m.map(([k, l]) => `<div class="fld"><label>${esc(l)}</label><input class="mx-in" type="number" min="0" step="any" data-ceov="${k}" value="${e.v[k] ?? ''}"></div>`).join('')}</div>` : ''; }).join('')}
@@ -174,7 +174,7 @@ function ceoCsv() {
   CEO_SECTIONS.forEach(([sec, r]) => r.forEach(([k, l, s]) => rows.push([sec, l, ...[C.w1, C.w2].map(c => (s === 'month' || s === 'env') ? '' : c[k] ?? ''), C.mon[k] ?? '', C.ytd[k] ?? ''])));
   const ry = ceoRates(C.ytd); if (ry) rows.push(['Rates', 'LTIFR YTD', '', '', '', ry.ltifr.toFixed(2)], ['Rates', 'TRCF YTD', '', '', '', ry.trcf.toFixed(2)], ['Rates', 'LTISR YTD', '', '', '', ry.ltisr.toFixed(2)]);
   const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(',')).join('\n');
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `NAVO CEO HSSE ${CEO.month}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `NASS Safe Link CEO HSSE ${CEO.month}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 /* ---------- Environmental performance ---------- */
@@ -305,7 +305,7 @@ function ceoPayload() {
     tiles: [['Man-hours YTD', C.ytd.manhours], ['Fatalities YTD', C.ytd.fat], ['Recordable cases YTD', ry ? ry.rec : null], ['Lost time injuries YTD', ry ? ry.lti : null], ['Days lost YTD', C.ytd.daysLost], ['Road traffic accidents YTD', C.ytd.rtac]],
     attention, sections: CEO_SECTIONS.map(([title, rows]) => ({ title, rows: rows.map(([k, label, src]) => ({ label, src, w1: C.w1[k] ?? null, w2: C.w2[k] ?? null, mon: C.mon[k] ?? null, ytd: C.ytd[k] ?? null })) })),
     env: { year: y, months: mons.map(m => fmtMonth(m).slice(0, 3)), scope1: ev.map(v => v ? +v.scope1.toFixed(1) : null), scope2: ev.map(v => v ? +v.scope2.toFixed(1) : null), diverted: ev.map(v => v ? +v.wasteDiverted.toFixed(1) : null), disposed: ev.map(v => v ? +v.wasteDisposed.toFixed(1) : null) },
-    notes: ['Figures already in NAVO are calculated from records: man-hours and manpower from monthly performance data; incidents, days lost, inspections and observations from reports and inspections by event date.',
+    notes: ['Figures already in NASS Safe Link are calculated from records: man-hours and manpower from monthly performance data; incidents, days lost, inspections and observations from reports and inspections by event date.',
       'Weeks 1–2 = days 1–14; weeks 3–4 = day 15 to month end. Man-hours and environmental figures are monthly and appear in the month and YTD columns only.',
       `Rates per ${hsN(hsKpiCfg().mult)} man-hours. LTIFR = (fatalities + SI + RLTA + RLTI) × basis ÷ man-hours; TRCF adds RWC and MTC; LTISR = (days lost + 6,000 per fatality) × basis ÷ man-hours.`,
       'Blank (—) means not reported; zero means reported zero.', 'Health, camp, training, security, lifting and CCTV figures are entered per project and fortnight by HSE staff.'],
@@ -331,7 +331,7 @@ async function ceoDownload(payload, fmt, btn) {
     const r = await fetch('/api/report?fmt=' + fmt, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if (!r.ok) throw new Error((await r.text()).slice(0, 200));
     const b = await r.blob(), a = document.createElement('a'); a.href = URL.createObjectURL(b);
-    a.download = `NAVO ${({ ceo: 'CEO HSSE report', env: 'Environmental report', template: 'data import template' })[payload.kind] || 'report'} ${payload.kind === 'template' ? '' : payload.scopeLabel + ' '}${payload.month}.${fmt}`.replace(/[^\w .()-]+/g, '-');
+    a.download = `NASS Safe Link ${({ ceo: 'CEO HSSE report', env: 'Environmental report', template: 'data import template' })[payload.kind] || 'report'} ${payload.kind === 'template' ? '' : payload.scopeLabel + ' '}${payload.month}.${fmt}`.replace(/[^\w .()-]+/g, '-');
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('Report downloaded');
   } catch (e) { toast('The report could not be created. ' + (e.message || '')); }
   finally { btn.disabled = false; btn.textContent = lbl; }

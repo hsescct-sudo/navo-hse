@@ -1,4 +1,4 @@
-/* NAVO Workflow studio: every process drawn as a flowchart (start/end, step, decision with a branch, automatic step).
+/* NASS Safe Link Workflow studio: every process drawn as a flowchart (start/end, step, decision with a branch, automatic step).
    A System admin edits it on the page: click a shape to change its words or type, add, remove or move steps,
    rename or recolour a workflow, add a new one, and save. Everyone else sees the saved drawings.
    Saved in admin/workflows (settings) as `maps`, beside the older responsibility table (`rows`). */
@@ -84,8 +84,8 @@ flowsPage = function () {
   const list = wfsList(), wf = wfsCur(); WFS.cur = wf.id;
   const ed = myRole() === 'admin';
   const nav = `<div class="wfs-nav" role="tablist">${list.map(w => `<button role="tab" aria-selected="${w.id === wf.id}" data-wfs-pick="${wfsEsc(w.id)}" style="--c:${w.color}"><i></i>${wfsEsc(w.name)}<small>${w.nodes.length} steps</small></button>`).join('')}${ed ? '<button class="wfs-new" data-wfs-new>+ New workflow</button>' : ''}</div>`;
-  const bar = ed ? `<div class="wfs-bar"><span class="${WFS.dirty ? 'wfs-dirty' : 'mx-muted'}">${WFS.dirty ? 'Unsaved changes' : 'All changes saved'}</span><span class="filters"><button class="btn" data-wfs-png>Download picture</button>${WFS.dirty ? '<button class="btn" data-wfs-undo>Discard changes</button>' : ''}<button class="btn" data-wfs-reset>Restore NAVO defaults</button>${list.length > 1 ? '<button class="btn danger" data-wfs-remove>Delete this workflow</button>' : ''}<button class="btn pri" data-wfs-save ${WFS.dirty ? '' : 'disabled'}>Save workflows</button></span></div>` : `<div class="wfs-bar"><span class="mx-muted">Set by your System admin</span><span class="filters"><button class="btn" data-wfs-png>Download picture</button></span></div>`;
-  return `<div class="nvr-hero wfs-hero"><div><span class="nvi-eyebrow">Workflow studio</span><h2>How work flows in NAVO</h2><p>Every process as a flowchart: start and end, steps, decisions with their branch, and what NAVO does automatically.${ed ? ' Click a shape to change it, add steps, or build a new workflow, then save.' : ''}</p></div>
+  const bar = ed ? `<div class="wfs-bar"><span class="${WFS.dirty ? 'wfs-dirty' : 'mx-muted'}">${WFS.dirty ? 'Unsaved changes' : 'All changes saved'}</span><span class="filters"><button class="btn" data-wfs-png>Download picture</button>${WFS.dirty ? '<button class="btn" data-wfs-undo>Discard changes</button>' : ''}<button class="btn" data-wfs-reset>Restore NASS Safe Link defaults</button>${list.length > 1 ? '<button class="btn danger" data-wfs-remove>Delete this workflow</button>' : ''}<button class="btn pri" data-wfs-save ${WFS.dirty ? '' : 'disabled'}>Save workflows</button></span></div>` : `<div class="wfs-bar"><span class="mx-muted">Set by your System admin</span><span class="filters"><button class="btn" data-wfs-png>Download picture</button></span></div>`;
+  return `<div class="nvr-hero wfs-hero"><div><span class="nvi-eyebrow">Workflow studio</span><h2>How work flows in NASS Safe Link</h2><p>Every process as a flowchart: start and end, steps, decisions with their branch, and what NASS Safe Link does automatically.${ed ? ' Click a shape to change it, add steps, or build a new workflow, then save.' : ''}</p></div>
     <div class="wfs-legend"><span><i class="wfs-ico k-s"></i>Start / end</span><span><i class="wfs-ico k-p"></i>Step</span><span><i class="wfs-ico k-d"></i>Decision</span><span><i class="wfs-ico k-a"></i>Automatic</span></div></div>
    ${nav}
    <div class="panel wfs-panel" style="--c:${wf.color}">
@@ -117,7 +117,7 @@ async function wfsPng() {
   const img = new Image(); const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(clone)], { type: 'image/svg+xml' }));
   await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
   ctx.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
-  c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'NAVO workflow - ' + wfsCur().name + '.png'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }, 'image/png');
+  c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'NASS Safe Link workflow - ' + wfsCur().name + '.png'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }, 'image/png');
 }
 
 document.addEventListener('click', e => {
@@ -140,7 +140,7 @@ document.addEventListener('click', e => {
   if (D.wfsColor) { wfsTouch().color = D.wfsColor; return wfsRedraw(); }
   if (t.hasAttribute('data-wfs-save')) return wfsSave();
   if (t.hasAttribute('data-wfs-undo')) { WFS.draft = null; WFS.dirty = false; WFS.sel = null; if (!wfsList().some(w => w.id === WFS.cur)) WFS.cur = null; return wfsRedraw(); }
-  if (t.hasAttribute('data-wfs-reset')) { if (t.dataset.armed !== '1') { t.dataset.armed = '1'; t.textContent = 'Click again to restore'; setTimeout(() => { if (t.isConnected) { t.dataset.armed = ''; t.textContent = 'Restore NAVO defaults'; } }, 3000); return; } WFS.draft = JSON.parse(JSON.stringify(WFS_DEF)); WFS.dirty = true; WFS.sel = null; WFS.cur = WFS.draft[0].id; toast('Defaults restored. Save to keep them.'); return wfsRedraw(); }
+  if (t.hasAttribute('data-wfs-reset')) { if (t.dataset.armed !== '1') { t.dataset.armed = '1'; t.textContent = 'Click again to restore'; setTimeout(() => { if (t.isConnected) { t.dataset.armed = ''; t.textContent = 'Restore NASS Safe Link defaults'; } }, 3000); return; } WFS.draft = JSON.parse(JSON.stringify(WFS_DEF)); WFS.dirty = true; WFS.sel = null; WFS.cur = WFS.draft[0].id; toast('Defaults restored. Save to keep them.'); return wfsRedraw(); }
   if (t.hasAttribute('data-wfs-remove')) { if (t.dataset.armed !== '1') { t.dataset.armed = '1'; t.textContent = 'Click again to delete'; setTimeout(() => { if (t.isConnected) { t.dataset.armed = ''; t.textContent = 'Delete this workflow'; } }, 3000); return; } wfsTouch(); WFS.draft = WFS.draft.filter(w => w.id !== WFS.cur); WFS.cur = WFS.draft[0].id; WFS.sel = null; return wfsRedraw(); }
 }, true);
 document.addEventListener('keydown', e => { if (st.view === 'flows' && (e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-wfs-i]')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); } });
