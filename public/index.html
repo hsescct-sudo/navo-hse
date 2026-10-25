@@ -349,8 +349,8 @@ table.mx tr.sec td:first-child{background:var(--surface2)}
 <nav class="tabbar" id="tabbar"></nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script>
-<script src="supabase-config.js?v=20261025h"></script>
-<script src="navo-supabase.js?v=20261025h"></script><script src="navo-ops.js?v=20261025h"></script>
+<script src="supabase-config.js?v=20261025i"></script>
+<script src="navo-supabase.js?v=20261025i"></script><script src="navo-ops.js?v=20261025i"></script>
 <script>
 const IC={
 dash:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',
@@ -1157,7 +1157,7 @@ async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;
  const NAMES=["Ring Road","Tower","Hospital Package","Plant","Yard","Hub","Factory","Depot","Complex","Upgrade","Jetty","Showroom"];
  const now=Date.now(),day=864e5;const projects=[],reports=[],actions=[],insp=[],acts=[];
  const CPOOL=["Al Bawani","Nesma & Partners","Al Rashid Trading","Gulf Scaffolding Co.","Arabian Cranes","Delta Steel Erectors","Al Fanar Electrical","Petro Civil","Emirates Formwork","Qatar Building Co.","Oman Earthworks","Bahrain Pipe Services","Desert Logistics","Al Jaber Transport","Falcon MEP","Redstone Insulation","Seven Seas Marine","Crown Painting","Unity Manpower","Al Harbi Plant Hire","Atlas Precast","Sahara Readymix","Coastline Dredging","Prime Fit-Out","Masar Landscaping","Royal Asphalt","Summit Electrical","Horizon HVAC","Al Muhaidib Steel","Najd Security","Taybah Catering","Pearl Cleaning","GreenLine Waste","Blue Ocean Divers","SkyLift Access","Al Ghanim Glazing","Ironclad Fabrication","Wadi Drilling","Gulf Fire Protection","Safe Hands Training","Peak Rigging","Al Qahtani Concrete","Metro Traffic Mgmt","Delmon Plumbing","Arabian Insulation"];
- const DC=["KSA","UAE","Bahrain"],SL=[];slots.forEach(s=>{const n=s[0]==="Construction"&&s[1]!=="Plant"?4:1;for(let k=0;k<n;k++)SL.push([...s,k])});SL.forEach(([pl,b,c,k],i)=>{const PC=[0,1,2].map(q=>CPOOL[(i*3+q)%CPOOL.length]);const id="demo-p"+String(i+1).padStart(2,"0");const country=DC[i%DC.length];const hc=pick([90,140,220,310,460,650]);const pi=pick([4,6,8,10]);const pw=pick([2,3,4,6]);
+ const DC=["KSA","UAE","Bahrain"],SL=[];slots.forEach(s=>{const n=s[0]==="Construction"&&s[1]!=="Plant"?4:1;for(let k=0;k<n;k++)SL.push([...s,k])});SL.forEach(([pl,b,c,k],i)=>{const PC=[0,1,2].map(q=>CPOOL[(i*3+q)%CPOOL.length]);const id="demo-p"+String(i+1).padStart(2,"0");const country=DC[i%DC.length];const hc=pick([90,140,220,310,460,650]);const pi=pick([2,3,4,5]);const pw=pick([1,2,2,3]);
   projects.push({id,name:b==="Plant"&&c?`${c} · ${country}`:pl==="Construction"?`${c?b+" "+c:b} Project #${k+1} · ${country}`:`${b} · ${country}`,country,platform:pl,division:b,cluster:c||"",headcount:hc,planInsp:pi,planWalk:pw});
   const q=.45+R()*.55;
   const dmax=365;for(let d=dmax;d>=0;d--){const t=now-d*day-Math.floor(R()*8)*3600e3;
@@ -1170,7 +1170,7 @@ async function loadDemo(){let seed=11;const R=()=>{seed=(seed*16807)%2147483647;
      actions.push({title:"Follow up: "+reports[reports.length-1].desc.toLowerCase(),project:id,owner:pick(["Site Supervisor","HSE Engineer","Area Engineer","Foreman"]),contractor:reports[reports.length-1].contractor||pick(PC),due,priority:cat&&R()<.4?"High":"Normal",report:null,ts:t,by:null,closedAt})}}
    if(R()<pi/30*(.5+q*.6))insp.push({project:id,tpl:pick(Object.keys(TEMPLATES)),items:6,fails:R()<q?0:Math.ceil(R()*3),ts:t,by:null});
    if(R()<pw/30*(.4+q*.7))acts.push({type:"Leadership walkthrough",project:id,date:t,count:1,by:null,ts:now});
-   if(d%14===0)acts.push({type:"Toolbox talk",project:id,date:t,count:Math.max(1,Math.round(hc/12)),by:null,ts:now});if(d%14===2)acts.push({type:"STARRT briefing",project:id,date:t,count:Math.max(1,Math.round(hc/25)),by:null,ts:now});if(d%14===3)acts.push({type:"Behaviour safety leadership engagement",project:id,date:t,count:1,by:null,ts:now});if(d%30===5)acts.push({type:"Inter-division / facility tour",project:id,date:t,count:1,by:null,ts:now});if(d%45===9)acts.push({type:"OHS campaign",project:id,date:t,count:1,by:null,ts:now});if(d%60===11)acts.push({type:"Emergency drill",project:id,date:t,count:1,by:null,ts:now})}});
+   if(d%30===0)acts.push({type:"Toolbox talk",project:id,date:t,count:Math.max(1,Math.round(hc/12)),by:null,ts:now});if(d%30===2)acts.push({type:"STARRT briefing",project:id,date:t,count:Math.max(1,Math.round(hc/25)),by:null,ts:now});if(d%30===3)acts.push({type:"Behaviour safety leadership engagement",project:id,date:t,count:1,by:null,ts:now});if(d%30===5)acts.push({type:"Inter-division / facility tour",project:id,date:t,count:1,by:null,ts:now});if(d%45===9)acts.push({type:"OHS campaign",project:id,date:t,count:1,by:null,ts:now});if(d%60===11)acts.push({type:"Emergency drill",project:id,date:t,count:1,by:null,ts:now})}});
  const prog=m=>{const b=document.getElementById("demo-load");if(b)b.textContent=m};const BI=L.db.bulkInsert;L.db.bulkInsert=async(t,rows)=>{for(let i=0;i<rows.length;i+=200){prog(`Loading ${t} ${Math.min(i+200,rows.length)} / ${rows.length}…`);await BI(t,rows.slice(i,i+200))}};
  const mxr=mxSample(projects,reports,actions,insp,R);
  try{await (async()=>{await L.db.doc("admin/projects").set({list:[...L.projects.filter(p=>!String(p.id).startsWith("demo-")),...projects]});
@@ -1277,53 +1277,53 @@ document.addEventListener("click",async e=>{const t=e.target.closest("#br-defaul
  const ok=await liveSave(()=>L.db.doc("admin/structure").set(s),"Name & logo saved");if(ok!==false){L.structure=s;L.bdraft=null;applyBrand();render()}});
 applyBrand();
 </script>
-<script src="release-core.js?v=20261025h"></script>
-<link rel="stylesheet" href="client-review.css?v=20261025h">
-<script src="hsse.js?v=20261025h"></script>
-<script src="checklists.js?v=20261025h"></script>
-<script src="modules.js?v=20261025h"></script>
-<link rel="stylesheet" href="cases.css?v=20261025h">
-<script src="cases-core.js?v=20261025h"></script>
-<script src="case-lookups.js?v=20261025h"></script>
-<script src="cases.js?v=20261025h"></script>
-<script src="client-review.js?v=20261025h"></script>
-<link rel="stylesheet" href="experience.css?v=20261025h">
-<script src="experience.js?v=20261025h"></script>
-<link rel="stylesheet" href="field-review.css?v=20261025h">
-<script src="field-review-core.js?v=20261025h"></script>
-<script src="field-review.js?v=20261025h"></script>
-<script src="evidence-mobile.js?v=20261025h"></script>
-<link rel="stylesheet" href="command-dashboard.css?v=20261025h">
-<script src="command-dashboard.js?v=20261025h"></script>
+<script src="release-core.js?v=20261025i"></script>
+<link rel="stylesheet" href="client-review.css?v=20261025i">
+<script src="hsse.js?v=20261025i"></script>
+<script src="checklists.js?v=20261025i"></script>
+<script src="modules.js?v=20261025i"></script>
+<link rel="stylesheet" href="cases.css?v=20261025i">
+<script src="cases-core.js?v=20261025i"></script>
+<script src="case-lookups.js?v=20261025i"></script>
+<script src="cases.js?v=20261025i"></script>
+<script src="client-review.js?v=20261025i"></script>
+<link rel="stylesheet" href="experience.css?v=20261025i">
+<script src="experience.js?v=20261025i"></script>
+<link rel="stylesheet" href="field-review.css?v=20261025i">
+<script src="field-review-core.js?v=20261025i"></script>
+<script src="field-review.js?v=20261025i"></script>
+<script src="evidence-mobile.js?v=20261025i"></script>
+<link rel="stylesheet" href="command-dashboard.css?v=20261025i">
+<script src="command-dashboard.js?v=20261025i"></script>
 <link rel="stylesheet" href="vendor/leaflet-1.9.4.css">
 <link rel="stylesheet" href="vendor/markercluster-1.5.3.css">
 <script src="vendor/leaflet-1.9.4.js"></script>
 <script src="vendor/leaflet.markercluster-1.5.3.js"></script>
-<script src="portfolio-map-core.js?v=20261025h"></script>
-<link rel="stylesheet" href="portfolio-map.css?v=20261025h">
-<script src="portfolio-map.js?v=20261025h"></script>
-<script src="client-assurance-core.js?v=20261025h"></script>
-<link rel="stylesheet" href="client-assurance.css?v=20261025h">
-<script src="client-assurance.js?v=20261025h"></script>
-<script src="ceo-reporting.js?v=20261025h"></script>
-<link rel="stylesheet" href="leadership-cockpit.css?v=20261025h">
-<script src="leadership-cockpit.js?v=20261025h"></script>
-<script src="navo-checklists.js?v=20261025h"></script>
-<script src="navo-inspect.js?v=20261025h"></script>
-<script src="navo-rca.js?v=20261025h"></script>
-<script src="navo-report.js?v=20261025h"></script>
-<script src="navo-ceo.js?v=20261025h"></script><script src="navo-ceo-dash.js?v=20261025h"></script><script src="navo-analytics.js?v=20261023h"></script><script src="navo-wfstudio.js?v=20261024a"></script>
-<script src="navo-auto.js?v=20261025h"></script>
-<script src="navo-import.js?v=20261025h"></script>
-<script src="navo-access.js?v=20261025h"></script><script src="navo-users.js?v=20261025h"></script>
-<link rel="stylesheet" href="navo-auto.css?v=20261025h">
-<link rel="stylesheet" href="navo-ceo.css?v=20261025h"><link rel="stylesheet" href="navo-ceo-dash.css?v=20261025h">
-<link rel="stylesheet" href="navo-theme.css?v=20261025h">
-<link rel="stylesheet" href="navo-pro.css?v=20261025h">
-<link rel="stylesheet" href="navo-3d.css?v=20261025h">
-<script src="navo-3d.js?v=20261025h"></script>
-<link rel="stylesheet" href="navo-motion.css?v=20261025h"><link rel="stylesheet" href="navo-wfstudio.css?v=20261024a"><link rel="stylesheet" href="navo-reg.css?v=20261024c"><link rel="stylesheet" href="navo-trends.css?v=20261025h"><link rel="stylesheet" href="navo-report-style.css?v=1"><link rel="stylesheet" href="navo-v2.css?v=11"><link rel="stylesheet" href="navo-sidebar.css?v=5"><link rel="stylesheet" href="navo-hse360.css?v=2"><link rel="stylesheet" href="navo-cinema.css?v=20261025h">
-<script src="navo-motion.js?v=20261025h"></script><script src="navo-cinema.js?v=20261025h"></script><script src="navo-reg.js?v=20261024c"></script><script src="navo-m-training.js?v=20261024c"></script><script src="navo-m-equipment.js?v=20261024c"></script><script src="navo-m-scaffold.js?v=20261024c"></script><script src="navo-m-food.js?v=20261024c"></script><script src="navo-m-connected.js?v=20261024c"></script><script src="navo-m-leadership.js?v=20261024c"></script><script src="navo-m-nav.js?v=20261024c"></script><script src="navo-trends.js?v=20261025h"></script><script src="navo-m-demo.js?v=20261025h"></script><script src="navo-pilot.js?v=20261025h"></script><script src="navo-v2.js?v=14"></script><script src="navo-sidebar.js?v=2"></script><script src="navo-hse360.js?v=1"></script>
+<script src="portfolio-map-core.js?v=20261025i"></script>
+<link rel="stylesheet" href="portfolio-map.css?v=20261025i">
+<script src="portfolio-map.js?v=20261025i"></script>
+<script src="client-assurance-core.js?v=20261025i"></script>
+<link rel="stylesheet" href="client-assurance.css?v=20261025i">
+<script src="client-assurance.js?v=20261025i"></script>
+<script src="ceo-reporting.js?v=20261025i"></script>
+<link rel="stylesheet" href="leadership-cockpit.css?v=20261025i">
+<script src="leadership-cockpit.js?v=20261025i"></script>
+<script src="navo-checklists.js?v=20261025i"></script>
+<script src="navo-inspect.js?v=20261025i"></script>
+<script src="navo-rca.js?v=20261025i"></script>
+<script src="navo-report.js?v=20261025i"></script>
+<script src="navo-ceo.js?v=20261025i"></script><script src="navo-ceo-dash.js?v=20261025i"></script><script src="navo-analytics.js?v=20261023h"></script><script src="navo-wfstudio.js?v=20261024a"></script>
+<script src="navo-auto.js?v=20261025i"></script>
+<script src="navo-import.js?v=20261025i"></script>
+<script src="navo-access.js?v=20261025i"></script><script src="navo-users.js?v=20261025i"></script>
+<link rel="stylesheet" href="navo-auto.css?v=20261025i">
+<link rel="stylesheet" href="navo-ceo.css?v=20261025i"><link rel="stylesheet" href="navo-ceo-dash.css?v=20261025i">
+<link rel="stylesheet" href="navo-theme.css?v=20261025i">
+<link rel="stylesheet" href="navo-pro.css?v=20261025i">
+<link rel="stylesheet" href="navo-3d.css?v=20261025i">
+<script src="navo-3d.js?v=20261025i"></script>
+<link rel="stylesheet" href="navo-motion.css?v=20261025i"><link rel="stylesheet" href="navo-wfstudio.css?v=20261024a"><link rel="stylesheet" href="navo-reg.css?v=20261024c"><link rel="stylesheet" href="navo-trends.css?v=20261025i"><link rel="stylesheet" href="navo-report-style.css?v=1"><link rel="stylesheet" href="navo-v2.css?v=11"><link rel="stylesheet" href="navo-sidebar.css?v=5"><link rel="stylesheet" href="navo-hse360.css?v=2"><link rel="stylesheet" href="navo-cinema.css?v=20261025i">
+<script src="navo-motion.js?v=20261025i"></script><script src="navo-cinema.js?v=20261025i"></script><script src="navo-reg.js?v=20261024c"></script><script src="navo-m-training.js?v=20261024c"></script><script src="navo-m-equipment.js?v=20261024c"></script><script src="navo-m-scaffold.js?v=20261024c"></script><script src="navo-m-food.js?v=20261024c"></script><script src="navo-m-connected.js?v=20261024c"></script><script src="navo-m-leadership.js?v=20261024c"></script><script src="navo-m-nav.js?v=20261024c"></script><script src="navo-trends.js?v=20261025i"></script><script src="navo-m-demo.js?v=20261025i"></script><script src="navo-pilot.js?v=20261025i"></script><script src="navo-v2.js?v=14"></script><script src="navo-sidebar.js?v=2"></script><script src="navo-hse360.js?v=1"></script>
 
 </body></html>
 
