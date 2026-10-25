@@ -522,7 +522,7 @@ document.addEventListener("click", (e) => {
   }
 });
 ceoDownloads = function () {
-  if (nxLoading()) return;
+  if (nxLoading()) { toast('Records are still loading. Downloads open as soon as they finish — try again in a few seconds.'); return; }
   cxModal(
     "Download dashboard brief",
     `<p>Current filters: <b>${esc(hsTitle())}</b>. A short summary of the selected dashboard. Source registers are downloaded separately.</p><label>Platform<select id="co-export-scope">${["Corporation", "Construction", "Non-Construction"].map((s) => `<option value="${s}" ${s === (hsInit().plat || "Corporation") ? "selected" : ""}>${coPlatformLabel(s)}</option>`).join("")}</select></label><div class="cx-actions"><button data-co-export="docx">Word · short brief</button><button data-co-export="xlsx">Excel · data & charts</button><button data-co-export="pptx">PowerPoint · 3 slides</button><button data-co-export="pdf">PDF · one-page summary</button></div><p>PowerPoint: cover → selected dashboard on slide 2 → concise summary. No long appendices. Historical demo data stays labelled.</p><div class="cx-actions"><button data-ceo-history>Five-year performance</button><button data-ceo-register>Record register CSV</button></div>`,
